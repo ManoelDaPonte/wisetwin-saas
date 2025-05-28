@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { registerSchema } from "@/lib/validators/auth"
+import { z } from "zod"
 
 export function RegisterForm({
   className,
@@ -12,12 +14,14 @@ export function RegisterForm({
 }: React.ComponentProps<"form">) {
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<z.ZodFormattedError<typeof registerSchema["_output"]> | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setIsLoading(true)
     setError(null)
+    setFieldErrors(null)
 
     const formData = new FormData(event.currentTarget)
     const name = formData.get("name") as string
@@ -27,6 +31,15 @@ export function RegisterForm({
 
     if (password !== confirmPassword) {
       setError("Les mots de passe ne correspondent pas")
+      setIsLoading(false)
+      return
+    }
+
+    // Validation côté client
+    const validationResult = registerSchema.safeParse({ name, email, password })
+    
+    if (!validationResult.success) {
+      setFieldErrors(validationResult.error.format())
       setIsLoading(false)
       return
     }
@@ -46,6 +59,10 @@ export function RegisterForm({
 
       if (!response.ok) {
         const data = await response.json()
+        if (data.errors) {
+          setFieldErrors(data.errors)
+          return
+        }
         throw new Error(data.message || "Une erreur est survenue")
       }
 
@@ -80,6 +97,9 @@ export function RegisterForm({
             required 
             disabled={isLoading}
           />
+          {fieldErrors?.name && (
+            <p className="text-sm text-destructive">{fieldErrors.name._errors[0]}</p>
+          )}
         </div>
         <div className="grid gap-3">
           <Label htmlFor="email">Email</Label>
@@ -91,6 +111,9 @@ export function RegisterForm({
             required 
             disabled={isLoading}
           />
+          {fieldErrors?.email && (
+            <p className="text-sm text-destructive">{fieldErrors.email._errors[0]}</p>
+          )}
         </div>
         <div className="grid gap-3">
           <Label htmlFor="password">Mot de passe</Label>
@@ -101,6 +124,9 @@ export function RegisterForm({
             required 
             disabled={isLoading}
           />
+          {fieldErrors?.password && (
+            <p className="text-sm text-destructive">{fieldErrors.password._errors[0]}</p>
+          )}
         </div>
         <div className="grid gap-3">
           <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>

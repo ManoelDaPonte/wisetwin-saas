@@ -28,11 +28,13 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { useSession, signOut } from "next-auth/react"
+import { useOrganizationStore } from "@/stores/organization-store"
 
 export function NavUser() {
   const { data: session } = useSession()
   const { isMobile } = useSidebar()
   const router = useRouter()
+  const clearStore = useOrganizationStore((state) => state.clearStore)
 
   if (!session?.user) {
     return null
@@ -86,7 +88,10 @@ export function NavUser() {
                 <Settings2 className="mr-2 h-4 w-4" />
                 Settings
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/login" })}>
+              <DropdownMenuItem onClick={() => {
+                clearStore()
+                signOut({ callbackUrl: "/login" })
+              }}>
                 <LogOut className="mr-2 h-4 w-4" />
                 Log out
               </DropdownMenuItem>

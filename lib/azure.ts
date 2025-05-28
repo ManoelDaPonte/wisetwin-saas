@@ -1,12 +1,7 @@
 import { BlobServiceClient } from "@azure/storage-blob"
+import { env } from "@/lib/config/env"
 
-const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING
-
-if (!connectionString) {
-  throw new Error("AZURE_STORAGE_CONNECTION_STRING is not defined")
-}
-
-const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString)
+const blobServiceClient = BlobServiceClient.fromConnectionString(env.AZURE_STORAGE_CONNECTION_STRING)
 
 function sanitizeContainerName(name: string): string {
   // Azure container names must be lowercase, 3-63 chars, and can only contain letters, numbers, and hyphens
@@ -16,6 +11,18 @@ function sanitizeContainerName(name: string): string {
     .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
     .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
     .slice(0, 63) // Max length 63
+}
+
+interface AzureError {
+  statusCode?: number
+}
+
+function isAzureError(error: unknown): error is AzureError {
+  return (
+    error !== null &&
+    typeof error === 'object' &&
+    'statusCode' in error
+  )
 }
 
 export async function createUserContainer(userEmail: string, userId: string) {
@@ -30,7 +37,7 @@ export async function createUserContainer(userEmail: string, userId: string) {
     await containerClient.create()
     return containerName
   } catch (error) {
-    if ((error as any).statusCode === 409) {
+    if (isAzureError(error) && error.statusCode === 409) {
       // Container already exists
       return containerName
     }
@@ -48,10 +55,10 @@ export async function createOrganizationContainer(organizationName: string, orga
     await containerClient.create()
     return containerName
   } catch (error) {
-    if ((error as any).statusCode === 409) {
+    if (isAzureError(error) && error.statusCode === 409) {
       // Container already exists
       return containerName
     }
     throw error
   }
-} 
+}

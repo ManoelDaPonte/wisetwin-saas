@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
-import { PrismaClient } from "@prisma/client"
 import { createOrganizationContainer } from "@/lib/azure"
-
-const prisma = new PrismaClient()
+import { prisma } from "@/lib/prisma"
 
 export async function GET() {
   try {

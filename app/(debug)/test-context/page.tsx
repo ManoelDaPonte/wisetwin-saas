@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 export default function TestContextPage() {
   const { activeOrganization, organizations } = useOrganizationStore()
   const isPersonalSpace = useIsPersonalSpace()
-  const { containerId, organizationId, isReady, getAzurePath } = useAzureContext()
+  const { containerId, isReady, getAzurePath } = useAzureContext()
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -32,7 +32,7 @@ export default function TestContextPage() {
               <dd>{activeOrganization?.id || "N/A"}</dd>
             </div>
             <div>
-              <dt className="font-semibold">Nombre d'organisations:</dt>
+              <dt className="font-semibold">Nombre d&apos;organisations:</dt>
               <dd>{organizations.length}</dd>
             </div>
           </dl>

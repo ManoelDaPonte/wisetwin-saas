@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   Boxes,
   Building2,
-  Settings2,
 } from "lucide-react"
 import { useIsPersonalSpace } from "@/stores/organization-store"
 

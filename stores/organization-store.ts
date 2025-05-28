@@ -20,6 +20,7 @@ interface OrganizationStore {
   switchToPersonal: () => void
   addOrganization: (organization: Organization) => void
   updateOrganization: (id: string, updates: Partial<Organization>) => void
+  clearStore: () => void
 }
 
 // Selectors séparés pour la réactivité
@@ -56,7 +57,12 @@ export const useOrganizationStore = create<OrganizationStore>()(
         activeOrganization: state.activeOrganization?.id === id
           ? { ...state.activeOrganization, ...updates }
           : state.activeOrganization
-      }))
+      })),
+      
+      clearStore: () => set({
+        activeOrganization: null,
+        organizations: []
+      })
     }),
     {
       name: 'organization-storage', // Clé localStorage
