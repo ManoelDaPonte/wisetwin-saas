@@ -37,6 +37,7 @@ export async function GET() {
         name: org.name,
         description: org.description,
         role: "OWNER" as const,
+        azureContainerId: org.azureContainerId,
       })),
       // Organizations where user is member
       ...user.OrganizationMember.map((member) => ({
@@ -44,6 +45,7 @@ export async function GET() {
         name: member.organization.name,
         description: member.organization.description,
         role: member.role,
+        azureContainerId: member.organization.azureContainerId,
       })),
     ]
 
@@ -88,7 +90,7 @@ export async function POST(req: Request) {
     })
 
     // Create Azure container
-    const containerId = await createOrganizationContainer(organization.id)
+    const containerId = await createOrganizationContainer(organization.name, organization.id)
 
     // Update organization with container ID
     const updatedOrganization = await prisma.organization.update({
@@ -101,6 +103,7 @@ export async function POST(req: Request) {
       name: updatedOrganization.name,
       description: updatedOrganization.description,
       role: "OWNER",
+      azureContainerId: updatedOrganization.azureContainerId,
     })
   } catch (error) {
     console.error("[ORGANIZATIONS_POST]", error)

@@ -16,10 +16,12 @@ model User {
   email         String    @unique
   password      String
   image         String?
+  azureContainerId String? @unique
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   emailVerified DateTime?
   organizations Organization[]
+  OrganizationMember OrganizationMember[]
 }
 
 model Organization {

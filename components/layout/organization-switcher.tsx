@@ -1,9 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { ChevronsUpDown, Plus } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { Building2, ChevronsUpDown, Plus, User } from "lucide-react"
 import { useSession } from "next-auth/react"
+import { useOrganizationStore, useIsPersonalSpace } from "@/stores/organization-store"
 
 import {
   Dialog,
@@ -33,18 +33,19 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
-type Organization = {
-  id: string
-  name: string
-  description: string | null
-  role: "OWNER" | "ADMIN" | "MEMBER"
-}
 
 export function OrganizationSwitcher() {
   const { data: session } = useSession()
   const { isMobile } = useSidebar()
-  const router = useRouter()
-  const [organizations, setOrganizations] = React.useState<Organization[]>([])
+  const {
+    activeOrganization,
+    organizations,
+    setOrganizations,
+    switchToOrganization,
+    switchToPersonal,
+    addOrganization
+  } = useOrganizationStore()
+  const isPersonalSpace = useIsPersonalSpace()
   const [isLoading, setIsLoading] = React.useState(false)
   const [isDialogOpen, setIsDialogOpen] = React.useState(false)
   const [newOrgName, setNewOrgName] = React.useState("")
@@ -86,10 +87,11 @@ export function OrganizationSwitcher() {
       if (!response.ok) throw new Error("Failed to create organization")
 
       const newOrg = await response.json()
-      setOrganizations([...organizations, newOrg])
+      addOrganization(newOrg)
       setIsDialogOpen(false)
       setNewOrgName("")
       setNewOrgDescription("")
+      // L'organisation sera automatiquement sélectionnée grâce à addOrganization
     } catch (error) {
       console.error("Error creating organization:", error)
     } finally {
@@ -111,14 +113,18 @@ export function OrganizationSwitcher() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                {organizations[0]?.name.charAt(0).toUpperCase() || "O"}
+                {isPersonalSpace ? (
+                  <User className="h-4 w-4" />
+                ) : (
+                  activeOrganization?.name.charAt(0).toUpperCase() || <Building2 className="h-4 w-4" />
+                )}
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">
-                  {organizations[0]?.name || "Select Organization"}
+                  {isPersonalSpace ? "Espace personnel" : activeOrganization?.name || "Sélectionner"}
                 </span>
                 <span className="truncate text-xs">
-                  {organizations[0]?.role || ""}
+                  {isPersonalSpace ? session?.user?.email : activeOrganization?.role || ""}
                 </span>
               </div>
               <ChevronsUpDown className="ml-auto" />
@@ -130,12 +136,34 @@ export function OrganizationSwitcher() {
             align="end"
             sideOffset={4}
           >
-            <DropdownMenuLabel>Organizations</DropdownMenuLabel>
+            <DropdownMenuLabel>Espaces de travail</DropdownMenuLabel>
             <DropdownMenuSeparator />
+            {/* Espace personnel */}
+            <DropdownMenuItem
+              onClick={() => {
+                switchToPersonal()
+              }}
+              className={isPersonalSpace ? "bg-accent" : ""}
+            >
+              <div className="flex items-center gap-2">
+                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-6 items-center justify-center rounded">
+                  <User className="h-3 w-3" />
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-medium">Espace personnel</span>
+                  <span className="truncate text-xs">{session?.user?.email}</span>
+                </div>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel>Organizations</DropdownMenuLabel>
             {organizations.map((org) => (
               <DropdownMenuItem
                 key={org.id}
-                onClick={() => router.push(`/organizations/${org.id}`)}
+                onClick={() => {
+                  switchToOrganization(org)
+                }}
+                className={activeOrganization?.id === org.id ? "bg-accent" : ""}
               >
                 <div className="flex items-center gap-2">
                   <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-6 items-center justify-center rounded">

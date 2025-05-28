@@ -24,6 +24,13 @@ export const authOptions: NextAuthOptions = {
         const user = await prisma.user.findUnique({
           where: {
             email: credentials.email
+          },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            password: true,
+            azureContainerId: true,
           }
         });
 
@@ -44,6 +51,22 @@ export const authOptions: NextAuthOptions = {
       }
     })
   ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.azureContainerId = user.azureContainerId || undefined;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session?.user) {
+        session.user.id = token.id as string;
+        session.user.azureContainerId = token.azureContainerId as string | undefined;
+      }
+      return session;
+    },
+  },
   session: {
     strategy: "jwt"
   },

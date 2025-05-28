@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { hash } from "bcryptjs"
 import { PrismaClient } from "@prisma/client"
+import { createUserContainer } from "@/lib/azure"
 
 const prisma = new PrismaClient()
 
@@ -38,6 +39,18 @@ export async function POST(req: Request) {
         password: hashedPassword,
       },
     })
+    
+    // Créer le container Azure personnel
+    try {
+      const containerId = await createUserContainer(user.email, user.id)
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { azureContainerId: containerId },
+      })
+    } catch (azureError) {
+      console.error("Failed to create Azure container:", azureError)
+      // On continue quand même, le container pourra être créé plus tard
+    }
 
     return NextResponse.json(
       { message: "Compte créé avec succès" },
