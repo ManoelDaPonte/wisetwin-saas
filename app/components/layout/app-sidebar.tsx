@@ -9,8 +9,8 @@ import {
 } from "lucide-react"
 import { useIsPersonalSpace } from "@/app/stores/organization-store"
 
-import { NavMain } from "@/app/components/navigation/nav-main"
-import { NavUser } from "@/app/components/navigation/nav-user"
+import { NavMain } from "@/app/components/layout/nav-main"
+import { NavUser } from "@/app/components/layout/nav-user"
 import { OrganizationSwitcher } from "@/app/components/layout/organization-switcher"
 import {
   Sidebar,
@@ -38,8 +38,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         icon: LayoutDashboard,
       },
       {
-        title: "Wisetwin",
-        url: "/wisetwin",
+        title: "Wisetour",
+        url: "/wisetour",
         icon: Boxes,
       },
       {

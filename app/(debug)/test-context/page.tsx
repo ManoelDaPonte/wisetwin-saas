@@ -1,13 +1,13 @@
 "use client"
 
 import { useOrganizationStore, useIsPersonalSpace } from "@/app/stores/organization-store"
-import { useAzureContext } from "@/app/hooks/use-azure"
+import { useContainer } from "@/app/hooks/use-container"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
 
 export default function TestContextPage() {
   const { activeOrganization, organizations } = useOrganizationStore()
   const isPersonalSpace = useIsPersonalSpace()
-  const { containerId, isReady } = useAzureContext()
+  const { containerId, isReady } = useContainer()
 
   return (
     <div className="container mx-auto p-6 space-y-6">
