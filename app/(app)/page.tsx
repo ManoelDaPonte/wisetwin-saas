@@ -2,8 +2,8 @@ import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
 import { Building2, Plus } from "lucide-react"
 
-import { Button } from "@/app/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default async function HomePage() {
   const session = await getServerSession()

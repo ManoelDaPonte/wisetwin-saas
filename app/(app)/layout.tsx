@@ -1,9 +1,10 @@
-import { AppSidebar } from "@/app/components/layout/app-sidebar"
+import { AppSidebar } from "@/app/components/app-sidebar"
+import { LogoBackground } from "@/app/components/logo-background"
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/app/components/ui/sidebar"
+} from "@/components/ui/sidebar"
 
 
 export default function AppLayout({
@@ -15,8 +16,11 @@ export default function AppLayout({
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <SidebarTrigger />
-        {children}
+        <LogoBackground />
+        <div className="relative z-10">
+          <SidebarTrigger />
+          {children}
+        </div>
       </SidebarInset>
     </SidebarProvider>
   )

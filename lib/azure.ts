@@ -62,3 +62,58 @@ export async function createOrganizationContainer(organizationName: string, orga
     throw error
   }
 }
+
+export type BuildType = 'wisetour' | 'wisetrainer'
+
+export interface Build {
+  name: string
+  fullPath: string
+  size: number
+  lastModified: Date | undefined
+  contentType: string | undefined
+  url: string
+  metadata?: Record<string, string>
+  buildType: BuildType
+}
+
+export async function listBuilds(containerId: string, buildType: BuildType): Promise<Build[]> {
+  const containerClient = blobServiceClient.getContainerClient(containerId)
+  
+  // Vérifier que le container existe
+  const exists = await containerClient.exists()
+  if (!exists) {
+    throw new Error('Container not found')
+  }
+  
+  // Lister les blobs dans le dossier spécifique
+  const prefix = `${buildType}/`
+  const builds: Build[] = []
+  
+  for await (const blob of containerClient.listBlobsFlat({ prefix })) {
+    // Ignorer le dossier lui-même et récupérer seulement les fichiers Unity
+    if (blob.name !== prefix && blob.name.endsWith('.unityweb')) {
+      const blobClient = containerClient.getBlobClient(blob.name)
+      const properties = await blobClient.getProperties()
+      
+      builds.push({
+        name: blob.name.replace(prefix, ''), // Enlever le préfixe du nom
+        fullPath: blob.name,
+        size: blob.properties.contentLength || 0,
+        lastModified: blob.properties.lastModified,
+        contentType: blob.properties.contentType,
+        url: blobClient.url,
+        metadata: properties.metadata,
+        buildType
+      })
+    }
+  }
+  
+  // Trier par date de modification (plus récent en premier)
+  builds.sort((a, b) => {
+    const dateA = new Date(a.lastModified || 0).getTime()
+    const dateB = new Date(b.lastModified || 0).getTime()
+    return dateB - dateA
+  })
+  
+  return builds
+}

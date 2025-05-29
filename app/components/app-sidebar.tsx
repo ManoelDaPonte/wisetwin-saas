@@ -9,16 +9,16 @@ import {
 } from "lucide-react"
 import { useIsPersonalSpace } from "@/app/stores/organization-store"
 
-import { NavMain } from "@/app/components/layout/nav-main"
-import { NavUser } from "@/app/components/layout/nav-user"
-import { OrganizationSwitcher } from "@/app/components/layout/organization-switcher"
+import { NavMain } from "@/app/components/nav-main"
+import { NavUser } from "@/app/components/nav-user"
+import { OrganizationSwitcher } from "@/app/components/organization-switcher"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/app/components/ui/sidebar"
+} from "@/components/ui/sidebar"
 
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
