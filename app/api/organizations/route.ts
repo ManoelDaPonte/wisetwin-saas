@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
-import { createOrganizationContainer } from "@/app/lib/azure"
-import { prisma } from "@/app/lib/prisma"
+import { createOrganizationContainer } from "@/lib/azure"
+import { prisma } from "@/lib/prisma"
 
 export async function GET() {
   try {

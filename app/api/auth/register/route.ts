@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { registerSchema, isPasswordStrong } from "@/app/(auth)/utils/validators"
-import { prisma } from "@/app/lib/prisma"
-import { createUserContainer } from "@/app/lib/azure"
+import { prisma } from "@/lib/prisma"
+import { createUserContainer } from "@/lib/azure"
 import { hash } from "bcryptjs"
 
 export async function POST(req: Request) {

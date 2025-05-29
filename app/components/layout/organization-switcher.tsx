@@ -5,8 +5,8 @@ import { Building2, ChevronsUpDown, Plus, User } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useOrganizationStore, useIsPersonalSpace } from "@/app/stores/organization-store"
 import { useOrganizations } from "@/app/hooks/use-organizations"
-import { CreateOrganizationDialog } from "@/app/components/organizations/create-organization-dialog"
-import { OrganizationMenuItem } from "@/app/components/organizations/organization-menu-item"
+import { CreateOrganizationDialog } from "@/app/components/layout/create-organization-dialog"
+import { OrganizationMenuItem } from "@/app/components/layout/organization-menu-item"
 import {
   DropdownMenu,
   DropdownMenuContent,
