@@ -1,7 +1,7 @@
 import { useOrganizationStore, useIsPersonalSpace } from "@/app/stores/organization-store"
 import { useSession } from "next-auth/react"
 
-export function useAzureContext() {
+export function useContainer() {
   const { activeOrganization } = useOrganizationStore()
   const isPersonalSpace = useIsPersonalSpace()
   const { data: session } = useSession()
