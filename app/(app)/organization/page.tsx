@@ -1,9 +1,9 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { useOrganizationStore, useIsPersonalSpace } from "@/stores/organization-store"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
+import { Button } from "@/app/components/ui/button"
+import { Input } from "@/app/components/ui/input"
+import { useOrganizationStore, useIsPersonalSpace } from "@/app/stores/organization-store"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 

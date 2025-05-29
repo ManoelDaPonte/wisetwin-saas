@@ -1,9 +1,9 @@
-import { AppSidebar } from "@/components/layout/app-sidebar"
+import { AppSidebar } from "@/app/components/layout/app-sidebar"
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar"
+} from "@/app/components/ui/sidebar"
 
 
 export default function AppLayout({

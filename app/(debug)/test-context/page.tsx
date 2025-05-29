@@ -1,13 +1,13 @@
 "use client"
 
-import { useOrganizationStore, useIsPersonalSpace } from "@/stores/organization-store"
-import { useAzureContext } from "@/hooks/use-azure-context"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useOrganizationStore, useIsPersonalSpace } from "@/app/stores/organization-store"
+import { useAzureContext } from "@/app/hooks/use-azure"
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
 
 export default function TestContextPage() {
   const { activeOrganization, organizations } = useOrganizationStore()
   const isPersonalSpace = useIsPersonalSpace()
-  const { containerId, isReady, getAzurePath } = useAzureContext()
+  const { containerId, isReady } = useAzureContext()
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -52,10 +52,6 @@ export default function TestContextPage() {
             <div>
               <dt className="font-semibold">Est prêt:</dt>
               <dd>{isReady ? "Oui" : "Non"}</dd>
-            </div>
-            <div>
-              <dt className="font-semibold">Exemple de path Azure:</dt>
-              <dd className="font-mono text-sm">{getAzurePath("test/file.txt")}</dd>
             </div>
           </dl>
         </CardContent>

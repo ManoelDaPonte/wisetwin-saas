@@ -3,10 +3,10 @@
 import * as React from "react"
 import { Building2, ChevronsUpDown, Plus, User } from "lucide-react"
 import { useSession } from "next-auth/react"
-import { useOrganizationStore, useIsPersonalSpace } from "@/stores/organization-store"
-import { useOrganizations } from "@/hooks/use-organizations"
-import { CreateOrganizationDialog } from "@/components/organizations/create-organization-dialog"
-import { OrganizationMenuItem } from "@/components/organizations/organization-menu-item"
+import { useOrganizationStore, useIsPersonalSpace } from "@/app/stores/organization-store"
+import { useOrganizations } from "@/app/hooks/use-organizations"
+import { CreateOrganizationDialog } from "@/app/components/organizations/create-organization-dialog"
+import { OrganizationMenuItem } from "@/app/components/organizations/organization-menu-item"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,13 +14,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/app/components/ui/dropdown-menu"
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
+} from "@/app/components/ui/sidebar"
 
 export function OrganizationSwitcher() {
   const { data: session } = useSession()

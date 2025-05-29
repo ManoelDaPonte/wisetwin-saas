@@ -8,13 +8,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { useOrganizations } from "@/hooks/use-organizations"
-import { useOrganizationStore } from "@/stores/organization-store"
+} from "@/app/components/ui/dialog"
+import { Button } from "@/app/components/ui/button"
+import { Input } from "@/app/components/ui/input"
+import { Label } from "@/app/components/ui/label"
+import { Textarea } from "@/app/components/ui/textarea"
+import { useOrganizations } from "@/app/hooks/use-organizations"
+import { useOrganizationStore } from "@/app/stores/organization-store"
 import { Plus } from "lucide-react"
 
 interface CreateOrganizationDialogProps {
@@ -30,14 +30,13 @@ export function CreateOrganizationDialog({
   const [name, setName] = React.useState("")
   const [description, setDescription] = React.useState("")
   const { createOrganization, isLoading, error } = useOrganizations()
-  const { addOrganization, switchToOrganization } = useOrganizationStore()
+  const { switchToOrganization } = useOrganizationStore()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     try {
       const newOrg = await createOrganization(name, description)
-      addOrganization(newOrg)
       switchToOrganization(newOrg)
       setIsOpen(false)
       setName("")

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
-import { UserService } from "@/lib/services/user.service"
-import { registerSchema } from "@/lib/validators/auth"
+import { registerSchema, isPasswordStrong } from "@/app/(auth)/utils/validators"
+import { prisma } from "@/app/lib/prisma"
+import { createUserContainer } from "@/app/lib/azure"
+import { hash } from "bcryptjs"
 
 export async function POST(req: Request) {
   try {
@@ -21,16 +23,48 @@ export async function POST(req: Request) {
     
     const { name, email, password } = validationResult.data
 
+    // Additional business logic validation
+    if (!isPasswordStrong(password)) {
+      return NextResponse.json(
+        { message: "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre" },
+        { status: 400 }
+      )
+    }
+
+    // Vérifier si l'utilisateur existe déjà
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    })
+
+    if (existingUser) {
+      return NextResponse.json(
+        { message: "Un compte existe déjà avec cet email" },
+        { status: 400 }
+      )
+    }
+
+    // Hasher le mot de passe
+    const hashedPassword = await hash(password, 12)
+
+    // Créer l'utilisateur
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+      },
+    })
+
+    // Créer le container Azure personnel
     try {
-      await UserService.createUser({ name, email, password })
-    } catch (userError) {
-      if (userError instanceof Error && userError.message === "Un compte existe déjà avec cet email") {
-        return NextResponse.json(
-          { message: userError.message },
-          { status: 400 }
-        )
-      }
-      throw userError
+      const containerId = await createUserContainer(user.email, user.id)
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { azureContainerId: containerId },
+      })
+    } catch (azureError) {
+      console.error("Failed to create Azure container:", azureError)
+      // On continue quand même, le container pourra être créé plus tard
     }
 
     return NextResponse.json(

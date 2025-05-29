@@ -7,18 +7,18 @@ import {
   Boxes,
   Building2,
 } from "lucide-react"
-import { useIsPersonalSpace } from "@/stores/organization-store"
+import { useIsPersonalSpace } from "@/app/stores/organization-store"
 
-import { NavMain } from "@/components/navigation/nav-main"
-import { NavUser } from "@/components/navigation/nav-user"
-import { OrganizationSwitcher } from "@/components/layout/organization-switcher"
+import { NavMain } from "@/app/components/navigation/nav-main"
+import { NavUser } from "@/app/components/navigation/nav-user"
+import { OrganizationSwitcher } from "@/app/components/layout/organization-switcher"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from "@/app/components/ui/sidebar"
 
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

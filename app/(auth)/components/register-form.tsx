@@ -1,11 +1,11 @@
 "use client"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { registerSchema } from "@/lib/validators/auth"
+import { cn } from "@/app/lib/utils"
+import { Button } from "@/app/components/ui/button"
+import { Input } from "@/app/components/ui/input"
+import { Label } from "@/app/components/ui/label"
+import { registerSchema, isPasswordStrong, getPasswordRequirements } from "../utils/validators"
 import { z } from "zod"
 
 export function RegisterForm({
@@ -31,6 +31,13 @@ export function RegisterForm({
 
     if (password !== confirmPassword) {
       setError("Les mots de passe ne correspondent pas")
+      setIsLoading(false)
+      return
+    }
+
+    // Check password strength with business logic
+    if (!isPasswordStrong(password)) {
+      setError(getPasswordRequirements())
       setIsLoading(false)
       return
     }
@@ -127,6 +134,7 @@ export function RegisterForm({
           {fieldErrors?.password && (
             <p className="text-sm text-destructive">{fieldErrors.password._errors[0]}</p>
           )}
+          <p className="text-xs text-muted-foreground">{getPasswordRequirements()}</p>
         </div>
         <div className="grid gap-3">
           <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>

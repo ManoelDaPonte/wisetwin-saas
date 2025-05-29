@@ -11,7 +11,7 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/components/ui/avatar"
+} from "@/app/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,15 +20,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/app/components/ui/dropdown-menu"
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
+} from "@/app/components/ui/sidebar"
 import { useSession, signOut } from "next-auth/react"
-import { useOrganizationStore } from "@/stores/organization-store"
+import { useOrganizationStore } from "@/app/stores/organization-store"
 
 export function NavUser() {
   const { data: session } = useSession()
