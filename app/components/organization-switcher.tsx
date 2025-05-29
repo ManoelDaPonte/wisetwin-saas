@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Building2, ChevronsUpDown, Plus, User } from "lucide-react"
+import { Building2, ChevronsUpDown, Plus, User, UserPlus } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useOrganizationStore, useIsPersonalSpace } from "@/app/stores/organization-store"
 import { useOrganizations } from "@/app/hooks/use-organizations"
@@ -113,6 +113,21 @@ export function OrganizationSwitcher() {
                 </div>
               </DropdownMenuItem>
             </CreateOrganizationDialog>
+            
+            <DropdownMenuItem 
+              className="gap-2 p-2"
+              onClick={() => {
+                // TODO: Implémenter la logique pour rejoindre une organisation
+                console.log("Rejoindre une organisation")
+              }}
+            >
+              <div className="flex size-6 items-center justify-center rounded-md border bg-background">
+                <UserPlus className="size-4" />
+              </div>
+              <div className="font-medium text-muted-foreground">
+                Rejoindre une organisation
+              </div>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

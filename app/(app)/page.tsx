@@ -16,9 +16,9 @@ export default async function HomePage() {
     <div className="container max-w-5xl py-6">
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold">Welcome to WiseTwin</h1>
+          <h1 className="text-3xl font-bold">Bienvenue sur WiseTwin</h1>
           <p className="text-muted-foreground">
-            Get started by joining an existing organization or creating your own.
+            Commencez par rejoindre une organisation existante ou créez la vôtre.
           </p>
         </div>
 
@@ -27,20 +27,20 @@ export default async function HomePage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Building2 className="h-5 w-5" />
-                Join Organization
+                Rejoindre une organisation
               </CardTitle>
               <CardDescription>
-                Join an existing organization using an invitation link or code.
+                Rejoignez une organisation existante avec un lien ou un code d'invitation.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                You&apos;ll need an invitation link or code from the organization administrator to join.
+                Vous aurez besoin d'un lien ou d'un code d'invitation de l'administrateur de l'organisation.
               </p>
             </CardContent>
             <CardFooter>
               <Button variant="outline" className="w-full">
-                Enter Invitation Code
+                Entrer le code d'invitation
               </Button>
             </CardFooter>
           </Card>
@@ -49,20 +49,20 @@ export default async function HomePage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Plus className="h-5 w-5" />
-                Create Organization
+                Créer une organisation
               </CardTitle>
               <CardDescription>
-                Create a new organization to collaborate with your team.
+                Créez une nouvelle organisation pour collaborer avec votre équipe.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                You&apos;ll be the owner of the organization and can invite team members.
+                Vous serez le propriétaire de l'organisation et pourrez inviter des membres.
               </p>
             </CardContent>
             <CardFooter>
               <Button className="w-full">
-                Create Organization
+                Créer une organisation
               </Button>
             </CardFooter>
           </Card>
