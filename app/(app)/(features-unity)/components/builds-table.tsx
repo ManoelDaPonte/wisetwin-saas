@@ -65,7 +65,7 @@ export function BuildsTable({
           <div className="space-y-4">
             {builds.map((build) => (
               <div 
-                key={build.fullPath} 
+                key={build.name} 
                 className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
               >
                 <div className="flex items-center gap-4">
@@ -74,7 +74,7 @@ export function BuildsTable({
                     <div className="flex items-center gap-2">
                       <p className="font-medium">{build.name}</p>
                       <Badge variant="secondary" className="text-xs">
-                        {formatFileSize(build.size)}
+                        {formatFileSize(build.totalSize)}
                       </Badge>
                     </div>
                     <p className="text-sm text-muted-foreground">
@@ -86,14 +86,6 @@ export function BuildsTable({
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => window.open(build.url, '_blank')}
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Télécharger
-                  </Button>
                   <Button
                     size="sm"
                     onClick={() => {

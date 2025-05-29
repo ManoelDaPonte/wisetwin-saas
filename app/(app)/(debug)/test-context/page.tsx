@@ -2,7 +2,7 @@
 
 import { useOrganizationStore, useIsPersonalSpace } from "@/app/stores/organization-store"
 import { useContainer } from "@/app/hooks/use-container"
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function TestContextPage() {
   const { activeOrganization, organizations } = useOrganizationStore()

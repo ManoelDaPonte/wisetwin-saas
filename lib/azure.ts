@@ -65,15 +65,24 @@ export async function createOrganizationContainer(organizationName: string, orga
 
 export type BuildType = 'wisetour' | 'wisetrainer'
 
-export interface Build {
+export interface BuildFile {
   name: string
-  fullPath: string
+  url: string
   size: number
   lastModified: Date | undefined
-  contentType: string | undefined
-  url: string
-  metadata?: Record<string, string>
+}
+
+export interface Build {
+  name: string
   buildType: BuildType
+  files: {
+    loader?: BuildFile
+    framework?: BuildFile
+    wasm?: BuildFile
+    data?: BuildFile
+  }
+  totalSize: number
+  lastModified: Date | undefined
 }
 
 export async function listBuilds(containerId: string, buildType: BuildType): Promise<Build[]> {
@@ -87,23 +96,76 @@ export async function listBuilds(containerId: string, buildType: BuildType): Pro
   
   // Lister les blobs dans le dossier spécifique
   const prefix = `${buildType}/`
-  const builds: Build[] = []
+  const buildFiles = new Map<string, Map<string, BuildFile>>()
   
   for await (const blob of containerClient.listBlobsFlat({ prefix })) {
-    // Ignorer le dossier lui-même et récupérer seulement les fichiers Unity
-    if (blob.name !== prefix && blob.name.endsWith('.unityweb')) {
+    // Ignorer le dossier lui-même
+    if (blob.name === prefix) continue
+    
+    // Extraire le nom du fichier sans le préfixe
+    const nameWithoutPrefix = blob.name.replace(prefix, '')
+    
+    // Identifier le type de fichier Unity WebGL
+    let fileType: 'loader' | 'framework' | 'wasm' | 'data' | null = null
+    let buildName = ''
+    
+    if (nameWithoutPrefix.endsWith('.loader.js')) {
+      fileType = 'loader'
+      buildName = nameWithoutPrefix.replace('.loader.js', '')
+    } else if (nameWithoutPrefix.endsWith('.framework.js.gz')) {
+      fileType = 'framework'
+      buildName = nameWithoutPrefix.replace('.framework.js.gz', '')
+    } else if (nameWithoutPrefix.endsWith('.wasm.gz')) {
+      fileType = 'wasm'
+      buildName = nameWithoutPrefix.replace('.wasm.gz', '')
+    } else if (nameWithoutPrefix.endsWith('.data.gz')) {
+      fileType = 'data'
+      buildName = nameWithoutPrefix.replace('.data.gz', '')
+    }
+    
+    // Si c'est un fichier Unity WebGL reconnu
+    if (fileType && buildName) {
       const blobClient = containerClient.getBlobClient(blob.name)
-      const properties = await blobClient.getProperties()
       
-      builds.push({
-        name: blob.name.replace(prefix, ''), // Enlever le préfixe du nom
-        fullPath: blob.name,
-        size: blob.properties.contentLength || 0,
-        lastModified: blob.properties.lastModified,
-        contentType: blob.properties.contentType,
+      // Créer l'entrée pour ce build si elle n'existe pas
+      if (!buildFiles.has(buildName)) {
+        buildFiles.set(buildName, new Map())
+      }
+      
+      // Ajouter le fichier au build
+      buildFiles.get(buildName)!.set(fileType, {
+        name: nameWithoutPrefix,
         url: blobClient.url,
-        metadata: properties.metadata,
-        buildType
+        size: blob.properties.contentLength || 0,
+        lastModified: blob.properties.lastModified
+      })
+    }
+  }
+  
+  // Convertir la map en array de builds
+  const builds: Build[] = []
+  for (const [buildName, files] of buildFiles) {
+    // Calculer la taille totale et la date de modification la plus récente
+    let totalSize = 0
+    let lastModified: Date | undefined
+    const buildFileObj: Build['files'] = {}
+    
+    for (const [fileType, file] of files) {
+      totalSize += file.size
+      if (!lastModified || (file.lastModified && file.lastModified > lastModified)) {
+        lastModified = file.lastModified
+      }
+      buildFileObj[fileType as keyof Build['files']] = file
+    }
+    
+    // Ajouter seulement si on a au moins un fichier
+    if (Object.keys(buildFileObj).length > 0) {
+      builds.push({
+        name: buildName,
+        buildType,
+        files: buildFileObj,
+        totalSize,
+        lastModified
       })
     }
   }
