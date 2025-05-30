@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { loginSchema } from "@/lib/validators"
 
 export function LoginForm({
   className,
@@ -23,6 +24,14 @@ export function LoginForm({
     const formData = new FormData(event.currentTarget)
     const email = formData.get("email") as string
     const password = formData.get("password") as string
+
+    // Valider les données
+    const validation = loginSchema.safeParse({ email, password })
+    if (!validation.success) {
+      setError(validation.error.errors[0].message)
+      setIsLoading(false)
+      return
+    }
 
     try {
       const result = await signIn("credentials", {

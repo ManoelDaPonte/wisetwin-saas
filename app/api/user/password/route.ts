@@ -2,26 +2,28 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 import { withAuth, AuthenticatedRequest } from "@/lib/auth-wrapper"
-import { validatePassword } from "@/lib/validators"
+import { passwordChangeSchema, isPasswordStrong, getPasswordRequirements } from "@/lib/validators"
 
 export const PATCH = withAuth(async (request: AuthenticatedRequest) => {
   try {
 
     const body = await request.json()
-    const { currentPassword, newPassword } = body
-
-    if (!currentPassword || !newPassword) {
+    
+    // Valider les données avec le schéma
+    const validation = passwordChangeSchema.safeParse(body)
+    if (!validation.success) {
       return NextResponse.json(
-        { error: "Les mots de passe sont requis" },
+        { error: validation.error.errors[0].message },
         { status: 400 }
       )
     }
+    
+    const { currentPassword, newPassword } = validation.data
 
     // Validation de la complexité du mot de passe
-    const passwordValidation = validatePassword(newPassword)
-    if (!passwordValidation.isValid) {
+    if (!isPasswordStrong(newPassword)) {
       return NextResponse.json(
-        { error: passwordValidation.error },
+        { error: getPasswordRequirements() },
         { status: 400 }
       )
     }

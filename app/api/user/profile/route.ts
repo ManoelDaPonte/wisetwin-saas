@@ -1,26 +1,34 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { withAuth, AuthenticatedRequest } from "@/lib/auth-wrapper"
+import { updateProfileSchema } from "@/lib/validators"
 
 export const PATCH = withAuth(async (request: AuthenticatedRequest) => {
   try {
 
     const body = await request.json()
-    const { name } = body
-
-    if (!name || typeof name !== 'string' || name.trim().length === 0) {
+    
+    // Valider les données avec le schéma
+    const validation = updateProfileSchema.safeParse(body)
+    if (!validation.success) {
       return NextResponse.json(
-        { error: "Le nom est requis" },
+        { error: validation.error.errors[0].message },
         { status: 400 }
       )
     }
     
-    // Sanitize and limit name length
-    const sanitizedName = name.trim().slice(0, 100)
+    const { name } = validation.data
+    
+    if (!name) {
+      return NextResponse.json(
+        { error: "Aucune donnée à mettre à jour" },
+        { status: 400 }
+      )
+    }
 
     const updatedUser = await prisma.user.update({
       where: { id: request.user.id },
-      data: { name: sanitizedName },
+      data: { name },
       select: { id: true, name: true, email: true }
     })
 

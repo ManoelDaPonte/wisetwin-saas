@@ -10,6 +10,7 @@ import { useSession } from "next-auth/react"
 import { useUserActions } from "../hooks/use-user-actions"
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
+import { updateProfileSchema, passwordChangeSchema, isPasswordStrong, getPasswordRequirements } from "@/lib/validators"
 
 export function CompteSection() {
   const { data: session, update } = useSession()
@@ -43,6 +44,13 @@ export function CompteSection() {
             />
             <Button
               onClick={async () => {
+                // Valider les données
+                const validation = updateProfileSchema.safeParse({ name: username })
+                if (!validation.success) {
+                  toast.error(validation.error.errors[0].message)
+                  return
+                }
+                
                 try {
                   await updateUser({ name: username })
                   // Rafraîchir la session pour obtenir les nouvelles données
@@ -95,10 +103,24 @@ export function CompteSection() {
           </div>
           <Button
             onClick={async () => {
-              if (newPassword !== confirmPassword) {
-                toast.error("Les mots de passe ne correspondent pas")
+              // Valider avec le schéma
+              const validation = passwordChangeSchema.safeParse({
+                currentPassword,
+                newPassword,
+                confirmPassword
+              })
+              
+              if (!validation.success) {
+                toast.error(validation.error.errors[0].message)
                 return
               }
+              
+              // Vérifier la force du mot de passe
+              if (!isPasswordStrong(newPassword)) {
+                toast.error(getPasswordRequirements())
+                return
+              }
+              
               try {
                 await changePassword({ currentPassword, newPassword })
                 toast.success("Mot de passe changé avec succès")
