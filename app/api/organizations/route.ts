@@ -1,18 +1,12 @@
 import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
 import { createOrganizationContainer } from "@/lib/azure"
 import { prisma } from "@/lib/prisma"
+import { withAuth, AuthenticatedRequest } from "@/lib/auth-wrapper"
 
-export async function GET() {
+export const GET = withAuth(async (req: AuthenticatedRequest) => {
   try {
-    const session = await getServerSession()
-
-    if (!session?.user?.email) {
-      return new NextResponse("Unauthorized", { status: 401 })
-    }
-
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { id: req.user.id },
       include: {
         organizations: true,
         OrganizationMember: {
@@ -52,38 +46,28 @@ export async function GET() {
     console.error("[ORGANIZATIONS_GET]", error)
     return new NextResponse("Internal error", { status: 500 })
   }
-}
+})
 
-export async function POST(req: Request) {
+export const POST = withAuth(async (req: AuthenticatedRequest) => {
   try {
-    const session = await getServerSession()
-
-    if (!session?.user?.email) {
-      return new NextResponse("Unauthorized", { status: 401 })
-    }
-
     const body = await req.json()
     const { name, description } = body
 
-    if (!name) {
+    if (!name || typeof name !== 'string') {
       return new NextResponse("Name is required", { status: 400 })
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    })
-
-    if (!user) {
-      return new NextResponse("User not found", { status: 404 })
-    }
+    // Sanitize inputs
+    const sanitizedName = name.trim().slice(0, 100)
+    const sanitizedDescription = description ? String(description).trim().slice(0, 500) : null
 
     // Create organization with owner
     const organization = await prisma.organization.create({
       data: {
-        name,
-        description,
+        name: sanitizedName,
+        description: sanitizedDescription,
         azureContainerId: "", // Will be updated after container creation
-        ownerId: user.id,
+        ownerId: req.user.id,
       },
     })
 
@@ -107,4 +91,4 @@ export async function POST(req: Request) {
     console.error("[ORGANIZATIONS_POST]", error)
     return new NextResponse("Internal error", { status: 500 })
   }
-} 
+}) 

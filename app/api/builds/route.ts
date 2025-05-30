@@ -1,23 +1,15 @@
-import { NextRequest, NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { NextResponse } from "next/server"
 import { listBuilds, BuildType } from "@/lib/azure"
+import { withOrgAuth, OrgAuthenticatedRequest } from "@/lib/auth-wrapper"
 
-export async function GET(req: NextRequest) {
+export const GET = withOrgAuth(async (req: OrgAuthenticatedRequest) => {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
-    
     const { searchParams } = new URL(req.url)
-    const containerId = searchParams.get("containerId")
     const buildType = searchParams.get("type") as BuildType
     
-    if (!containerId || !buildType) {
+    if (!buildType) {
       return NextResponse.json(
-        { error: "Missing containerId or type parameter" },
+        { error: "Missing type parameter" },
         { status: 400 }
       )
     }
@@ -29,7 +21,8 @@ export async function GET(req: NextRequest) {
       )
     }
     
-    const builds = await listBuilds(containerId, buildType)
+    // Use the container ID from the authenticated organization
+    const builds = await listBuilds(req.organization.azureContainerId, buildType)
     
     return NextResponse.json({ builds })
     
@@ -40,4 +33,4 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     )
   }
-}
+})

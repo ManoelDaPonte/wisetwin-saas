@@ -1,21 +1,11 @@
-import { NextRequest, NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 import { deleteContainer } from "@/lib/azure"
+import { withAuth, AuthenticatedRequest } from "@/lib/auth-wrapper"
 
-export async function DELETE(request: NextRequest) {
+export const DELETE = withAuth(async (request: AuthenticatedRequest) => {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "Non authentifié" },
-        { status: 401 }
-      )
-    }
-
     const body = await request.json()
     const { password } = body
 
@@ -28,7 +18,7 @@ export async function DELETE(request: NextRequest) {
 
     // Récupérer l'utilisateur avec son mot de passe et ses containers Azure
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: request.user.id },
       select: { 
         password: true,
         azureContainerId: true,
@@ -77,7 +67,7 @@ export async function DELETE(request: NextRequest) {
     // - Les organisations dont il est propriétaire
     // - Ses appartenances aux organisations (OrganizationMember)
     await prisma.user.delete({
-      where: { id: session.user.id }
+      where: { id: request.user.id }
     })
 
     // Supprimer les containers Azure en parallèle
@@ -97,4 +87,4 @@ export async function DELETE(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+})

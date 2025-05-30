@@ -1,32 +1,26 @@
-import { NextRequest, NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { withAuth, AuthenticatedRequest } from "@/lib/auth-wrapper"
 
-export async function PATCH(request: NextRequest) {
+export const PATCH = withAuth(async (request: AuthenticatedRequest) => {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "Non authentifié" },
-        { status: 401 }
-      )
-    }
 
     const body = await request.json()
     const { name } = body
 
-    if (!name || name.trim().length === 0) {
+    if (!name || typeof name !== 'string' || name.trim().length === 0) {
       return NextResponse.json(
         { error: "Le nom est requis" },
         { status: 400 }
       )
     }
+    
+    // Sanitize and limit name length
+    const sanitizedName = name.trim().slice(0, 100)
 
     const updatedUser = await prisma.user.update({
-      where: { id: session.user.id },
-      data: { name: name.trim() },
+      where: { id: request.user.id },
+      data: { name: sanitizedName },
       select: { id: true, name: true, email: true }
     })
 
@@ -41,4 +35,4 @@ export async function PATCH(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+})
