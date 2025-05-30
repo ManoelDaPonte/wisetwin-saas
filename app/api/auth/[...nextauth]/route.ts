@@ -51,17 +51,36 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.azureContainerId = user.azureContainerId || undefined;
       }
+      
+      // Handle updates to the session
+      if (trigger === "update" && session) {
+        token.name = session.name;
+        token.email = session.email;
+      }
+      
       return token;
     },
     async session({ session, token }) {
       if (session?.user) {
         session.user.id = token.id as string;
         session.user.azureContainerId = token.azureContainerId as string | undefined;
+        
+        // Always fetch fresh user data from database
+        const currentUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { name: true, email: true, image: true }
+        });
+        
+        if (currentUser) {
+          session.user.name = currentUser.name;
+          session.user.email = currentUser.email;
+          session.user.image = currentUser.image;
+        }
       }
       return session;
     },

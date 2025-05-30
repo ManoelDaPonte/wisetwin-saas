@@ -179,3 +179,19 @@ export async function listBuilds(containerId: string, buildType: BuildType): Pro
   
   return builds
 }
+
+export async function deleteContainer(containerName: string): Promise<void> {
+  const containerClient = blobServiceClient.getContainerClient(containerName)
+  
+  try {
+    // Vérifier si le container existe
+    const exists = await containerClient.exists()
+    if (exists) {
+      // Supprimer le container et tout son contenu
+      await containerClient.delete()
+    }
+  } catch (error) {
+    console.error(`Erreur lors de la suppression du container ${containerName}:`, error)
+    // On ne lance pas l'erreur pour ne pas bloquer la suppression du compte
+  }
+}

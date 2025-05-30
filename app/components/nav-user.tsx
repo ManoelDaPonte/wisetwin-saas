@@ -84,16 +84,16 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => router.push("/settings")}>
+              <DropdownMenuItem onClick={() => router.push("/parametres")}>
                 <Settings2 className="mr-2 h-4 w-4" />
-                Settings
+                Paramètres
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => {
                 clearStore()
                 signOut({ callbackUrl: "/login" })
               }}>
                 <LogOut className="mr-2 h-4 w-4" />
-                Log out
+                Déconnexion
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>
