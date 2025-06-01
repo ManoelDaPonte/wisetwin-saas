@@ -65,9 +65,15 @@ export function withAuth(handler: RouteHandler) {
 export function withOrgAuth(handler: OrgRouteHandler) {
   return withAuth(async (request: AuthenticatedRequest, context?: any) => {
     try {
-      // Get organizationId from query params or body
+      // Get organizationId from query params, body, or route params
       const url = new URL(request.url);
-      const organizationId = url.searchParams.get("organizationId");
+      let organizationId = url.searchParams.get("organizationId");
+      
+      // Try to get from route params if available (Next.js 15 requires await)
+      if (!organizationId && context?.params) {
+        const params = await context.params;
+        organizationId = params.orgId;
+      }
       
       if (!organizationId) {
         // Try to get from container ID if provided

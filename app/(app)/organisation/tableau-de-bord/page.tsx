@@ -5,9 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { useOrganizationStore, useIsPersonalSpace } from "@/app/stores/organization-store"
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+import { useOrganizationStore } from "@/app/stores/organization-store"
 import { 
   Users, 
   BookOpen,
@@ -103,14 +101,6 @@ const mockTrainingData = {
 
 export default function OrganizationDashboardPage() {
   const { activeOrganization } = useOrganizationStore()
-  const isPersonalSpace = useIsPersonalSpace()
-  const router = useRouter()
-  
-  useEffect(() => {
-    if (isPersonalSpace) {
-      router.push('/accueil')
-    }
-  }, [isPersonalSpace, router])
   
   if (!activeOrganization) {
     return null

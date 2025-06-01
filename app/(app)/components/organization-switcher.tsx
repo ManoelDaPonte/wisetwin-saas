@@ -3,10 +3,11 @@
 import * as React from "react"
 import { Building2, ChevronsUpDown, Plus, User, UserPlus } from "lucide-react"
 import { useSession } from "next-auth/react"
+import { useRouter, usePathname } from "next/navigation"
 import { useOrganizationStore, useIsPersonalSpace } from "@/app/stores/organization-store"
 import { useOrganizations } from "@/app/hooks/use-organizations"
-import { CreateOrganizationDialog } from "@/app/components/create-organization-dialog"
-import { OrganizationMenuItem } from "@/app/components/organization-menu-item"
+import { CreateOrganizationDialog } from "@/app/(app)/components/create-organization-dialog"
+import { OrganizationMenuItem } from "@/app/(app)/components/organization-menu-item"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +26,8 @@ import {
 export function OrganizationSwitcher() {
   const { data: session } = useSession()
   const { isMobile } = useSidebar()
+  const router = useRouter()
+  const pathname = usePathname()
   const {
     activeOrganization,
     organizations,
@@ -33,6 +36,14 @@ export function OrganizationSwitcher() {
   } = useOrganizationStore()
   const isPersonalSpace = useIsPersonalSpace()
   const { fetchOrganizations } = useOrganizations()
+  
+  const handleSwitchToPersonal = React.useCallback(() => {
+    switchToPersonal()
+    // Si on est sur une page organisation, rediriger vers accueil
+    if (pathname.startsWith('/organisation')) {
+      router.push('/accueil')
+    }
+  }, [switchToPersonal, pathname, router])
 
   React.useEffect(() => {
     if (session?.user) {
@@ -78,7 +89,7 @@ export function OrganizationSwitcher() {
             <OrganizationMenuItem
               isPersonal
               isActive={isPersonalSpace}
-              onSelect={switchToPersonal}
+              onSelect={handleSwitchToPersonal}
             />
             
             {organizations.length > 0 && (

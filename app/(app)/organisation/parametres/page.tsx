@@ -6,8 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
-import { useOrganizationStore, useIsPersonalSpace } from "@/app/stores/organization-store"
-import { useRouter } from "next/navigation"
+import { useOrganizationStore } from "@/app/stores/organization-store"
 import { useEffect, useState } from "react"
 import { 
   Save,
@@ -31,18 +30,10 @@ import {
 
 export default function SettingsPage() {
   const { activeOrganization } = useOrganizationStore()
-  const isPersonalSpace = useIsPersonalSpace()
-  const router = useRouter()
   
   const [organizationName, setOrganizationName] = useState("")
   const [organizationDescription, setOrganizationDescription] = useState("")
   const [organizationUrl, setOrganizationUrl] = useState("")
-  
-  useEffect(() => {
-    if (isPersonalSpace) {
-      router.push('/accueil')
-    }
-  }, [isPersonalSpace, router])
   
   useEffect(() => {
     if (activeOrganization) {

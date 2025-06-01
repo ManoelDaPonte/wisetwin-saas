@@ -17,9 +17,9 @@ import {
 import { useIsPersonalSpace } from "@/app/stores/organization-store"
 import { LucideIcon } from "lucide-react"
 
-import { NavMain } from "@/app/components/nav-main"
-import { NavUser } from "@/app/components/nav-user"
-import { OrganizationSwitcher } from "@/app/components/organization-switcher"
+import { NavMain } from "@/app/(app)/components/nav-main"
+import { NavUser } from "@/app/(app)/components/nav-user"
+import { OrganizationSwitcher } from "@/app/(app)/components/organization-switcher"
 import {
   Sidebar,
   SidebarContent,

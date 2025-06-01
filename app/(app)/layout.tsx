@@ -1,6 +1,6 @@
-import { AppSidebar } from "@/app/components/app-sidebar"
-import { AppBreadcrumb } from "@/app/components/app-breadcrumb"
-import { LogoBackground } from "@/app/components/logo-background"
+import { AppSidebar } from "@/app/(app)/components/app-sidebar"
+import { AppBreadcrumb } from "@/app/(app)/components/app-breadcrumb"
+import { LogoBackground } from "@/app/(app)/components/logo-background"
 import {
   Breadcrumb,
 } from "@/components/ui/breadcrumb"

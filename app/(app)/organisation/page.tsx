@@ -1,22 +1,15 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { useOrganizationStore, useIsPersonalSpace } from "@/app/stores/organization-store"
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+import { useOrganizationStore } from "@/app/stores/organization-store"
 import { 
   Building2, 
-  Users, 
-  HardDrive, 
-  Activity,
+  Users,
   ArrowRight,
-  Shield,
   Settings,
-  CreditCard,
 } from "lucide-react"
+import { useRouter } from "next/navigation"
+
 
 // Mock data pour les statistiques
 const mockStats = {
@@ -34,14 +27,7 @@ const mockStats = {
 
 export default function OrganizationPage() {
   const { activeOrganization } = useOrganizationStore()
-  const isPersonalSpace = useIsPersonalSpace()
   const router = useRouter()
-  
-  useEffect(() => {
-    if (isPersonalSpace) {
-      router.push('/accueil')
-    }
-  }, [isPersonalSpace, router])
   
   if (!activeOrganization) {
     return null
