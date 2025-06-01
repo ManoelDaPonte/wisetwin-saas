@@ -1,10 +1,9 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { UserPlus } from "lucide-react"
 import { useOrganizationStore } from "@/app/stores/organization-store"
 import { useMembers } from "@/app/(app)/organisation/hooks/use-members"
 import { MembersTable } from "./components/members-table"
+import { InviteMemberDialog } from "./components/invite-member-dialog"
 
 export default function MembersPage() {
   const { activeOrganization } = useOrganizationStore()
@@ -35,12 +34,7 @@ export default function MembersPage() {
             Gérez les membres et leurs permissions dans {activeOrganization?.name}
           </p>
         </div>
-        {canInvite && (
-          <Button onClick={() => {/* TODO: Ouvrir le dialog d'invitation */}}>
-            <UserPlus className="h-4 w-4 mr-2" />
-            Inviter un membre
-          </Button>
-        )}
+        {canInvite && <InviteMemberDialog />}
       </div>
 
       <MembersTable

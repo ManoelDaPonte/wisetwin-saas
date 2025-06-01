@@ -1,11 +1,12 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { loginSchema } from "@/lib/validators"
 
 export function LoginForm({
@@ -13,8 +14,11 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"form">) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  
+  const invitationToken = searchParams.get("invitation")
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -45,7 +49,12 @@ export function LoginForm({
         return
       }
 
-      router.push("/")
+      // Si on a un token d'invitation, rediriger vers la page d'invitation
+      if (invitationToken) {
+        router.push(`/invitation/${invitationToken}`)
+      } else {
+        router.push("/")
+      }
       router.refresh()
     } catch {
       setError("Une erreur est survenue. Veuillez réessayer.")
@@ -62,6 +71,15 @@ export function LoginForm({
           Entrez votre email pour vous connecter à votre compte
         </p>
       </div>
+      
+      {invitationToken && (
+        <Alert>
+          <AlertDescription>
+            Connectez-vous pour accepter votre invitation à rejoindre une organisation.
+          </AlertDescription>
+        </Alert>
+      )}
+      
       <div className="grid gap-6">
         <div className="grid gap-3">
           <Label htmlFor="email">Email</Label>

@@ -11,6 +11,12 @@ const envSchema = z.object({
   // Azure Storage
   AZURE_STORAGE_CONNECTION_STRING: z.string().min(1),
   
+  // Email
+  EMAIL_PASSWORD: z.string().min(1),
+  
+  // App
+  NEXT_PUBLIC_APP_URL: z.string().url().optional(),
+  
   // Environment
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 })

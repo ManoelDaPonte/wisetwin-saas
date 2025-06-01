@@ -7,6 +7,7 @@ import { useRouter, usePathname } from "next/navigation"
 import { useOrganizationStore, useIsPersonalSpace } from "@/app/stores/organization-store"
 import { useOrganizations } from "@/app/hooks/use-organizations"
 import { CreateOrganizationDialog } from "@/app/(app)/components/create-organization-dialog"
+import { JoinOrganizationDialog } from "@/app/(app)/components/join-organization-dialog"
 import { OrganizationMenuItem } from "@/app/(app)/components/organization-menu-item"
 import {
   DropdownMenu,
@@ -125,20 +126,19 @@ export function OrganizationSwitcher() {
               </DropdownMenuItem>
             </CreateOrganizationDialog>
             
-            <DropdownMenuItem 
-              className="gap-2 p-2"
-              onClick={() => {
-                // TODO: Implémenter la logique pour rejoindre une organisation
-                console.log("Rejoindre une organisation")
-              }}
-            >
-              <div className="flex size-6 items-center justify-center rounded-md border bg-background">
-                <UserPlus className="size-4" />
-              </div>
-              <div className="font-medium text-muted-foreground">
-                Rejoindre une organisation
-              </div>
-            </DropdownMenuItem>
+            <JoinOrganizationDialog>
+              <DropdownMenuItem 
+                className="gap-2 p-2"
+                onSelect={(e) => e.preventDefault()}
+              >
+                <div className="flex size-6 items-center justify-center rounded-md border bg-background">
+                  <UserPlus className="size-4" />
+                </div>
+                <div className="font-medium text-muted-foreground">
+                  Rejoindre une organisation
+                </div>
+              </DropdownMenuItem>
+            </JoinOrganizationDialog>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

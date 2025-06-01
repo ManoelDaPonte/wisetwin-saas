@@ -167,7 +167,7 @@ export function useMembers() {
       }
 
       const response = await fetch(
-        `/api/organizations/${activeOrganization.id}/invitations/${invitationId}`,
+        `/api/invitations/${invitationId}?organizationId=${activeOrganization.id}`,
         {
           method: "DELETE",
         }

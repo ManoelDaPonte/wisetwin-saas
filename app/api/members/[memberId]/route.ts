@@ -106,9 +106,8 @@ export const DELETE = withOrgAuth(async (
         { status: 404 }
       )
     }
-
     // Un membre peut se retirer lui-même
-    if (memberId === request.user.id && request.organization.role === "MEMBER") {
+    if (memberId === request.user.id && request.organization.role !== "OWNER" && request.organization.role !== "ADMIN") {
       // C'est OK, un membre peut quitter l'organisation
     }
 

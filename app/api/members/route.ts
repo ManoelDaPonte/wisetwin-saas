@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { withOrgAuth, OrgAuthenticatedRequest } from "@/lib/auth-wrapper"
 import { prisma } from "@/lib/prisma"
+import { sendInvitationEmail } from "@/lib/email-service"
 
 // GET /api/members?organizationId=xxx - Récupérer tous les membres et invitations
 export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
@@ -62,12 +63,40 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
       }))
     ].filter(Boolean)
 
-    // TODO: Récupérer les invitations quand le modèle sera créé
-    const invitations: any[] = []
+    // Récupérer les invitations en attente
+    const invitations = await prisma.organizationInvitation.findMany({
+      where: {
+        organizationId: request.organization.id,
+        status: "PENDING",
+        expiresAt: {
+          gt: new Date() // Non expirées
+        }
+      },
+      include: {
+        invitedBy: {
+          select: {
+            name: true,
+            email: true
+          }
+        }
+      },
+      orderBy: { createdAt: "desc" }
+    })
+
+    // Formater les invitations
+    const formattedInvitations = invitations.map(inv => ({
+      id: inv.id,
+      email: inv.email,
+      role: inv.role,
+      invitedBy: inv.invitedBy.name || inv.invitedBy.email,
+      createdAt: inv.createdAt.toISOString(),
+      expiresAt: inv.expiresAt.toISOString(),
+      status: inv.status
+    }))
 
     return NextResponse.json({
       members,
-      invitations,
+      invitations: formattedInvitations,
     })
   } catch (error) {
     console.error("Error fetching members:", error)
@@ -77,6 +106,16 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
     )
   }
 })
+
+// Fonction pour générer un code court unique (8 caractères pour plus de sécurité)
+function generateShortCode(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  let code = ''
+  for (let i = 0; i < 8; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return code
+}
 
 // POST /api/members?organizationId=xxx - Inviter un nouveau membre
 export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
@@ -100,57 +139,124 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
       )
     }
 
-    // Vérifier si l'utilisateur existe
+    // Vérifier si l'utilisateur existe déjà et est membre
     const existingUser = await prisma.user.findUnique({
       where: { email }
     })
 
-    if (!existingUser) {
-      return NextResponse.json(
-        { error: "Cet utilisateur n'existe pas. Il doit d'abord créer un compte." },
-        { status: 404 }
-      )
+    if (existingUser) {
+      // Vérifier si déjà membre
+      const existingMember = await prisma.organizationMember.findFirst({
+        where: {
+          userId: existingUser.id,
+          organizationId: request.organization.id
+        }
+      })
+
+      if (existingMember) {
+        return NextResponse.json(
+          { error: "Cet utilisateur est déjà membre de l'organisation" },
+          { status: 409 }
+        )
+      }
+
+      // Vérifier si c'est le propriétaire
+      const org = await prisma.organization.findUnique({
+        where: { id: request.organization.id }
+      })
+
+      if (org?.ownerId === existingUser.id) {
+        return NextResponse.json(
+          { error: "Le propriétaire est déjà membre de l'organisation" },
+          { status: 409 }
+        )
+      }
     }
 
-    // Vérifier si déjà membre
-    const existingMember = await prisma.organizationMember.findFirst({
+    // Vérifier s'il y a déjà une invitation
+    const existingInvitation = await prisma.organizationInvitation.findUnique({
       where: {
-        userId: existingUser.id,
-        organizationId: request.organization.id
+        email_organizationId: {
+          email,
+          organizationId: request.organization.id
+        }
       }
     })
 
-    if (existingMember) {
-      return NextResponse.json(
-        { error: "Cet utilisateur est déjà membre de l'organisation" },
-        { status: 409 }
-      )
+    if (existingInvitation) {
+      if (existingInvitation.status === "PENDING" && existingInvitation.expiresAt > new Date()) {
+        return NextResponse.json(
+          { error: "Une invitation est déjà en attente pour cet email" },
+          { status: 409 }
+        )
+      }
+      
+      // Si l'invitation est expirée, annulée ou acceptée, on peut la supprimer et en créer une nouvelle
+      await prisma.organizationInvitation.delete({
+        where: { id: existingInvitation.id }
+      })
     }
 
-    // Vérifier si c'est le propriétaire
-    const org = await prisma.organization.findUnique({
-      where: { id: request.organization.id }
-    })
-
-    if (org?.ownerId === existingUser.id) {
-      return NextResponse.json(
-        { error: "Le propriétaire est déjà membre de l'organisation" },
-        { status: 409 }
-      )
+    // Générer un code court unique
+    let code: string
+    let codeExists = true
+    while (codeExists) {
+      code = generateShortCode()
+      const existing = await prisma.organizationInvitation.findUnique({
+        where: { code }
+      })
+      codeExists = !!existing
     }
 
-    // Créer le membership directement (pas d'invitation pour l'instant)
-    const membership = await prisma.organizationMember.create({
+    // Créer l'invitation
+    const invitation = await prisma.organizationInvitation.create({
       data: {
-        userId: existingUser.id,
-        organizationId: request.organization.id,
+        email,
         role,
+        code: code!,
+        organizationId: request.organization.id,
+        invitedById: request.user.id,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 jours
+      },
+      include: {
+        organization: {
+          select: {
+            name: true
+          }
+        },
+        invitedBy: {
+          select: {
+            name: true,
+            email: true
+          }
+        }
       }
     })
+
+    // Envoyer l'email d'invitation
+    try {
+      await sendInvitationEmail({
+        email: invitation.email,
+        organizationName: invitation.organization.name,
+        inviterName: invitation.invitedBy.name || invitation.invitedBy.email,
+        token: invitation.token,
+        code: invitation.code,
+        role: invitation.role,
+        expiresAt: invitation.expiresAt
+      })
+    } catch (emailError) {
+      // On ne bloque pas la création de l'invitation si l'email échoue
+    }
 
     return NextResponse.json({
-      message: "Membre ajouté avec succès",
-      membership
+      message: "Invitation envoyée avec succès",
+      invitation: {
+        id: invitation.id,
+        email: invitation.email,
+        role: invitation.role,
+        expiresAt: invitation.expiresAt,
+        status: invitation.status
+      }
     })
   } catch (error) {
     console.error("Error inviting member:", error)
