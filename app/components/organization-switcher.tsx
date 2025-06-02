@@ -6,9 +6,9 @@ import { useSession } from "next-auth/react"
 import { useRouter, usePathname } from "next/navigation"
 import { useOrganizationStore, useIsPersonalSpace } from "@/app/stores/organization-store"
 import { useOrganizations } from "@/app/hooks/use-organizations"
-import { CreateOrganizationDialog } from "@/app/(app)/components/create-organization-dialog"
-import { JoinOrganizationDialog } from "@/app/(app)/components/join-organization-dialog"
-import { OrganizationMenuItem } from "@/app/(app)/components/organization-menu-item"
+import { CreateOrganizationDialog } from "@/app/components/create-organization-dialog"
+import { JoinOrganizationDialog } from "@/app/components/join-organization-dialog"
+import { OrganizationMenuItem } from "@/app/components/organization-menu-item"
 import {
   DropdownMenu,
   DropdownMenuContent,

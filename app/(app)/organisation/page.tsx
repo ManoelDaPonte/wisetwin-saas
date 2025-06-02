@@ -9,31 +9,25 @@ import {
   Settings,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
-
-
-// Mock data pour les statistiques
-const mockStats = {
-  members: 4,
-  storage: {
-    used: 2.5,
-    total: 10,
-  },
-  builds: {
-    wisetour: 3,
-    wisetrainer: 5,
-  },
-  lastActivity: "Il y a 2 heures",
-}
+import { useMembers } from "./hooks/use-members"
+import { useBuilds } from "@/app/hooks/use-builds"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function OrganizationPage() {
   const { activeOrganization } = useOrganizationStore()
   const router = useRouter()
   
+  const { members, isLoading: isMembersLoading } = useMembers()
+  const { data: wisetourBuilds, isLoading: isWisetourLoading } = useBuilds('wisetour')
+  const { data: wisetrainerBuilds, isLoading: isWisetrainerLoading } = useBuilds('wisetrainer')
+  
   if (!activeOrganization) {
     return null
   }
 
-  const storagePercentage = (mockStats.storage.used / mockStats.storage.total) * 100
+  const memberCount = members?.length || 0
+  const wisetourCount = wisetourBuilds?.length || 0
+  const wisetrainerCount = wisetrainerBuilds?.length || 0
 
   return (
     <div className="container mx-auto py-8 space-y-8">
@@ -52,9 +46,13 @@ export default function OrganizationPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{mockStats.members}</div>
+            {isMembersLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold">{memberCount}</div>
+            )}
             <p className="text-xs text-muted-foreground">
-              +1 ce mois-ci
+              Utilisateurs actifs
             </p>
           </CardContent>
         </Card>
@@ -65,7 +63,11 @@ export default function OrganizationPage() {
             <Building2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{mockStats.builds.wisetrainer}</div>
+            {isWisetrainerLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold">{wisetrainerCount}</div>
+            )}
             <p className="text-xs text-muted-foreground">
               Formations actives
             </p>
@@ -78,7 +80,11 @@ export default function OrganizationPage() {
             <Building2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{mockStats.builds.wisetour}</div>
+            {isWisetourLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold">{wisetourCount}</div>
+            )}
             <p className="text-xs text-muted-foreground">
               Environnements actifs
             </p>
