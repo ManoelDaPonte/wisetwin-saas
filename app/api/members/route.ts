@@ -39,20 +39,12 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
       orderBy: { createdAt: "asc" }
     })
 
-    // Formater les données
-    const members = [
-      // Ajouter le propriétaire en premier
-      owner && {
-        id: owner.id,
-        name: owner.name,
-        email: owner.email,
-        avatarUrl: owner.image,
-        role: "OWNER" as const,
-        joinedAt: organization.createdAt.toISOString(),
-        isOwner: true,
-      },
-      // Ajouter les autres membres
-      ...memberships.map(m => ({
+    // Formater les données - éviter les doublons si le propriétaire est aussi dans OrganizationMember
+    const membersMap = new Map()
+    
+    // D'abord ajouter tous les membres
+    memberships.forEach(m => {
+      membersMap.set(m.user.id, {
         id: m.user.id,
         name: m.user.name,
         email: m.user.email,
@@ -60,8 +52,28 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
         role: m.role,
         joinedAt: m.createdAt.toISOString(),
         isOwner: false,
-      }))
-    ].filter(Boolean)
+      })
+    })
+    
+    // Puis ajouter/remplacer le propriétaire avec le bon rôle
+    if (owner) {
+      membersMap.set(owner.id, {
+        id: owner.id,
+        name: owner.name,
+        email: owner.email,
+        avatarUrl: owner.image,
+        role: "OWNER" as const,
+        joinedAt: organization.createdAt.toISOString(),
+        isOwner: true,
+      })
+    }
+    
+    // Convertir en array et trier (propriétaire en premier)
+    const members = Array.from(membersMap.values()).sort((a, b) => {
+      if (a.isOwner) return -1
+      if (b.isOwner) return 1
+      return 0
+    })
 
     // Récupérer les invitations en attente
     const invitations = await prisma.organizationInvitation.findMany({

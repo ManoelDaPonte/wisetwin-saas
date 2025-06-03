@@ -21,25 +21,33 @@ export const GET = withAuth(async (req: AuthenticatedRequest) => {
       return new NextResponse("User not found", { status: 404 })
     }
 
-    // Combine owned organizations and member organizations
-    const organizations = [
-      // Organizations where user is owner
-      ...user.organizations.map((org) => ({
-        id: org.id,
-        name: org.name,
-        description: org.description,
-        role: "OWNER" as const,
-        azureContainerId: org.azureContainerId,
-      })),
-      // Organizations where user is member
-      ...user.OrganizationMember.map((member) => ({
+    // Combine owned organizations and member organizations - éviter les doublons
+    const organizationsMap = new Map()
+    
+    // D'abord ajouter les organisations où l'utilisateur est membre
+    user.OrganizationMember.forEach((member) => {
+      organizationsMap.set(member.organization.id, {
         id: member.organization.id,
         name: member.organization.name,
         description: member.organization.description,
         role: member.role,
         azureContainerId: member.organization.azureContainerId,
-      })),
-    ]
+      })
+    })
+    
+    // Puis ajouter/remplacer les organisations où l'utilisateur est propriétaire
+    user.organizations.forEach((org) => {
+      organizationsMap.set(org.id, {
+        id: org.id,
+        name: org.name,
+        description: org.description,
+        role: "OWNER" as const,
+        azureContainerId: org.azureContainerId,
+      })
+    })
+    
+    // Convertir en array
+    const organizations = Array.from(organizationsMap.values())
 
     return NextResponse.json(organizations)
   } catch (error) {

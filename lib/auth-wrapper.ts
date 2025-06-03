@@ -17,6 +17,9 @@ export interface OrgAuthenticatedRequest extends AuthenticatedRequest {
     id: string;
     azureContainerId: string;
     role: "OWNER" | "ADMIN" | "MEMBER";
+    name: string;
+    description: string | null;
+    ownerId: string;
   };
 }
 
@@ -111,7 +114,10 @@ export function withOrgAuth(handler: OrgRouteHandler) {
         orgRequest.organization = {
           id: org.id,
           azureContainerId: org.azureContainerId,
-          role: hasAccess.role!
+          role: hasAccess.role!,
+          name: org.name,
+          description: org.description,
+          ownerId: org.ownerId
         };
         
         return handler(orgRequest, context);
@@ -143,7 +149,10 @@ export function withOrgAuth(handler: OrgRouteHandler) {
       orgRequest.organization = {
         id: organization.id,
         azureContainerId: organization.azureContainerId,
-        role: hasAccess.role!
+        role: hasAccess.role!,
+        name: organization.name,
+        description: organization.description,
+        ownerId: organization.ownerId
       };
       
       return handler(orgRequest, context);

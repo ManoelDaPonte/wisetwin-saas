@@ -14,7 +14,7 @@ import {
   Box,
   Book,
 } from "lucide-react"
-import { useIsPersonalSpace } from "@/app/stores/organization-store"
+import { useIsPersonalSpace, useOrganizationStore } from "@/app/stores/organization-store"
 import { LucideIcon } from "lucide-react"
 
 import { NavMain } from "@/app/components/nav-main"
@@ -41,6 +41,7 @@ type NavigationItem = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const isPersonalSpace = useIsPersonalSpace()
+  const { activeOrganization } = useOrganizationStore()
   
   // Groupes de navigation
   const mainNavItems = React.useMemo(() => {
@@ -91,6 +92,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const organizationNavItems = React.useMemo(() => {
     if (isPersonalSpace) return []
     
+    const isMember = activeOrganization?.role === "MEMBER"
+    
     const items: NavigationItem[] = [
       {
         title: "Organisation",
@@ -109,16 +112,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             title: "Paramètres",
             url: "/organisation/parametres",
           },
-          {
+          // Tableau de bord seulement pour OWNER et ADMIN
+          ...(isMember ? [] : [{
             title: "Tableau de bord",
             url: "/organisation/tableau-de-bord",
-          },
+          }]),
         ],
       },
     ]
     
     return items
-  }, [isPersonalSpace])
+  }, [isPersonalSpace, activeOrganization?.role])
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
