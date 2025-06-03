@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useContainer } from './use-container'
 import { Build, BuildType } from '@/lib/azure'
 
-async function fetchBuilds(containerId: string, buildType: BuildType): Promise<Build[]> {
+async function fetchBuilds(containerId: string, buildType: BuildType): Promise<{ builds: Build[] }> {
   const response = await fetch(`/api/builds?containerId=${containerId}&type=${buildType}`)
   
   if (!response.ok) {
@@ -10,8 +10,7 @@ async function fetchBuilds(containerId: string, buildType: BuildType): Promise<B
     throw new Error(error.error || 'Failed to fetch builds')
   }
   
-  const data = await response.json()
-  return data.builds
+  return response.json()
 }
 
 export function useBuilds(buildType: BuildType) {

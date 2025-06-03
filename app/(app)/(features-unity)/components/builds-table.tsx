@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
 interface BuildsTableProps {
-  builds: Build[] | undefined
+  builds: { builds: Build[] } | undefined
   isLoading: boolean
   error: Error | null
   title: string
@@ -61,9 +61,9 @@ export function BuildsTable({
               </div>
             ))}
           </div>
-        ) : builds && builds.length > 0 ? (
+        ) : builds?.builds && builds.builds.length > 0 ? (
           <div className="space-y-4">
-            {builds.map((build) => (
+            {builds.builds.map((build) => (
               <div 
                 key={build.name} 
                 className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
