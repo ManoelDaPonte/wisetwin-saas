@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server"
 import { listBuilds, BuildType } from "@/lib/azure"
-import { withOrgAuth, OrgAuthenticatedRequest } from "@/lib/auth-wrapper"
+import { withAuth, AuthenticatedRequest } from "@/lib/auth-wrapper"
+import { prisma } from "@/lib/prisma"
 
-export const GET = withOrgAuth(async (req: OrgAuthenticatedRequest) => {
+export const GET = withAuth(async (req: AuthenticatedRequest) => {
   try {
     const { searchParams } = new URL(req.url)
     const buildType = searchParams.get("type") as BuildType
+    const containerId = searchParams.get("containerId")
     
     if (!buildType) {
       return NextResponse.json(
@@ -20,9 +22,54 @@ export const GET = withOrgAuth(async (req: OrgAuthenticatedRequest) => {
         { status: 400 }
       )
     }
+
+    if (!containerId) {
+      return NextResponse.json(
+        { error: "Missing containerId parameter" },
+        { status: 400 }
+      )
+    }
+
+    // Vérifier si c'est un container personnel
+    if (containerId.startsWith('personal-')) {
+      // Vérifier que l'utilisateur a accès à ce container personnel
+      if (containerId !== req.user.azureContainerId) {
+        return NextResponse.json(
+          { error: "You don't have access to this personal container" },
+          { status: 403 }
+        )
+      }
+    } else {
+      // C'est un container d'organisation, vérifier l'accès
+      const org = await prisma.organization.findFirst({
+        where: { azureContainerId: containerId }
+      })
+
+      if (!org) {
+        return NextResponse.json(
+          { error: "Organization not found" },
+          { status: 404 }
+        )
+      }
+
+      // Vérifier si l'utilisateur a accès à cette organisation
+      const hasAccess = await prisma.organizationMember.findFirst({
+        where: {
+          organizationId: org.id,
+          userId: req.user.id
+        }
+      })
+
+      if (!hasAccess && org.ownerId !== req.user.id) {
+        return NextResponse.json(
+          { error: "You don't have access to this organization" },
+          { status: 403 }
+        )
+      }
+    }
     
-    // Use the container ID from the authenticated organization
-    const builds = await listBuilds(req.organization.azureContainerId, buildType)
+    // Lister les builds
+    const builds = await listBuilds(containerId, buildType)
     
     return NextResponse.json({ builds })
     
