@@ -1,9 +1,9 @@
 "use client";
 
-import { BuildsTable } from "@/app/(app)/(features-unity)/components/builds-table";
+import { BuildsTable } from "../../components/builds-table";
 import { useBuilds } from "@/app/hooks/use-builds";
 
-export default function WisetourPage() {
+export default function MesVisitesPage() {
   const {
     data: builds,
     error,
@@ -12,7 +12,7 @@ export default function WisetourPage() {
     unfollowBuild,
     isFollowLoading,
     isUnfollowLoading,
-  } = useBuilds("wisetour");
+  } = useBuilds("wisetour", { followedOnly: true });
 
   return (
     <div className="h-full flex flex-col">
@@ -20,9 +20,9 @@ export default function WisetourPage() {
         builds={builds}
         isLoading={isLoading}
         error={error}
-        title="Visites disponibles"
-        description="Explorez et lancez les visites d'environnements industriels Unity"
-        mode="catalog"
+        title="Mes Visites"
+        description="Gérez et suivez vos visites industrielles en cours"
+        mode="my-trainings"
         followBuild={followBuild}
         unfollowBuild={unfollowBuild}
         isFollowLoading={isFollowLoading}

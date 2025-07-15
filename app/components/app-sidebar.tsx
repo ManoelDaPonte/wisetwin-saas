@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   Home,
   LayoutDashboard,
@@ -13,36 +13,39 @@ import {
   BarChart3,
   Box,
   Book,
-} from "lucide-react"
-import { useIsPersonalSpace, useOrganizationStore } from "@/app/stores/organization-store"
-import { LucideIcon } from "lucide-react"
+} from "lucide-react";
+import {
+  useIsPersonalSpace,
+  useOrganizationStore,
+} from "@/app/stores/organization-store";
+import { LucideIcon } from "lucide-react";
 
-import { NavMain } from "@/app/components/nav-main"
-import { NavUser } from "@/app/components/nav-user"
-import { OrganizationSwitcher } from "@/app/components/organization-switcher"
+import { NavMain } from "@/app/components/nav-main";
+import { NavUser } from "@/app/components/nav-user";
+import { OrganizationSwitcher } from "@/app/components/organization-switcher";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 type NavigationItem = {
-  title: string
-  url: string
-  icon?: LucideIcon
-  isActive?: boolean
+  title: string;
+  url: string;
+  icon?: LucideIcon;
+  isActive?: boolean;
   items?: {
-    title: string
-    url: string
-  }[]
-}
+    title: string;
+    url: string;
+  }[];
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const isPersonalSpace = useIsPersonalSpace()
-  const { activeOrganization } = useOrganizationStore()
-  
+  const isPersonalSpace = useIsPersonalSpace();
+  const { activeOrganization } = useOrganizationStore();
+
   // Groupes de navigation
   const mainNavItems = React.useMemo(() => {
     const items: NavigationItem[] = [
@@ -67,10 +70,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           },
         ],
       },
-    ]
-    
-    return items
-  }, [])
+    ];
+
+    return items;
+  }, []);
 
   const platformNavItems = React.useMemo(() => {
     const items: NavigationItem[] = [
@@ -78,22 +81,42 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: "Wisetour",
         url: "/wisetour",
         icon: Box,
+        items: [
+          {
+            title: "Catalogue",
+            url: "/wisetour",
+          },
+          {
+            title: "Mes visites",
+            url: "/wisetour/mes-visites",
+          },
+        ],
       },
       {
         title: "Wisetrainer",
         url: "/wisetrainer",
         icon: Book,
+        items: [
+          {
+            title: "Catalogue",
+            url: "/wisetrainer",
+          },
+          {
+            title: "Mes formations",
+            url: "/wisetrainer/mes-formations",
+          },
+        ],
       },
-    ]
-    
-    return items
-  }, [])
+    ];
+
+    return items;
+  }, []);
 
   const organizationNavItems = React.useMemo(() => {
-    if (isPersonalSpace) return []
-    
-    const isMember = activeOrganization?.role === "MEMBER"
-    
+    if (isPersonalSpace) return [];
+
+    const isMember = activeOrganization?.role === "MEMBER";
+
     const items: NavigationItem[] = [
       {
         title: "Organisation",
@@ -113,16 +136,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             url: "/organisation/parametres",
           },
           // Tableau de bord seulement pour OWNER et ADMIN
-          ...(isMember ? [] : [{
-            title: "Tableau de bord",
-            url: "/organisation/tableau-de-bord",
-          }]),
+          ...(isMember
+            ? []
+            : [
+                {
+                  title: "Tableau de bord",
+                  url: "/organisation/tableau-de-bord",
+                },
+              ]),
         ],
       },
-    ]
-    
-    return items
-  }, [isPersonalSpace, activeOrganization?.role])
+    ];
+
+    return items;
+  }, [isPersonalSpace, activeOrganization?.role]);
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -140,5 +167,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

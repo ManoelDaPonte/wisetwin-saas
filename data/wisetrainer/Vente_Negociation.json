@@ -1,0 +1,82 @@
+{
+  "id": "vente-negociation",
+  "name": "Vente et Négociation",
+  "description": "Perfectionnez vos techniques de vente et de négociation pour maximiser vos résultats commerciaux.",
+  "imageUrl": "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop",
+  "category": "Commercial",
+  "difficulty": "Avancé",
+  "duration": "200 minutes",
+  "objectMapping": {
+    "Customer": "CustomerManager",
+    "Sales": "SalesProcess",
+    "Negotiation": "NegotiationSimulator"
+  },
+  "modules": [
+    {
+      "id": "sales-fundamentals",
+      "title": "Fondamentaux de la vente",
+      "description": "Maîtrisez les bases de la vente moderne",
+      "duration": "70 minutes",
+      "objectives": [
+        "Comprendre le processus de vente",
+        "Identifier les besoins clients",
+        "Présenter une offre convaincante"
+      ],
+      "steps": [
+        {
+          "id": "sales-process",
+          "title": "Le processus de vente",
+          "content": "Découvrez les étapes clés d'une vente réussie.",
+          "interactiveElements": [
+            "Simulation de vente",
+            "Analyse de cas clients"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "negotiation-techniques",
+      "title": "Techniques de négociation",
+      "description": "Développez vos compétences en négociation",
+      "duration": "80 minutes",
+      "objectives": [
+        "Préparer une négociation",
+        "Utiliser les techniques de persuasion",
+        "Conclure un accord gagnant-gagnant"
+      ],
+      "steps": [
+        {
+          "id": "negotiation-preparation",
+          "title": "Préparation de la négociation",
+          "content": "Apprenez à préparer efficacement vos négociations.",
+          "interactiveElements": [
+            "Outil de préparation",
+            "Simulateur de négociation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "objection-handling",
+      "title": "Gestion des objections",
+      "description": "Transformez les objections en opportunités",
+      "duration": "50 minutes",
+      "objectives": [
+        "Anticiper les objections",
+        "Répondre avec pertinence",
+        "Maintenir la relation client"
+      ],
+      "steps": [
+        {
+          "id": "objection-techniques",
+          "title": "Techniques de réponse",
+          "content": "Maîtrisez l'art de répondre aux objections clients.",
+          "interactiveElements": [
+            "Base de données d'objections",
+            "Générateur de réponses"
+          ]
+        }
+      ]
+    }
+  ]
+}

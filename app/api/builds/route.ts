@@ -10,6 +10,7 @@ export const GET = withAuth(async (req: AuthenticatedRequest) => {
     const { searchParams } = new URL(req.url);
     const buildType = searchParams.get("type") as BuildType;
     const containerId = searchParams.get("containerId");
+    const followedOnly = searchParams.get("followedOnly") === "true";
 
     if (!buildType) {
       return NextResponse.json(
@@ -70,41 +71,141 @@ export const GET = withAuth(async (req: AuthenticatedRequest) => {
       }
     }
 
-    // Lister les builds
-    const builds: Build[] = await listBuilds(containerId, buildType);
+    // Si on veut seulement les formations suivies, récupérer les builds suivis
+    let followedBuildNames: Set<string> = new Set();
+    if (followedOnly) {
+      const followedBuilds = await prisma.userBuild.findMany({
+        where: {
+          userId: req.user.id,
+          buildType: buildType.toUpperCase() as any, // Convert to Prisma enum
+          containerId: containerId,
+        },
+        select: {
+          buildName: true,
+        },
+      });
+      followedBuildNames = new Set(followedBuilds.map((fb) => fb.buildName));
+    }
 
-    // Enrichir les builds avec les données locales
-    const enrichedBuilds = [];
-    for (const build of builds) {
-      const newBuild = { ...build }; // Create a mutable copy
-      const filePath = path.join(
-        process.cwd(),
-        "data",
-        buildType,
-        `${newBuild.name}.json`
-      );
+    // Lister les builds depuis Azure
+    const azureBuilds: Build[] = await listBuilds(containerId, buildType);
+
+    // Créer un map des builds Azure par nom pour faciliter la recherche
+    const azureBuildsByName = new Map<string, Build>();
+    azureBuilds.forEach((build) => {
+      azureBuildsByName.set(build.name, build);
+    });
+
+    // Lister tous les fichiers JSON disponibles dans le dossier data
+    const dataDir = path.join(process.cwd(), "data", buildType);
+    const enrichedBuilds: Build[] = [];
+    const processedBuildNames = new Set<string>();
+
+    // Lire tous les fichiers JSON dans le dossier data
+    let jsonFiles: string[] = [];
+    try {
+      if (fs.existsSync(dataDir)) {
+        jsonFiles = fs
+          .readdirSync(dataDir)
+          .filter((file) => file.endsWith(".json"));
+      }
+    } catch (e) {
+      console.warn(`Error reading data directory ${dataDir}:`, e);
+    }
+
+    // Traiter chaque fichier JSON
+    for (const jsonFile of jsonFiles) {
+      const buildName = jsonFile.replace(".json", "");
+      const filePath = path.join(dataDir, jsonFile);
+
       try {
-        if (fs.existsSync(filePath)) {
-          const fileContent = fs.readFileSync(filePath, "utf-8");
-          const localData = JSON.parse(fileContent);
-          // Merge localData into the build object
-          // Local data will overwrite Azure data in case of conflicts
-          Object.assign(newBuild, localData);
-        } else {
-          console.warn(
-            `Local data file not found for build ${newBuild.name} of type ${buildType} at ${filePath}`
-          );
+        const fileContent = fs.readFileSync(filePath, "utf-8");
+        const localData = JSON.parse(fileContent);
+
+        // Récupérer le nom enrichi ou utiliser le nom du fichier
+        const enrichedName = localData.name || buildName;
+
+        // Si on veut seulement les formations suivies, vérifier si ce build est suivi
+        // On vérifie à la fois le nom du fichier et le nom enrichi
+        if (
+          followedOnly &&
+          !followedBuildNames.has(buildName) &&
+          !followedBuildNames.has(enrichedName)
+        ) {
+          continue;
         }
+
+        // Vérifier si un build Azure existe pour ce nom
+        const azureBuild = azureBuildsByName.get(buildName);
+
+        if (azureBuild) {
+          // Build existe dans Azure, on l'enrichit
+          const enrichedBuild = { ...azureBuild };
+          Object.assign(enrichedBuild, localData);
+          enrichedBuilds.push(enrichedBuild);
+        } else {
+          // Pas de build Azure, créer un build virtuel basé sur le JSON
+          const virtualBuild: Build = {
+            name: enrichedName, // Utiliser le nom enrichi
+            buildType: buildType,
+            files: {
+              // Fichiers virtuels pour indiquer que c'est un build de démo
+              loader: {
+                name: `${buildName}.loader.js`,
+                url: `/demo/builds/${buildType}/${buildName}.loader.js`,
+                size: 1024 * 50, // 50KB fictif
+                lastModified: new Date(),
+              },
+              framework: {
+                name: `${buildName}.framework.js.gz`,
+                url: `/demo/builds/${buildType}/${buildName}.framework.js.gz`,
+                size: 1024 * 1024 * 2, // 2MB fictif
+                lastModified: new Date(),
+              },
+              wasm: {
+                name: `${buildName}.wasm.gz`,
+                url: `/demo/builds/${buildType}/${buildName}.wasm.gz`,
+                size: 1024 * 1024 * 5, // 5MB fictif
+                lastModified: new Date(),
+              },
+              data: {
+                name: `${buildName}.data.gz`,
+                url: `/demo/builds/${buildType}/${buildName}.data.gz`,
+                size: 1024 * 1024 * 10, // 10MB fictif
+                lastModified: new Date(),
+              },
+            },
+            totalSize: 1024 * 1024 * 17, // ~17MB total fictif
+            lastModified: new Date(),
+            // Ajouter les données JSON enrichies
+            ...localData,
+          };
+
+          enrichedBuilds.push(virtualBuild);
+        }
+
+        processedBuildNames.add(buildName);
       } catch (e) {
         console.error(
-          `Error reading or parsing local data for build ${newBuild.name} at ${filePath}:`,
+          `Error reading or parsing local data for ${jsonFile}:`,
           e
         );
-        // Optionally, you could add a specific error field to the build object here
-        // e.g., build.enrichmentError = 'Failed to load local data';
       }
-      enrichedBuilds.push(newBuild);
     }
+
+    // Ajouter les builds Azure qui n'ont pas de fichier JSON correspondant
+    for (const azureBuild of azureBuilds) {
+      if (!processedBuildNames.has(azureBuild.name)) {
+        // Si on veut seulement les formations suivies, vérifier si ce build est suivi
+        if (followedOnly && !followedBuildNames.has(azureBuild.name)) {
+          continue;
+        }
+        enrichedBuilds.push(azureBuild);
+      }
+    }
+
+    // Trier par nom pour un affichage cohérent
+    enrichedBuilds.sort((a, b) => a.name.localeCompare(b.name));
 
     return NextResponse.json({ builds: enrichedBuilds });
   } catch (error) {

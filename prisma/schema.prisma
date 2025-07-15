@@ -23,6 +23,7 @@ model User {
   organizations Organization[]
   OrganizationMember OrganizationMember[]
   sentInvitations OrganizationInvitation[] @relation("InvitedBy")
+  followedBuilds UserBuild[]
 }
 
 model Organization {
@@ -77,6 +78,29 @@ model OrganizationInvitation {
   @@index([email])
 }
 
+model UserBuild {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  buildName   String    // Nom du build (build.name)
+  buildType   BuildType // wisetrainer ou wisetour
+  containerId String    // Container Azure où se trouve le build
+  
+  // Métadonnées de suivi
+  startedAt   DateTime  @default(now())
+  lastAccessedAt DateTime @default(now())
+  progress    Float     @default(0) // Pourcentage de progression (0-100)
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@unique([userId, buildName, buildType, containerId])
+  @@index([userId, buildType])
+  @@index([userId, containerId])
+}
+
 enum Role {
   ADMIN
   MEMBER
@@ -87,4 +111,9 @@ enum InvitationStatus {
   ACCEPTED
   EXPIRED
   CANCELLED
+}
+
+enum BuildType {
+  WISETOUR
+  WISETRAINER
 }

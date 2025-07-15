@@ -1,0 +1,91 @@
+{
+  "id": "Incendie_Evacuation",
+  "name": "Prévention Incendie et Évacuation",
+  "description": "Formation aux gestes qui sauvent en cas d'incendie et procédures d'évacuation",
+  "imageUrl": "/images/png/incendie-formation.png",
+  "category": "Sécurité",
+  "difficulty": "Intermédiaire",
+  "duration": "50 min",
+  "objectMapping": {
+    "Extincteur": "extincteur-co2",
+    "Alarme": "declencheur-alarme",
+    "Sortie": "sortie-secours",
+    "Point_rassemblement": "point-rassemblement"
+  },
+  "modules": [
+    {
+      "id": "incendie-intervention",
+      "order": 1,
+      "title": "Intervention sur début d'incendie",
+      "description": "Utiliser les moyens de première intervention",
+      "type": "intervention",
+      "educational": {
+        "title": "Prévention et lutte contre l'incendie",
+        "content": {
+          "intro": "La réglementation impose la formation de tous les salariés à la sécurité incendie. Chaque établissement doit organiser des exercices d'évacuation réguliers.",
+          "sections": [
+            {
+              "title": "Triangle du feu",
+              "text": "Combustible + Comburant + Énergie d'activation = FEU. Supprimer un élément éteint le feu."
+            },
+            {
+              "title": "Classes de feu",
+              "items": [
+                "Classe A: feux de matières solides (bois, papier, textile)",
+                "Classe B: feux de liquides inflammables (essence, alcool)",
+                "Classe C: feux de gaz (propane, méthane)",
+                "Classe D: feux de métaux (magnésium, sodium)",
+                "Classe F: feux d'huiles de cuisson"
+              ]
+            },
+            {
+              "title": "Consignes d'évacuation",
+              "items": [
+                "Déclencher l'alarme incendie",
+                "Évacuer sans courir, sans paniquer",
+                "Fermer les portes derrière soi",
+                "Se diriger vers le point de rassemblement",
+                "Attendre les consignes des guides-files"
+              ]
+            }
+          ]
+        },
+        "imageUrl": "/images/wisetrainer/triangle-feu.png"
+      },
+      "steps": [
+        {
+          "id": "step-1",
+          "title": "Déclencher l'alarme",
+          "instruction": "Activez le déclencheur manuel d'alarme incendie",
+          "validationEvent": "declencheur-alarme",
+          "validationType": "3d",
+          "hint": "Brisez la vitre ou appuyez sur le bouton selon le modèle"
+        },
+        {
+          "id": "step-2",
+          "title": "Utiliser l'extincteur",
+          "instruction": "Prenez l'extincteur et dirigez-vous vers le feu",
+          "validationEvent": "extincteur-co2",
+          "validationType": "3d",
+          "hint": "Technique RGTA: Retirer la goupille, viser la base des flammes, presser la poignée"
+        },
+        {
+          "id": "step-3",
+          "title": "Évacuer par la sortie de secours",
+          "instruction": "Dirigez-vous vers la sortie de secours la plus proche",
+          "validationEvent": "sortie-secours",
+          "validationType": "3d",
+          "hint": "Suivez les panneaux d'évacuation, ne prenez jamais l'ascenseur"
+        },
+        {
+          "id": "step-4",
+          "title": "Rejoindre le point de rassemblement",
+          "instruction": "Allez au point de rassemblement et attendez l'appel",
+          "validationEvent": "point-rassemblement",
+          "validationType": "3d",
+          "hint": "Restez groupés, facilitez le décompte des personnes évacuées"
+        }
+      ]
+    }
+  ]
+}

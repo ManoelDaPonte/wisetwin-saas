@@ -1,0 +1,89 @@
+{
+  "id": "Travail_en_Hauteur",
+  "name": "Sécurité du Travail en Hauteur",
+  "description": "Formation complète sur les techniques et équipements pour travailler en sécurité en hauteur",
+  "imageUrl": "/images/png/hauteur-formation.png",
+  "category": "Sécurité",
+  "difficulty": "Avancé",
+  "duration": "60 min",
+  "objectMapping": {
+    "Harnais": "harnais-securite",
+    "Echelle": "echelle-verification",
+    "Ligne_de_vie": "ligne-de-vie",
+    "Point_ancrage": "point-ancrage"
+  },
+  "modules": [
+    {
+      "id": "hauteur-preparation",
+      "order": 1,
+      "title": "Préparation et vérification des équipements",
+      "description": "Vérifier l'état des équipements avant utilisation",
+      "type": "verification",
+      "educational": {
+        "title": "Travail en hauteur : réglementation et risques",
+        "content": {
+          "intro": "Le travail en hauteur présente des risques de chute grave. La réglementation impose des mesures de prévention strictes dès 3 mètres de hauteur.",
+          "sections": [
+            {
+              "title": "Principe de prévention",
+              "text": "Protection collective prioritaire, puis protection individuelle si nécessaire."
+            },
+            {
+              "title": "Équipements obligatoires",
+              "items": [
+                "Harnais de sécurité conforme EN 361",
+                "Longe avec absorbeur d'énergie",
+                "Points d'ancrage certifiés",
+                "Casque de protection"
+              ]
+            },
+            {
+              "title": "Vérifications avant utilisation",
+              "items": [
+                "État des coutures et sangles",
+                "Fonctionnement des boucles",
+                "Date de péremption",
+                "Certificat de conformité"
+              ]
+            }
+          ]
+        },
+        "imageUrl": "/images/wisetrainer/hauteur-equipements.png"
+      },
+      "steps": [
+        {
+          "id": "step-1",
+          "title": "Vérifier le harnais",
+          "instruction": "Inspectez visuellement le harnais de sécurité",
+          "validationEvent": "harnais-securite",
+          "validationType": "3d",
+          "hint": "Vérifiez l'absence de coupures, d'usure excessive et le bon fonctionnement des boucles"
+        },
+        {
+          "id": "step-2",
+          "title": "Contrôler l'échelle",
+          "instruction": "Vérifiez la stabilité et l'état de l'échelle",
+          "validationEvent": "echelle-verification",
+          "validationType": "3d",
+          "hint": "L'échelle doit être posée sur un sol stable, angle de 75°"
+        },
+        {
+          "id": "step-3",
+          "title": "Installer la ligne de vie",
+          "instruction": "Fixez la ligne de vie temporaire",
+          "validationEvent": "ligne-de-vie",
+          "validationType": "3d",
+          "hint": "La ligne de vie doit être tendue et fixée sur des points d'ancrage certifiés"
+        },
+        {
+          "id": "step-4",
+          "title": "Vérifier le point d'ancrage",
+          "instruction": "Contrôlez la résistance du point d'ancrage",
+          "validationEvent": "point-ancrage",
+          "validationType": "3d",
+          "hint": "Le point d'ancrage doit résister à 12 kN minimum"
+        }
+      ]
+    }
+  ]
+}

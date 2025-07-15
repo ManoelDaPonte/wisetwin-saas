@@ -1,0 +1,87 @@
+{
+  "id": "Securite_EPI",
+  "name": "Formation aux Équipements de Protection Individuelle",
+  "description": "Apprenez à identifier, utiliser et entretenir correctement vos EPI",
+  "imageUrl": "/images/png/epi-formation.png",
+  "category": "Sécurité",
+  "difficulty": "Débutant",
+  "duration": "25 min",
+  "objectMapping": {
+    "Casque": "casque-securite",
+    "Gants": "gants-protection",
+    "Chaussures": "chaussures-securite",
+    "Lunettes": "lunettes-protection"
+  },
+  "modules": [
+    {
+      "id": "epi-identification",
+      "order": 1,
+      "title": "Identification des EPI selon les risques",
+      "description": "Reconnaître les différents types d'EPI et leurs usages",
+      "type": "identification",
+      "educational": {
+        "title": "Les Équipements de Protection Individuelle",
+        "content": {
+          "intro": "Les EPI sont des dispositifs destinés à être portés par une personne en vue de la protéger contre un ou plusieurs risques susceptibles de menacer sa sécurité ou sa santé au travail.",
+          "sections": [
+            {
+              "title": "Catégories d'EPI",
+              "text": "Les EPI sont classés en 3 catégories selon le niveau de risque : risques mineurs, risques graves, risques mortels ou irréversibles."
+            },
+            {
+              "title": "Obligations de l'employeur",
+              "items": [
+                "Fournir gratuitement les EPI adaptés",
+                "Former les salariés à leur utilisation",
+                "Assurer leur maintenance et remplacement"
+              ]
+            },
+            {
+              "title": "Obligations du salarié",
+              "items": [
+                "Porter les EPI fournis",
+                "Les utiliser conformément aux consignes",
+                "Signaler tout défaut ou détérioration"
+              ]
+            }
+          ]
+        },
+        "imageUrl": "/images/wisetrainer/epi-categories.png"
+      },
+      "steps": [
+        {
+          "id": "step-1",
+          "title": "Identifier le casque de sécurité",
+          "instruction": "Sélectionnez le casque de sécurité approprié",
+          "validationEvent": "casque-securite",
+          "validationType": "3d",
+          "hint": "Le casque doit être conforme aux normes EN 397"
+        },
+        {
+          "id": "step-2",
+          "title": "Choisir les gants adaptés",
+          "instruction": "Prenez les gants de protection appropriés pour la tâche",
+          "validationEvent": "gants-protection",
+          "validationType": "3d",
+          "hint": "Vérifiez la résistance chimique et mécanique"
+        },
+        {
+          "id": "step-3",
+          "title": "Enfiler les chaussures de sécurité",
+          "instruction": "Mettez les chaussures de sécurité avec embout renforcé",
+          "validationEvent": "chaussures-securite",
+          "validationType": "3d",
+          "hint": "Assurez-vous que la semelle est antidérapante"
+        },
+        {
+          "id": "step-4",
+          "title": "Porter les lunettes de protection",
+          "instruction": "Ajustez les lunettes de protection",
+          "validationEvent": "lunettes-protection",
+          "validationType": "3d",
+          "hint": "Les lunettes doivent être adaptées au type de risque (chimique, mécanique, optique)"
+        }
+      ]
+    }
+  ]
+}
