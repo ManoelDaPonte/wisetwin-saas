@@ -1,5 +1,5 @@
 import { BlobServiceClient } from "@azure/storage-blob";
-import { env } from "@/lib/config/env";
+import { env } from "@/lib/env";
 
 const blobServiceClient = BlobServiceClient.fromConnectionString(
   env.AZURE_STORAGE_CONNECTION_STRING

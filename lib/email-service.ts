@@ -1,5 +1,5 @@
-import nodemailer from "nodemailer"
-import { env } from "@/lib/config/env"
+import nodemailer from "nodemailer";
+import { env } from "@/lib/env";
 
 // Configuration du transporteur email
 const transporter = nodemailer.createTransport({
@@ -10,54 +10,53 @@ const transporter = nodemailer.createTransport({
     user: "no-reply@wisetwin.eu",
     pass: env.EMAIL_PASSWORD,
   },
-})
+});
 
 // Fonction pour obtenir l'URL de base selon l'environnement
 function getBaseUrl() {
   if (env.NEXT_PUBLIC_APP_URL) {
-    return env.NEXT_PUBLIC_APP_URL
+    return env.NEXT_PUBLIC_APP_URL;
   }
-  
+
   if (env.NODE_ENV === "development") {
-    return "http://localhost:3000"
+    return "http://localhost:3000";
   }
-  
-  return "https://app.wisetwin.com"
+
+  return "https://app.wisetwin.com";
 }
 
 interface InvitationEmailData {
-  email: string
-  organizationName: string
-  inviterName: string
-  token: string
-  code: string
-  role: "ADMIN" | "MEMBER"
-  expiresAt: Date
+  email: string;
+  organizationName: string;
+  inviterName: string;
+  token: string;
+  code: string;
+  role: "ADMIN" | "MEMBER";
+  expiresAt: Date;
 }
 
 export async function sendInvitationEmail(data: InvitationEmailData) {
-  const baseUrl = getBaseUrl()
-  
+  const baseUrl = getBaseUrl();
+
   // Générer l'initiale pour le logo fallback
-  const organizationInitial = data.organizationName.charAt(0).toUpperCase()
-  
+  const organizationInitial = data.organizationName.charAt(0).toUpperCase();
+
   // Formater le rôle en français
-  const roleLabel = data.role === "ADMIN" ? "Administrateur" : "Membre"
-  
+  const roleLabel = data.role === "ADMIN" ? "Administrateur" : "Membre";
+
   // Calculer le nombre de jours avant expiration
   const daysUntilExpiry = Math.ceil(
     (data.expiresAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-  )
-  
+  );
 
   const info = await transporter.sendMail({
     from: '"WiseTwin" <no-reply@wisetwin.eu>',
-    replyTo: 'support@wisetwin.eu', // Email de réponse
+    replyTo: "support@wisetwin.eu", // Email de réponse
     to: data.email,
     subject: `${data.inviterName} vous invite à rejoindre ${data.organizationName} sur WiseTwin`,
     headers: {
-      'X-Mailer': 'WiseTwin',
-      'X-Priority': '3', // Normal priority
+      "X-Mailer": "WiseTwin",
+      "X-Priority": "3", // Normal priority
     },
     text: `
 Bonjour,
@@ -101,7 +100,11 @@ L'équipe WiseTwin
                 Bonjour,
               </p>
               <p style="margin: 0 0 24px; color: #374151; font-size: 16px; line-height: 24px;">
-                <strong>${data.inviterName}</strong> vous invite à rejoindre l'organisation <strong>${data.organizationName}</strong> sur WiseTwin en tant que <strong>${roleLabel}</strong>.
+                <strong>${
+                  data.inviterName
+                }</strong> vous invite à rejoindre l'organisation <strong>${
+      data.organizationName
+    }</strong> sur WiseTwin en tant que <strong>${roleLabel}</strong>.
               </p>
               
               <!-- CTA Button -->
@@ -121,7 +124,9 @@ L'équipe WiseTwin
                   <strong>Autres méthodes :</strong>
                 </p>
                 <p style="margin: 0 0 8px; color: #6b7280; font-size: 14px;">
-                  • Code d'invitation : <code style="background-color: #e5e7eb; padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 16px; color: #111827;">${data.code}</code>
+                  • Code d'invitation : <code style="background-color: #e5e7eb; padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 16px; color: #111827;">${
+                    data.code
+                  }</code>
                 </p>
                 <p style="margin: 0; color: #6b7280; font-size: 14px;">
                   • Rendez-vous sur : <a href="${baseUrl}" style="color: #667eea;">${baseUrl}</a>
@@ -158,10 +163,9 @@ L'équipe WiseTwin
 </body>
 </html>
     `,
-  })
+  });
 
-
-  return info
+  return info;
 }
 
 // Fonction pour envoyer un email de bienvenue après acceptation
@@ -170,9 +174,9 @@ export async function sendWelcomeEmail(
   userName: string,
   organizationName: string
 ) {
-  const baseUrl = getBaseUrl()
-  const dashboardUrl = `${baseUrl}/organisation/tableau-de-bord`
-  
+  const baseUrl = getBaseUrl();
+  const dashboardUrl = `${baseUrl}/organisation/tableau-de-bord`;
+
   const info = await transporter.sendMail({
     from: '"WiseTwin" <no-reply@wisetwin.eu>',
     to: email,
@@ -249,7 +253,7 @@ L'équipe WiseTwin
 </body>
 </html>
     `,
-  })
+  });
 
-  return info
+  return info;
 }

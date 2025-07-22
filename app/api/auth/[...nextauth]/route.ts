@@ -4,7 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { env } from "@/lib/config/env";
+import { env } from "@/lib/env";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -13,7 +13,7 @@ export const authOptions: NextAuthOptions = {
       name: "credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -22,7 +22,7 @@ export const authOptions: NextAuthOptions = {
 
         const user = await prisma.user.findUnique({
           where: {
-            email: credentials.email
+            email: credentials.email,
           },
           select: {
             id: true,
@@ -30,7 +30,7 @@ export const authOptions: NextAuthOptions = {
             name: true,
             password: true,
             azureContainerId: true,
-          }
+          },
         });
 
         if (!user || !user?.password) {
@@ -47,8 +47,8 @@ export const authOptions: NextAuthOptions = {
         }
 
         return user;
-      }
-    })
+      },
+    }),
   ],
   callbacks: {
     async jwt({ token, user, trigger, session }) {
@@ -56,26 +56,28 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.azureContainerId = user.azureContainerId || undefined;
       }
-      
+
       // Handle updates to the session
       if (trigger === "update" && session) {
         token.name = session.name;
         token.email = session.email;
       }
-      
+
       return token;
     },
     async session({ session, token }) {
       if (session?.user) {
         session.user.id = token.id as string;
-        session.user.azureContainerId = token.azureContainerId as string | undefined;
-        
+        session.user.azureContainerId = token.azureContainerId as
+          | string
+          | undefined;
+
         // Always fetch fresh user data from database
         const currentUser = await prisma.user.findUnique({
           where: { id: token.id as string },
-          select: { name: true, email: true, image: true }
+          select: { name: true, email: true, image: true },
         });
-        
+
         if (currentUser) {
           session.user.name = currentUser.name;
           session.user.email = currentUser.email;
@@ -86,7 +88,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   session: {
-    strategy: "jwt"
+    strategy: "jwt",
   },
   secret: env.NEXTAUTH_SECRET,
   debug: env.NODE_ENV === "development",

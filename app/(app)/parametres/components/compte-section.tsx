@@ -1,30 +1,41 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Separator } from "@/components/ui/separator"
-import { Save } from "lucide-react"
-import { useSession } from "next-auth/react"
-import { useUserActions } from "../hooks/use-user-actions"
-import { useState, useEffect } from "react"
-import { toast } from "sonner"
-import { updateProfileSchema, passwordChangeSchema, isPasswordStrong, getPasswordRequirements } from "@/lib/validators"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { Save } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useUserActions } from "../hooks/use-user-actions";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import {
+  updateProfileSchema,
+  passwordChangeSchema,
+  isPasswordStrong,
+  getPasswordRequirements,
+} from "@/app/validators";
 
 export function CompteSection() {
-  const { data: session, update } = useSession()
-  const { updateUser, changePassword, isLoading } = useUserActions()
-  const [username, setUsername] = useState(session?.user?.name || "")
-  const [currentPassword, setCurrentPassword] = useState("")
-  const [newPassword, setNewPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
+  const { data: session, update } = useSession();
+  const { updateUser, changePassword, isLoading } = useUserActions();
+  const [username, setUsername] = useState(session?.user?.name || "");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
     if (session?.user?.name) {
-      setUsername(session.user.name)
+      setUsername(session.user.name);
     }
-  }, [session])
+  }, [session]);
 
   return (
     <Card>
@@ -45,19 +56,25 @@ export function CompteSection() {
             <Button
               onClick={async () => {
                 // Valider les données
-                const validation = updateProfileSchema.safeParse({ name: username })
+                const validation = updateProfileSchema.safeParse({
+                  name: username,
+                });
                 if (!validation.success) {
-                  toast.error(validation.error.errors[0].message)
-                  return
+                  toast.error(validation.error.errors[0].message);
+                  return;
                 }
-                
+
                 try {
-                  await updateUser({ name: username })
+                  await updateUser({ name: username });
                   // Rafraîchir la session pour obtenir les nouvelles données
-                  await update()
-                  toast.success("Nom d'utilisateur mis à jour avec succès")
+                  await update();
+                  toast.success("Nom d'utilisateur mis à jour avec succès");
                 } catch (error) {
-                  toast.error(error instanceof Error ? error.message : "Erreur lors de la mise à jour")
+                  toast.error(
+                    error instanceof Error
+                      ? error.message
+                      : "Erreur lors de la mise à jour"
+                  );
                 }
               }}
               disabled={isLoading || username === session?.user?.name}
@@ -92,7 +109,9 @@ export function CompteSection() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="confirm-password">Confirmer le nouveau mot de passe</Label>
+            <Label htmlFor="confirm-password">
+              Confirmer le nouveau mot de passe
+            </Label>
             <Input
               id="confirm-password"
               type="password"
@@ -107,36 +126,42 @@ export function CompteSection() {
               const validation = passwordChangeSchema.safeParse({
                 currentPassword,
                 newPassword,
-                confirmPassword
-              })
-              
+                confirmPassword,
+              });
+
               if (!validation.success) {
-                toast.error(validation.error.errors[0].message)
-                return
+                toast.error(validation.error.errors[0].message);
+                return;
               }
-              
+
               // Vérifier la force du mot de passe
               if (!isPasswordStrong(newPassword)) {
-                toast.error(getPasswordRequirements())
-                return
+                toast.error(getPasswordRequirements());
+                return;
               }
-              
+
               try {
-                await changePassword({ currentPassword, newPassword })
-                toast.success("Mot de passe changé avec succès")
-                setCurrentPassword("")
-                setNewPassword("")
-                setConfirmPassword("")
+                await changePassword({ currentPassword, newPassword });
+                toast.success("Mot de passe changé avec succès");
+                setCurrentPassword("");
+                setNewPassword("");
+                setConfirmPassword("");
               } catch (error) {
-                toast.error(error instanceof Error ? error.message : "Erreur lors du changement de mot de passe")
+                toast.error(
+                  error instanceof Error
+                    ? error.message
+                    : "Erreur lors du changement de mot de passe"
+                );
               }
             }}
-            disabled={isLoading || !currentPassword || !newPassword || !confirmPassword}
+            disabled={
+              isLoading || !currentPassword || !newPassword || !confirmPassword
+            }
           >
             Changer le mot de passe
           </Button>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
