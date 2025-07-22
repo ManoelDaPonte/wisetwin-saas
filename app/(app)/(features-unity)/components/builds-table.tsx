@@ -9,16 +9,10 @@ import {
   ChevronDown,
   ChevronUp,
   ArrowUpDown,
-  MoreHorizontal,
   Play,
-  Heart,
-  HeartOff,
-  UserMinus,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Build, BuildType } from "@/lib/azure";
-import { useBuilds } from "@/app/hooks/use-builds";
-import { useContainer } from "@/app/hooks/use-container";
+import { Build } from "@/lib/azure";
 import {
   Card,
   CardContent,
@@ -39,12 +33,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 interface BuildsTableProps {
   builds: { builds: Build[] } | undefined;
@@ -53,19 +41,13 @@ interface BuildsTableProps {
   title: string;
   description?: string;
   mode?: "catalog" | "my-trainings";
-  followBuild?: (params: { buildName: string; buildType: BuildType }) => void;
-  unfollowBuild?: (params: { buildName: string; buildType: BuildType }) => void;
-  isFollowLoading?: boolean;
-  isUnfollowLoading?: boolean;
 }
 
 type SortField =
   | "name"
   | "category"
-  | "difficulty"
-  | "duration"
   | "lastModified"
-  | "totalSize";
+  | "version";
 type SortDirection = "asc" | "desc";
 
 interface SortState {
@@ -73,31 +55,6 @@ interface SortState {
   direction: SortDirection;
 }
 
-function formatFileSize(bytes: number): string {
-  const sizes = ["Bytes", "KB", "MB", "GB"];
-  if (bytes === 0) return "0 Bytes";
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + " " + sizes[i];
-}
-
-function getDifficultyOrder(difficulty: string | undefined): number {
-  if (!difficulty) return 0;
-  const order = {
-    Débutant: 1,
-    Beginner: 1,
-    Intermédiaire: 2,
-    Intermediate: 2,
-    Avancé: 3,
-    Advanced: 3,
-  };
-  return order[difficulty as keyof typeof order] || 0;
-}
-
-function parseDuration(duration: string | undefined): number {
-  if (!duration) return 0;
-  const match = duration.match(/(\d+)/);
-  return match ? parseInt(match[1]) : 0;
-}
 
 export function BuildsTable({
   builds,
@@ -106,13 +63,8 @@ export function BuildsTable({
   title,
   description,
   mode = "catalog",
-  followBuild,
-  unfollowBuild,
-  isFollowLoading,
-  isUnfollowLoading,
 }: BuildsTableProps) {
   const router = useRouter();
-  const { containerId } = useContainer();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
@@ -121,11 +73,9 @@ export function BuildsTable({
     direction: "asc",
   });
 
-  // Détecter le type de contenu basé sur les builds
-  const buildType = builds?.builds?.[0]?.buildType;
-  const isWisetour = buildType === "wisetour";
-  const contentType = isWisetour ? "visite" : "formation";
-  const contentTypePlural = isWisetour ? "visites" : "formations";
+  // Contenu unifié - tous les builds sont des formations
+  const contentType = "formation";
+  const contentTypePlural = "formations";
 
   const filteredAndSortedBuilds = useMemo(() => {
     if (!builds?.builds) return [];
@@ -150,20 +100,13 @@ export function BuildsTable({
         case "category":
           comparison = (a.category || "").localeCompare(b.category || "");
           break;
-        case "difficulty":
-          comparison =
-            getDifficultyOrder(a.difficulty) - getDifficultyOrder(b.difficulty);
-          break;
-        case "duration":
-          comparison = parseDuration(a.duration) - parseDuration(b.duration);
-          break;
         case "lastModified":
           const dateA = a.lastModified ? new Date(a.lastModified).getTime() : 0;
           const dateB = b.lastModified ? new Date(b.lastModified).getTime() : 0;
           comparison = dateA - dateB;
           break;
-        case "totalSize":
-          comparison = a.totalSize - b.totalSize;
+        case "version":
+          comparison = (a.version || "").localeCompare(b.version || "");
           break;
       }
 
@@ -188,27 +131,9 @@ export function BuildsTable({
     }));
   };
 
-  const handleLaunchClick = (build: Build) => {
-    const buildId = build.id || build.name;
-    router.push(`/${build.buildType}/${encodeURIComponent(buildId)}`);
-  };
-
-  const handleFollowClick = (build: Build) => {
-    if (followBuild) {
-      followBuild({
-        buildName: build.name,
-        buildType: build.buildType,
-      });
-    }
-  };
-
-  const handleUnfollowClick = (build: Build) => {
-    if (unfollowBuild) {
-      unfollowBuild({
-        buildName: build.name,
-        buildType: build.buildType,
-      });
-    }
+  const handleLaunchFormationClick = (build: Build) => {
+    const buildId = encodeURIComponent(build.id || build.name);
+    router.push(`/${build.buildType}/${buildId}`);
   };
 
   const SortButton = ({
@@ -306,13 +231,7 @@ export function BuildsTable({
                       <SortButton field="category">Catégorie</SortButton>
                     </TableHead>
                     <TableHead>
-                      <SortButton field="difficulty">Difficulté</SortButton>
-                    </TableHead>
-                    <TableHead>
-                      <SortButton field="duration">Durée</SortButton>
-                    </TableHead>
-                    <TableHead>
-                      <SortButton field="totalSize">Taille</SortButton>
+                      <SortButton field="version">Version</SortButton>
                     </TableHead>
                     <TableHead>
                       <SortButton field="lastModified">Modifié</SortButton>
@@ -352,38 +271,8 @@ export function BuildsTable({
                         )}
                       </TableCell>
                       <TableCell>
-                        {build.difficulty && (
-                          <Badge
-                            variant={
-                              build.difficulty
-                                .toLowerCase()
-                                .includes("débutant") ||
-                              build.difficulty
-                                .toLowerCase()
-                                .includes("beginner")
-                                ? "secondary"
-                                : build.difficulty
-                                    .toLowerCase()
-                                    .includes("avancé") ||
-                                  build.difficulty
-                                    .toLowerCase()
-                                    .includes("advanced")
-                                ? "destructive"
-                                : "default"
-                            }
-                          >
-                            {build.difficulty}
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {build.duration && (
-                          <span className="text-sm">{build.duration}</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
                         <span className="text-sm text-muted-foreground">
-                          {formatFileSize(build.totalSize)}
+                          {build.version || "1.0.0"}
                         </span>
                       </TableCell>
                       <TableCell>
@@ -400,43 +289,15 @@ export function BuildsTable({
                         </span>
                       </TableCell>
                       <TableCell>
-                        {mode === "catalog" ? (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleFollowClick(build)}
-                            disabled={isFollowLoading}
-                            className="w-20"
-                          >
-                            <Heart className="mr-2 h-4 w-4" />
-                            {isFollowLoading ? "..." : "Suivre"}
-                          </Button>
-                        ) : (
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Ouvrir le menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                onClick={() => handleLaunchClick(build)}
-                              >
-                                <Play className="mr-2 h-4 w-4" />
-                                Lancer
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => handleUnfollowClick(build)}
-                                disabled={isUnfollowLoading}
-                                className="text-destructive focus:text-destructive"
-                              >
-                                <UserMinus className="mr-2 h-4 w-4" />
-                                Ne plus suivre
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        )}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleLaunchFormationClick(build)}
+                          className="w-32"
+                        >
+                          <Play className="mr-2 h-4 w-4" />
+                          Lancer formation
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}

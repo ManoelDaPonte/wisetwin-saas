@@ -94,6 +94,7 @@ export interface Build {
   category?: string;
   difficulty?: string;
   duration?: string;
+  version?: string;
   objectMapping?: Record<string, any>;
   modules?: Array<Record<string, any>>;
 }
@@ -197,6 +198,18 @@ export async function listBuilds(
   });
 
   return builds;
+}
+
+export function getBuildUrls(containerId: string, buildType: BuildType, buildId: string) {
+  const containerClient = blobServiceClient.getContainerClient(containerId);
+  const basePath = `${buildType}/${buildId}`;
+
+  return {
+    loader: containerClient.getBlobClient(`${basePath}.loader.js`).url,
+    framework: containerClient.getBlobClient(`${basePath}.framework.js.gz`).url,
+    wasm: containerClient.getBlobClient(`${basePath}.wasm.gz`).url,
+    data: containerClient.getBlobClient(`${basePath}.data.gz`).url,
+  };
 }
 
 export async function deleteContainer(containerName: string): Promise<void> {

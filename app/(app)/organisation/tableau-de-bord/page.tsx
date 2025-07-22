@@ -17,86 +17,31 @@ import {
   ArrowRight,
 } from "lucide-react"
 
-// Mock data pour l'avancement des formations
+// TODO: Remplacer par de vraies données depuis l'API
 const mockTrainingData = {
   stats: {
-    totalUsers: 12,
-    activeTrainings: 4,
-    completionRate: 68,
-    averageTime: "2h 30min",
+    totalUsers: 0,
+    activeTrainings: 0,
+    completionRate: 0,
+    averageTime: "0h 0min",
   },
-  trainings: [
-    {
-      id: 1,
-      name: "Formation Sécurité BIM",
-      totalUsers: 8,
-      completedUsers: 5,
-      averageProgress: 62,
-      status: "active",
-    },
-    {
-      id: 2,
-      name: "Introduction au Digital Twin",
-      totalUsers: 6,
-      completedUsers: 6,
-      averageProgress: 100,
-      status: "completed",
-    },
-    {
-      id: 3,
-      name: "Maintenance prédictive IoT",
-      totalUsers: 4,
-      completedUsers: 1,
-      averageProgress: 35,
-      status: "active",
-    },
-    {
-      id: 4,
-      name: "Gestion des données 3D",
-      totalUsers: 10,
-      completedUsers: 7,
-      averageProgress: 85,
-      status: "active",
-    },
-  ],
-  recentProgress: [
-    {
-      userId: 1,
-      userName: "Jean Dupont",
-      userEmail: "jean.dupont@example.com",
-      training: "Formation Sécurité BIM",
-      progress: 45,
-      lastActivity: "Il y a 2 heures",
-      avatar: null,
-    },
-    {
-      userId: 2,
-      userName: "Marie Martin",
-      userEmail: "marie.martin@example.com",
-      training: "Gestion des données 3D",
-      progress: 92,
-      lastActivity: "Il y a 5 heures",
-      avatar: null,
-    },
-    {
-      userId: 3,
-      userName: "Pierre Bernard",
-      userEmail: "pierre.bernard@example.com",
-      training: "Maintenance prédictive IoT",
-      progress: 15,
-      lastActivity: "Il y a 1 jour",
-      avatar: null,
-    },
-    {
-      userId: 4,
-      userName: "Sophie Leroy",
-      userEmail: "sophie.leroy@example.com",
-      training: "Formation Sécurité BIM",
-      progress: 78,
-      lastActivity: "Il y a 3 jours",
-      avatar: null,
-    },
-  ],
+  trainings: [] as Array<{
+    id: number;
+    name: string;
+    totalUsers: number;
+    completedUsers: number;
+    averageProgress: number;
+    status: string;
+  }>,
+  recentProgress: [] as Array<{
+    userId: number;
+    userName: string;
+    userEmail: string;
+    training: string;
+    progress: number;
+    lastActivity: string;
+    avatar: string | null;
+  }>,
 }
 
 export default function OrganizationDashboardPage() {
@@ -125,7 +70,7 @@ export default function OrganizationDashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold">{mockTrainingData.stats.totalUsers}</div>
             <p className="text-xs text-muted-foreground">
-              +2 ce mois-ci
+              Aucune donnée disponible
             </p>
           </CardContent>
         </Card>
@@ -138,7 +83,7 @@ export default function OrganizationDashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold">{mockTrainingData.stats.activeTrainings}</div>
             <p className="text-xs text-muted-foreground">
-              3 en cours, 1 terminée
+              Aucune formation active
             </p>
           </CardContent>
         </Card>
