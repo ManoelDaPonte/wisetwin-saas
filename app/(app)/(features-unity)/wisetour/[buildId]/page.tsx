@@ -11,5 +11,9 @@ interface WiseTourBuildPageProps {
 
 export default function WiseTourBuildPage({ params }: WiseTourBuildPageProps) {
   const { buildId } = use(params);
-  return <Unity3DViewer buildId={buildId} />;
+  return (
+    <div className="h-full w-full -mb-4">
+      <Unity3DViewer buildId={buildId} />
+    </div>
+  );
 }
