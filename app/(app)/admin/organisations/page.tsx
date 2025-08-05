@@ -80,9 +80,7 @@ export default function AdminOrganizationsPage() {
 			label: "Container ID",
 			render: (org) => (
 				<code className="text-xs bg-muted px-2 py-1 rounded">
-					{org.azureContainerId.length > 20
-						? `${org.azureContainerId.substring(0, 20)}...`
-						: org.azureContainerId}
+					{org.azureContainerId}
 				</code>
 			),
 		},
