@@ -13,11 +13,14 @@ import {
   BarChart3,
   Box,
   Book,
+  Crown,
 } from "lucide-react";
 import {
   useIsPersonalSpace,
   useOrganizationStore,
 } from "@/app/stores/organization-store";
+import { useSession } from "next-auth/react";
+import { canAccessAdminPanel } from "@/lib/admin/permissions";
 import { LucideIcon } from "lucide-react";
 
 import { NavMain } from "@/app/components/nav-main";
@@ -45,6 +48,7 @@ type NavigationItem = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const isPersonalSpace = useIsPersonalSpace();
   const { activeOrganization } = useOrganizationStore();
+  const { data: session } = useSession();
 
   // Groupes de navigation
   const mainNavItems = React.useMemo(() => {
@@ -150,6 +154,38 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
     return items;
   }, [isPersonalSpace, activeOrganization?.role]);
+
+  // Navigation Super-admin (seulement pour @wisetwin.eu)
+  const superAdminNavItems = React.useMemo(() => {
+    if (!session?.user?.email || !canAccessAdminPanel(session.user.email)) {
+      return [];
+    }
+
+    const items: NavigationItem[] = [
+      {
+        title: "Super-admin",
+        url: "/admin",
+        icon: Crown,
+        items: [
+          {
+            title: "Formations",
+            url: "/admin/formations",
+          },
+          {
+            title: "Utilisateurs",
+            url: "/admin/utilisateurs",
+          },
+          {
+            title: "Organisations",
+            url: "/admin/organisations",
+          },
+        ],
+      },
+    ];
+
+    return items;
+  }, [session?.user?.email]);
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -160,6 +196,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={platformNavItems} label="Plateformes" />
         {organizationNavItems.length > 0 && (
           <NavMain items={organizationNavItems} label="Administration" />
+        )}
+        {superAdminNavItems.length > 0 && (
+          <NavMain items={superAdminNavItems} label="Super-admin" />
         )}
       </SidebarContent>
       <SidebarFooter>

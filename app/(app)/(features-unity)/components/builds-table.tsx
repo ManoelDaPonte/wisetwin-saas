@@ -293,9 +293,9 @@ export function BuildsTable({
                           variant="outline"
                           size="sm"
                           onClick={() => handleLaunchFormationClick(build)}
-                          className="w-32"
+                          className="flex items-center gap-2"
                         >
-                          <Play className="mr-2 h-4 w-4" />
+                          <Play className="h-4 w-4" />
                           Lancer formation
                         </Button>
                       </TableCell>
