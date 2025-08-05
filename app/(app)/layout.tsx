@@ -1,7 +1,7 @@
 import { AppSidebar } from "@/app/components/app-sidebar";
 import { AppBreadcrumb } from "@/app/components/app-breadcrumb";
 import { LogoBackground } from "@/app/components/logo-background";
-import { PrefetchProvider } from "@/app/providers/prefetch-provider";
+import { PrefetchProvider } from "@/providers/prefetch-provider";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import {
 	SidebarInset,

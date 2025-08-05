@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react"
-import { useOrganizationStore } from "@/app/stores/organization-store"
+import { useOrganizationStore } from "@/stores/organization-store"
 
 export function useOrganizations() {
   const [isLoading, setIsLoading] = useState(false)

@@ -1,4 +1,4 @@
-import { useOrganizationStore, useIsPersonalSpace } from "@/app/stores/organization-store"
+import { useOrganizationStore, useIsPersonalSpace } from "@/stores/organization-store"
 import { useSession } from "next-auth/react"
 
 export function useContainer() {
