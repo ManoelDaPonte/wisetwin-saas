@@ -23,10 +23,6 @@ interface OrganizationStore {
   clearStore: () => void
 }
 
-// Selectors séparés pour la réactivité
-export const useIsPersonalSpace = () => useOrganizationStore((state) => state.activeOrganization === null)
-export const useCurrentContainerId = () => useOrganizationStore((state) => state.activeOrganization?.azureContainerId || null)
-
 export const useOrganizationStore = create<OrganizationStore>()(
   persist(
     (set) => ({
@@ -72,3 +68,7 @@ export const useOrganizationStore = create<OrganizationStore>()(
     }
   )
 )
+
+// Selectors séparés pour la réactivité
+export const useIsPersonalSpace = () => useOrganizationStore((state) => state.activeOrganization === null)
+export const useCurrentContainerId = () => useOrganizationStore((state) => state.activeOrganization?.azureContainerId || null)

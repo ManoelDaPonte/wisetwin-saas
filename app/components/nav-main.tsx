@@ -1,8 +1,10 @@
 "use client"
 
+import React from "react"
 import { type LucideIcon } from "lucide-react"
 import { useRouter, usePathname } from "next/navigation"
 import { ChevronRight } from "lucide-react"
+import { useHoverPrefetch } from "@/app/hooks/use-hover-prefetch"
 
 import {
   Collapsible,
@@ -20,7 +22,7 @@ import {
   SidebarMenuSubButton,
 } from "@/components/ui/sidebar"
 
-export function NavMain({
+export const NavMain = React.memo(function NavMain({
   items,
   label = "Navigation",
 }: {
@@ -38,6 +40,7 @@ export function NavMain({
 }) {
   const router = useRouter()
   const pathname = usePathname()
+  const { handleHover } = useHoverPrefetch()
 
   return (
     <SidebarGroup>
@@ -75,6 +78,7 @@ export function NavMain({
                                 e.preventDefault()
                                 router.push(subItem.url)
                               }}
+                              onMouseEnter={() => handleHover(subItem.url)}
                             >
                               <span>{subItem.title}</span>
                             </a>
@@ -94,6 +98,7 @@ export function NavMain({
                 tooltip={item.title}
                 isActive={pathname === item.url}
                 onClick={() => router.push(item.url)}
+                onMouseEnter={() => handleHover(item.url)}
               >
                 {item.icon && <item.icon />}
                 <span>{item.title}</span>
@@ -104,4 +109,4 @@ export function NavMain({
       </SidebarMenu>
     </SidebarGroup>
   )
-}
+})

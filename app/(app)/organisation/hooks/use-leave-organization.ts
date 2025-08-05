@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
-import { useOrganizationStore } from '@/app/stores/organization-store'
+import { useOrganizationStore } from '@/stores/organization-store'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 

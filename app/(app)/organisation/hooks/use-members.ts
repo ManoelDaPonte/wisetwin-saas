@@ -1,7 +1,7 @@
 "use client"
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { useOrganizationStore } from "@/app/stores/organization-store"
+import { useOrganizationStore } from "@/stores/organization-store"
 import { toast } from "sonner"
 
 export interface Member {
