@@ -1,4 +1,4 @@
-import { BlobServiceClient } from "@azure/storage-blob";
+import { BlobServiceClient, BlobSASPermissions } from "@azure/storage-blob";
 import { env } from "@/lib/env";
 
 const blobServiceClient = BlobServiceClient.fromConnectionString(
@@ -229,4 +229,51 @@ export async function deleteContainer(containerName: string): Promise<void> {
     );
     // On ne lance pas l'erreur pour ne pas bloquer la suppression du compte
   }
+}
+
+
+// L'interface pour la structure de nos URLs
+export interface BuildUrls {
+    loader: string;
+    framework: string;
+    wasm: string;
+    data: string;
+}
+
+
+// Cette fonction s'exécutera uniquement sur le serveur
+export async function getBuildSasUrls(
+    containerId: string, 
+    buildId: string, 
+    buildType: "wisetour" | "wisetrainer"
+): Promise<BuildUrls> {
+    
+    const containerClient = blobServiceClient.getContainerClient(containerId);
+    
+    // ✅ CORRECTION : On initialise sasUrls comme un objet vide qui
+    // sera rempli pour correspondre à l'interface BuildUrls.
+    // On utilise "as any" ou Partial<BuildUrls> pour démarrer.
+    const sasUrls: Partial<BuildUrls> = {};
+
+    const fileNamesOnAzure = ["loader.js", "framework.js.br", "wasm.br", "data.br"];
+
+    for (const fileName of fileNamesOnAzure) {
+        const blobName = `${buildType}/${buildId}.${fileName}`;
+        const blobClient = containerClient.getBlobClient(blobName);
+
+        const sasUrl = await blobClient.generateSasUrl({
+            permissions: BlobSASPermissions.parse("r"),
+            expiresOn: new Date(new Date().valueOf() + 15 * 60 * 1000),
+        });
+
+        // On assigne l'URL à la bonne clé de l'objet
+        const cleanName = fileName.replace(".br", "").replace(".js", "") as keyof BuildUrls;
+        
+        // TypeScript sait maintenant que "cleanName" est une des clés de BuildUrls
+        sasUrls[cleanName] = sasUrl;
+    }
+
+    // À ce stade, TypeScript est confiant que toutes les clés ont été remplies.
+    // On peut le caster en BuildUrls sans risque.
+    return sasUrls as BuildUrls;
 }
