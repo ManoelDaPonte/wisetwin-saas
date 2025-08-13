@@ -1,6 +1,6 @@
 import { BlobServiceClient } from "@azure/storage-blob";
 import { env } from "@/lib/env";
-import { FormationMetadata, validateMetadata, getDefaultMetadata } from "./metadata";
+import { FormationMetadata, validateMetadata, getDefaultMetadata, normalizeMetadataForValidation } from "./metadata";
 import { BuildType } from "@/lib/azure";
 
 const blobServiceClient = BlobServiceClient.fromConnectionString(
@@ -26,11 +26,13 @@ export async function getFormationMetadata({
   error?: string;
 }> {
   try {
+    
     const containerClient = blobServiceClient.getContainerClient(containerId);
     const blobPath = `${buildType}/${buildName}-metadata.json`;
     const blockBlobClient = containerClient.getBlockBlobClient(blobPath);
 
     const exists = await blockBlobClient.exists();
+    
     if (!exists) {
       return { exists: false };
     }
@@ -38,26 +40,51 @@ export async function getFormationMetadata({
     const downloadResponse = await blockBlobClient.download();
     const content = await streamToString(downloadResponse.readableStreamBody!);
     
+
     try {
       const jsonData = JSON.parse(content);
-      const validation = validateMetadata(jsonData);
+
+      // Normaliser les données avant validation
+      const normalizedData = normalizeMetadataForValidation(jsonData);
+
+      
+      // Validation avec fallback automatique
+      const validation = validateMetadata(normalizedData);
       
       if (validation.success) {
         return { exists: true, metadata: validation.data };
       } else {
+        console.error("[MetadataService] Validation échouée:", validation.errors);
+        
+        // Log détaillé des erreurs pour débugger
+        Object.entries(validation.errors).forEach(([field, errors]) => {
+          console.error(`[MetadataService] Erreur ${field}:`, errors);
+        });
+        
         return { 
           exists: true, 
-          error: `Métadonnées invalides: ${Object.values(validation.errors).flat().join(', ')}` 
+          error: `Métadonnées invalides: ${Object.entries(validation.errors)
+            .map(([field, errors]) => `${field}: ${errors.join(', ')}`)
+            .join(' | ')}` 
         };
       }
     } catch (parseError) {
+      console.error("[MetadataService] Erreur parsing JSON:", parseError);
+      console.error("[MetadataService] Contenu problématique (premiers 500 chars):", content.substring(0, 500));
       return { 
         exists: true, 
-        error: "Fichier metadata.json corrompu" 
+        error: `Fichier metadata.json corrompu: ${parseError instanceof Error ? parseError.message : 'Erreur parsing'}` 
       };
     }
   } catch (error) {
-    console.error("Erreur lecture métadonnées:", error);
+    console.error("[MetadataService] Erreur lecture métadonnées:", error);
+    
+    // Log plus détaillé de l'erreur
+    if (error instanceof Error) {
+      console.error("[MetadataService] Message:", error.message);
+      console.error("[MetadataService] Stack trace:", error.stack);
+    }
+    
     return { 
       exists: false, 
       error: error instanceof Error ? error.message : "Erreur inconnue" 
