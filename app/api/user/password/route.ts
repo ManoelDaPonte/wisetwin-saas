@@ -6,7 +6,7 @@ import {
   passwordChangeSchema,
   isPasswordStrong,
   getPasswordRequirements,
-} from "@/app/validators";
+} from "@/validators";
 
 export const PATCH = withAuth(async (request: AuthenticatedRequest) => {
   try {

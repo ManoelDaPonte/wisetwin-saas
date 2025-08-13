@@ -8,10 +8,6 @@ export default function WisetourPage() {
 		data: builds,
 		error,
 		isLoading,
-		followBuild,
-		unfollowBuild,
-		isFollowLoading,
-		isUnfollowLoading,
 	} = useBuilds("wisetour");
 
 	return (

@@ -87,12 +87,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				icon: Box,
 				items: [
 					{
-						title: "Catalogue",
+						title: "Visites Virtuelles",
 						url: "/wisetour",
-					},
-					{
-						title: "Mes visites",
-						url: "/wisetour/mes-visites",
 					},
 				],
 			},
@@ -102,12 +98,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				icon: Book,
 				items: [
 					{
-						title: "Catalogue",
+						title: "Formations",
 						url: "/wisetrainer",
 					},
 					{
-						title: "Mes formations",
-						url: "/wisetrainer/mes-formations",
+						title: "Formations Terminées",
+						url: "/wisetrainer/formations-terminees",
 					},
 				],
 			},

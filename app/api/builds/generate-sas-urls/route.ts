@@ -1,7 +1,10 @@
 // Fichier : app/api/builds/generate-sas-urls/route.ts
 
 import { NextResponse } from "next/server";
-import { BlobServiceClient, BlobSASPermissions } from "@azure/storage-blob";
+import { 
+  BlobServiceClient, 
+  BlobSASPermissions 
+} from "@azure/storage-blob";
 import { withAuth, AuthenticatedRequest } from "@/lib/auth-wrapper";
 import { prisma } from "@/lib/prisma";
 

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { registerSchema, isPasswordStrong } from "@/app/validators";
+import { registerSchema, isPasswordStrong } from "@/validators";
 import { prisma } from "@/lib/prisma";
 import { createUserContainer } from "@/lib/azure";
 import { hash } from "bcryptjs";

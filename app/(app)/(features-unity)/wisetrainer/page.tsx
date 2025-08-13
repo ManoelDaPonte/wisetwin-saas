@@ -8,10 +8,6 @@ export default function WisetrainerPage() {
 		data: builds,
 		error,
 		isLoading,
-		followBuild,
-		unfollowBuild,
-		isFollowLoading,
-		isUnfollowLoading,
 	} = useBuilds("wisetrainer");
 
 	return (

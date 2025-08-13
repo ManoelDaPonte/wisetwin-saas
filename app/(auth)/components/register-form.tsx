@@ -9,7 +9,7 @@ import {
   registerSchema,
   isPasswordStrong,
   getPasswordRequirements,
-} from "@/app/validators";
+} from "@/validators";
 import { z } from "zod";
 
 export function RegisterForm({

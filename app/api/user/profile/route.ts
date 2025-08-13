@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { withAuth, AuthenticatedRequest } from "@/lib/auth-wrapper";
-import { updateProfileSchema } from "@/app/validators";
+import { updateProfileSchema } from "@/validators";
 
 export const PATCH = withAuth(async (request: AuthenticatedRequest) => {
   try {
