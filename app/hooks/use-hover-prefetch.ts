@@ -3,7 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useOrganizationStore } from "@/stores/organization-store";
 import { useContainer } from "./use-container";
 
-interface PrefetchStrategy {
+interface RoutePrefetchStrategy {
 	[key: string]: {
 		wisetourBuilds?: boolean;
 		wisetrainerBuilds?: boolean;
@@ -13,7 +13,7 @@ interface PrefetchStrategy {
 }
 
 // Stratégies de prefetch par route
-const PREFETCH_STRATEGIES: PrefetchStrategy = {
+const PREFETCH_STRATEGIES: RoutePrefetchStrategy = {
 	"/wisetour": {
 		wisetourBuilds: true,
 		followedBuilds: true,

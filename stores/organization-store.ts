@@ -1,13 +1,8 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { Organization } from '@/types/organization'
 
-export type Organization = {
-  id: string
-  name: string
-  description: string | null
-  role: "OWNER" | "ADMIN" | "MEMBER"
-  azureContainerId?: string
-}
+export { Organization }
 
 interface OrganizationStore {
   // État

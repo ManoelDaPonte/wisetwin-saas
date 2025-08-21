@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import { env } from "@/lib/env";
+import { InvitationEmailData } from "@/types/organization";
 
 // Configuration du transporteur email
 const transporter = nodemailer.createTransport({
@@ -25,15 +26,6 @@ function getBaseUrl() {
   return "https://app.wisetwin.com";
 }
 
-interface InvitationEmailData {
-  email: string;
-  organizationName: string;
-  inviterName: string;
-  token: string;
-  code: string;
-  role: "ADMIN" | "MEMBER";
-  expiresAt: Date;
-}
 
 export async function sendInvitationEmail(data: InvitationEmailData) {
   const baseUrl = getBaseUrl();

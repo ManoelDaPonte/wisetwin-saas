@@ -1,7 +1,7 @@
 import { BlobServiceClient } from "@azure/storage-blob";
 import { env } from "@/lib/env";
 import { FormationMetadata, validateMetadata, getDefaultMetadata, normalizeMetadataForValidation } from "./metadata";
-import { BuildType } from "@/lib/azure";
+import { BuildType } from "@/types/azure";
 
 const blobServiceClient = BlobServiceClient.fromConnectionString(
   env.AZURE_STORAGE_CONNECTION_STRING

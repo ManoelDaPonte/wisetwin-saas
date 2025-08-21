@@ -1,5 +1,9 @@
 // Types pour les métadonnées des formations Unity
-import { BuildFile, BuildType } from "@/types/azure-types";
+import { BuildFile, BuildType } from "@/types/azure";
+import { FormationMetadata, FormationModule } from "@/lib/admin/metadata";
+
+// Re-export pour éviter de casser les imports existants
+export type { FormationMetadata, FormationModule };
 
 export interface UnityInteraction {
   title: string;
@@ -7,32 +11,6 @@ export interface UnityInteraction {
   order: number;
   safety_warning: string;
   safety_consequences: string;
-}
-
-export interface FormationModule {
-  id: string;
-  title: string;
-  description?: string;
-  duration?: string;
-  order?: number;
-}
-
-export interface FormationMetadata extends Record<string, unknown> {
-  id: string;
-  title: string;
-  description: string;
-  version: string;
-  category: string;
-  duration: string;
-  difficulty: string;
-  tags: string[];
-  imageUrl: string;
-  modules: FormationModule[];
-  objectives: string[];
-  prerequisites: string[];
-  createdAt: string;
-  updatedAt: string;
-  unity: Record<string, UnityInteraction>;
 }
 
 // Type pour un build enrichi avec ses métadonnées

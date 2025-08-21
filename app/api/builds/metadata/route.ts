@@ -6,7 +6,7 @@ import {
   createDefaultMetadata,
   deleteFormationMetadata 
 } from "@/lib/admin/metadata-service";
-import { BuildType } from "@/lib/azure";
+import { BuildType } from "@/types/azure";
 
 // GET - Récupérer les métadonnées d'une formation
 export const GET = withSuperAdmin(async (req: SuperAdminRequest) => {

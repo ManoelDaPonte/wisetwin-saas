@@ -1,11 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Build, BuildType } from "@/lib/azure";
-
-interface BuildResponse {
-  builds: Build[];
-}
+import { Build, BuildType, BuildResponse } from "@/types";
 
 async function fetchBuild(buildType: BuildType, buildId: string, containerId: string): Promise<Build | null> {
   const params = new URLSearchParams({

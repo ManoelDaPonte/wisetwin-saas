@@ -98,11 +98,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				icon: Book,
 				items: [
 					{
-						title: "Formations",
+						title: "Toutes les formations",
 						url: "/wisetrainer",
 					},
 					{
-						title: "Formations Terminées",
+						title: "Formations terminées",
 						url: "/wisetrainer/formations-terminees",
 					},
 				],

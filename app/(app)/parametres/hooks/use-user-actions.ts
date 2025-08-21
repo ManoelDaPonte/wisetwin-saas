@@ -1,19 +1,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { signOut } from "next-auth/react"
-
-interface UpdateUserData {
-  name: string
-}
-
-interface ChangePasswordData {
-  currentPassword: string
-  newPassword: string
-}
-
-interface DeleteAccountData {
-  password: string
-}
+import { UpdateUserData, ChangePasswordData, DeleteAccountData } from "@/types"
 
 export function useUserActions() {
   const [isLoading, setIsLoading] = useState(false)

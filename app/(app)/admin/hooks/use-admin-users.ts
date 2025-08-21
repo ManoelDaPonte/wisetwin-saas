@@ -1,11 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { AdminUser } from "@/lib/admin/users";
-
-interface AdminUsersResponse {
-  users: AdminUser[];
-  total: number;
-  requestedBy: string;
-}
+import { AdminUser, AdminUsersResponse } from "@/types";
 
 async function fetchAdminUsers(): Promise<AdminUsersResponse> {
   const response = await fetch("/api/admin/users");

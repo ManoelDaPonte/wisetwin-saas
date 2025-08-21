@@ -3,15 +3,7 @@ import { useOrganizationStore } from '@/stores/organization-store'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { useOrganizations } from '@/app/hooks/use-organizations'
-
-interface UpdateOrganizationData {
-  name: string
-  description?: string
-}
-
-interface TransferOwnershipData {
-  newOwnerId: string
-}
+import { UpdateOrganizationData, TransferOwnershipData } from "@/types"
 
 export function useOrganizationSettings() {
   const queryClient = useQueryClient()

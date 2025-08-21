@@ -3,31 +3,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useOrganizationStore } from "@/stores/organization-store"
 import { toast } from "sonner"
+import { Member, Invitation, MembersResponse } from "@/types"
 
-export interface Member {
-  id: string
-  name: string | null
-  email: string
-  role: "OWNER" | "ADMIN" | "MEMBER"
-  joinedAt: string
-  avatarUrl?: string | null
-  isOwner: boolean
-}
-
-export interface Invitation {
-  id: string
-  email: string
-  role: "ADMIN" | "MEMBER"
-  invitedBy: string
-  createdAt: string
-  expiresAt: string
-  status: "PENDING" | "ACCEPTED" | "EXPIRED"
-}
-
-interface MembersResponse {
-  members: Member[]
-  invitations: Invitation[]
-}
+export { Member, Invitation }
 
 export function useMembers() {
   const { activeOrganization } = useOrganizationStore()

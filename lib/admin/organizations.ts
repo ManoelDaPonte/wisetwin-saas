@@ -1,21 +1,7 @@
 import { prisma } from "@/lib/prisma";
+import { AdminOrganization } from "@/types/admin";
 
-export interface AdminOrganization {
-  id: string;
-  name: string;
-  description?: string;
-  azureContainerId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  owner: {
-    id: string;
-    name?: string;
-    email: string;
-  };
-  membersCount: number;
-  buildsCount: number;
-  invitationsCount: number;
-}
+export { AdminOrganization };
 
 export async function getAllOrganizations(): Promise<AdminOrganization[]> {
   const organizations = await prisma.organization.findMany({

@@ -6,7 +6,7 @@ import {
   BlobSASPermissions
 } from "@azure/storage-blob";
 import { env } from "@/lib/env";
-import { Build, BuildType, BuildFile, isAzureError } from "@/types/azure-types";
+import { Build, BuildType, BuildFile, isAzureError } from "@/types/azure";
 import { FormationMetadata } from "@/types/metadata-types";
 
 // Utilitaire pour convertir un stream en Buffer

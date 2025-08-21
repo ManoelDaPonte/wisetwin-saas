@@ -1,10 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useContainer } from "./use-container";
-import { Build, BuildType } from "@/types/azure-types";
-
-interface BuildsOptions {
-  followedOnly?: boolean;
-}
+import { Build, BuildType, BuildsOptions } from "@/types";
 
 async function fetchBuilds(
   containerId: string,

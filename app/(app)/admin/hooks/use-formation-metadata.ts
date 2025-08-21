@@ -1,18 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { FormationMetadata } from "@/lib/admin/metadata";
-import { BuildType } from "@/lib/azure";
-
-interface MetadataParams {
-  containerId: string;
-  buildType: BuildType;
-  buildName: string;
-}
-
-interface MetadataResponse {
-  exists: boolean;
-  metadata?: FormationMetadata;
-  error?: string;
-}
+import { BuildType, MetadataParams, MetadataResponse } from "@/types";
 
 // Fetch metadata
 async function fetchMetadata({ containerId, buildType, buildName }: MetadataParams): Promise<MetadataResponse> {

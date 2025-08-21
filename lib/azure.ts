@@ -1,5 +1,6 @@
 import { BlobServiceClient, BlobSASPermissions } from "@azure/storage-blob";
 import { env } from "@/lib/env";
+import { BuildType, BuildFile, Build, BuildUrls, AzureError, isAzureError } from "@/types/azure";
 
 const blobServiceClient = BlobServiceClient.fromConnectionString(
   env.AZURE_STORAGE_CONNECTION_STRING
@@ -15,13 +16,6 @@ function sanitizeContainerName(name: string): string {
     .slice(0, 63); // Max length 63
 }
 
-interface AzureError {
-  statusCode?: number;
-}
-
-function isAzureError(error: unknown): error is AzureError {
-  return error !== null && typeof error === "object" && "statusCode" in error;
-}
 
 export async function createUserContainer(userEmail: string, userId: string) {
   // Extract username from email and sanitize
@@ -68,36 +62,6 @@ export async function createOrganizationContainer(
   }
 }
 
-export type BuildType = "wisetour" | "wisetrainer";
-
-export interface BuildFile {
-  name: string;
-  url: string;
-  size: number;
-  lastModified: Date | undefined;
-}
-
-export interface Build {
-  name: string;
-  buildType: BuildType;
-  files: {
-    loader?: BuildFile;
-    framework?: BuildFile;
-    wasm?: BuildFile;
-    data?: BuildFile;
-  };
-  totalSize: number;
-  lastModified: Date | undefined;
-  id?: string;
-  description?: string;
-  imageUrl?: string;
-  category?: string;
-  difficulty?: string;
-  duration?: string;
-  version?: string;
-  objectMapping?: Record<string, any>;
-  modules?: Array<Record<string, any>>;
-}
 
 export async function listBuilds(
   containerId: string,
@@ -232,13 +196,6 @@ export async function deleteContainer(containerName: string): Promise<void> {
 }
 
 
-// L'interface pour la structure de nos URLs
-export interface BuildUrls {
-    loader: string;
-    framework: string;
-    wasm: string;
-    data: string;
-}
 
 
 // Cette fonction s'exécutera uniquement sur le serveur

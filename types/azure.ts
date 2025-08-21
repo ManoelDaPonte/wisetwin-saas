@@ -1,4 +1,4 @@
-// Types et interfaces partagées entre client et serveur
+// Types et interfaces partagées pour Azure et les builds
 
 export type BuildType = "wisetour" | "wisetrainer";
 
@@ -50,10 +50,26 @@ export interface Build {
   } | null;
 }
 
+export interface BuildUrls {
+  [key: string]: string;
+}
+
 export interface AzureError {
   statusCode?: number;
 }
 
 export function isAzureError(error: unknown): error is AzureError {
   return error !== null && typeof error === "object" && "statusCode" in error;
+}
+
+// Interface pour formations terminées
+export interface CompletedFormation {
+  id: string;
+  buildName: string;
+  buildType: BuildType;
+  containerId: string;
+  progress: number;
+  completedAt: string;
+  startedAt: string;
+  lastAccessedAt: string;
 }

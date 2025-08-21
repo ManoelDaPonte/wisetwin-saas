@@ -1,6 +1,6 @@
   import { NextRequest, NextResponse } from "next/server";
   import { getFormationMetadata } from "@/lib/admin/metadata-service";
-  import { BuildType } from "@/lib/azure";
+  import { BuildType } from "@/types/azure";
 
   /**
    * API pour Unity - Récupération des métadonnées de formation

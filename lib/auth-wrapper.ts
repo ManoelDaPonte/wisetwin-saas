@@ -2,36 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
+import { AuthenticatedRequest, OrgAuthenticatedRequest, RouteHandler, OrgRouteHandler, Role } from "@/types/auth";
 
-export interface AuthenticatedRequest extends NextRequest {
-  user: {
-    id: string;
-    email: string;
-    name: string | null;
-    azureContainerId?: string;
-  };
-}
-
-export interface OrgAuthenticatedRequest extends AuthenticatedRequest {
-  organization: {
-    id: string;
-    azureContainerId: string;
-    role: "OWNER" | "ADMIN" | "MEMBER";
-    name: string;
-    description: string | null;
-    ownerId: string;
-  };
-}
-
-type RouteHandler = (
-  request: AuthenticatedRequest,
-  context?: any
-) => Promise<NextResponse> | NextResponse;
-
-type OrgRouteHandler = (
-  request: OrgAuthenticatedRequest,
-  context?: any
-) => Promise<NextResponse> | NextResponse;
+// Re-export types for backward compatibility
+export { AuthenticatedRequest, OrgAuthenticatedRequest, RouteHandler, OrgRouteHandler, Role };
 
 export function withAuth(handler: RouteHandler) {
   return async (request: NextRequest, context?: any) => {
@@ -168,7 +142,7 @@ export function withOrgAuth(handler: OrgRouteHandler) {
 
 async function checkOrgAccess(userId: string, organizationId: string): Promise<{
   hasAccess: boolean;
-  role?: "OWNER" | "ADMIN" | "MEMBER";
+  role?: Role;
 }> {
   // Check if user is owner
   const organization = await prisma.organization.findFirst({
@@ -191,7 +165,7 @@ async function checkOrgAccess(userId: string, organizationId: string): Promise<{
   });
   
   if (membership) {
-    return { hasAccess: true, role: membership.role as "ADMIN" | "MEMBER" };
+    return { hasAccess: true, role: membership.role as Role };
   }
   
   return { hasAccess: false };

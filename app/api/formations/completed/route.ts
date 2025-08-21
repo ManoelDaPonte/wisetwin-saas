@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { withAuth, AuthenticatedRequest } from "@/lib/auth-wrapper";
 import { prisma } from "@/lib/prisma";
-import { BuildType } from "@/types/azure-types";
+import { BuildType } from "@/types/azure";
 
 // POST /api/formations/completed - Marquer une formation comme terminée (appelé depuis Unity)
 export const POST = withAuth(async (req: AuthenticatedRequest) => {

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { listBuilds } from "@/lib/azure-server";
-import { BuildType } from "@/types/azure-types";
+import { BuildType } from "@/types/azure";
 import { withAuth, AuthenticatedRequest } from "@/lib/auth-wrapper";
 import { prisma } from "@/lib/prisma";
 

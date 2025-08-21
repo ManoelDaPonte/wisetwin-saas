@@ -1,33 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useContainer } from "./use-container";
-import { BuildType } from "@/types/azure-types";
-
-interface CompletedFormation {
-  id: string;
-  buildName: string;
-  buildType: BuildType;
-  containerId: string;
-  progress: number;
-  completedAt: string;
-  startedAt: string;
-  lastAccessedAt: string;
-}
-
-interface CompletedFormationsResponse {
-  completions: CompletedFormation[];
-  total: number;
-}
-
-interface MarkCompletedParams {
-  buildName: string;
-  buildType: BuildType;
-  containerId: string;
-  progress?: number;
-}
-
-interface CompletedFormationsOptions {
-  buildType?: BuildType;
-}
+import { 
+  BuildType, 
+  CompletedFormation,
+  CompletedFormationsResponse,
+  CompletedFormationsOptions,
+  MarkCompletedParams
+} from "@/types";
 
 // Fonction pour récupérer les formations terminées
 async function fetchCompletedFormations(

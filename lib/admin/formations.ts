@@ -1,19 +1,10 @@
 import { prisma } from "@/lib/prisma";
-import { listBuilds, BuildType } from "@/lib/azure";
+import { listBuilds } from "@/lib/azure";
 import { getFormationMetadata } from "./metadata-service";
+import { BuildType } from "@/types/azure";
+import { AdminFormation } from "@/types/admin";
 
-export interface AdminFormation {
-  id: string;
-  name: string;
-  buildType: BuildType;
-  containerId: string;
-  containerType: 'personal' | 'organization';
-  organizationName?: string;
-  userEmail?: string;
-  lastModified?: Date;
-  hasMetadata: boolean;
-  title?: string; // Titre depuis les métadonnées
-}
+export { AdminFormation };
 
 export async function getAllFormations(): Promise<AdminFormation[]> {
   const formations: AdminFormation[] = [];
