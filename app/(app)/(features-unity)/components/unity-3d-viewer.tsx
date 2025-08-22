@@ -5,7 +5,6 @@ import { useEffect, useCallback } from "react";
 import { BuildUrls } from "@/types/azure";
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
-import { Loader2 } from "lucide-react";
 
 interface Unity3DViewerProps {
 	buildUrls: BuildUrls;
@@ -34,6 +33,7 @@ export function Unity3DViewer({
 		frameworkUrl: buildUrls["framework"],
 		codeUrl: buildUrls["wasm"],
 	});
+
 
 	// Fonction pour appeler l'API formations/completed
 	const handleFormationCompleted = useCallback(async () => {
@@ -104,6 +104,8 @@ export function Unity3DViewer({
 					</div>
 				</div>
 			)}
+			
+			
 			<Unity
 				unityProvider={unityProvider}
 				style={{ width: "100%", height: "100%" }}
