@@ -4,6 +4,8 @@ import { Unity, useUnityContext } from "react-unity-webgl";
 import { useEffect, useCallback } from "react";
 import { BuildUrls } from "@/types/azure";
 import { toast } from "sonner";
+import { Progress } from "@/components/ui/progress";
+import { Loader2 } from "lucide-react";
 
 interface Unity3DViewerProps {
 	buildUrls: BuildUrls;
@@ -76,21 +78,29 @@ export function Unity3DViewer({
 		addEventListener("FormationCompleted", handleFormationCompleted);
 
 		return () => {
-			removeEventListener(
-				"FormationCompleted",
-				handleFormationCompleted
-			);
+			removeEventListener("FormationCompleted", handleFormationCompleted);
 		};
-	}, [addEventListener, removeEventListener, handleFormationCompleted, enableCompletion]);
+	}, [
+		addEventListener,
+		removeEventListener,
+		handleFormationCompleted,
+		enableCompletion,
+	]);
 
 	return (
 		<div className="relative w-full h-full">
 			{!isLoaded && (
-				<div className="absolute inset-0 z-10 flex items-center justify-center bg-gray-100">
-					<div className="text-center">
-						<p>
-							Chargement : {Math.round(loadingProgression * 100)}%
-						</p>
+				<div className="absolute inset-0 z-10 flex items-center justify-center">
+					<div className="flex items-center gap-3">
+						<div className="space-y-1">
+							<Progress
+								value={Math.round(loadingProgression * 100)}
+								className="h-2 w-48"
+							/>
+							<p className="text-sm text-muted-foreground text-center">
+								{Math.round(loadingProgression * 100)}%
+							</p>
+						</div>
 					</div>
 				</div>
 			)}
