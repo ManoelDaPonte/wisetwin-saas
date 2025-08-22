@@ -25,7 +25,13 @@ export default async function WiseTrainerBuildPage({
 	// 4. PASSER LES URLS AU COMPOSANT CLIENT
 	return (
 		<div className="h-full w-full -mb-4">
-			<Unity3DViewer buildUrls={buildUrls} />
+			<Unity3DViewer 
+				buildUrls={buildUrls}
+				buildName={buildId}
+				buildType="wisetrainer"
+				containerId={containerId}
+				enableCompletion={true}
+			/>
 		</div>
 	);
 }

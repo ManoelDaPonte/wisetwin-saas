@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
 import { withAuth, AuthenticatedRequest } from "@/lib/auth-wrapper";
 import { prisma } from "@/lib/prisma";
+import { listBuilds } from "@/lib/azure-server";
 import { BuildType } from "@/types/azure";
 
 // POST /api/formations/completed - Marquer une formation comme terminée (appelé depuis Unity)
 export const POST = withAuth(async (req: AuthenticatedRequest) => {
   try {
     const body = await req.json();
-    const { buildName, buildType, containerId, progress = 100 } = body;
+    const { buildName, buildType, containerId } = body;
+    console.log(buildName, buildType, containerId)
 
     // Validation des paramètres requis
     if (!buildName || !buildType || !containerId) {
@@ -62,6 +64,33 @@ export const POST = withAuth(async (req: AuthenticatedRequest) => {
       }
     }
 
+    // Vérifier que la formation existe réellement dans Azure
+    try {
+      const azureBuilds = await listBuilds(containerId, buildType);
+      const buildExists = azureBuilds.some((build: any) => 
+        build.name === buildName || build.id === buildName
+      );
+
+      if (!buildExists) {
+        return NextResponse.json(
+          { 
+            error: `Formation '${buildName}' introuvable dans le container ${containerId}`,
+            details: "La formation doit exister dans Azure pour être marquée comme terminée"
+          },
+          { status: 404 }
+        );
+      }
+    } catch (azureError) {
+      console.error("Erreur lors de la vérification Azure:", azureError);
+      return NextResponse.json(
+        { 
+          error: "Impossible de vérifier l'existence de la formation",
+          details: "Erreur de communication avec Azure Storage"
+        },
+        { status: 503 }
+      );
+    }
+
     // Mettre à jour ou créer l'enregistrement UserBuild
     const userBuild = await prisma.userBuild.upsert({
       where: {
@@ -75,7 +104,7 @@ export const POST = withAuth(async (req: AuthenticatedRequest) => {
       update: {
         completed: true,
         completedAt: new Date(),
-        progress: Math.max(progress, 100), // S'assurer que le progrès est au moins 100%
+        progress: 100, // Formation terminée
         lastAccessedAt: new Date(),
       },
       create: {
@@ -85,7 +114,7 @@ export const POST = withAuth(async (req: AuthenticatedRequest) => {
         containerId,
         completed: true,
         completedAt: new Date(),
-        progress: Math.max(progress, 100),
+        progress: 100,
         startedAt: new Date(),
         lastAccessedAt: new Date(),
       }
