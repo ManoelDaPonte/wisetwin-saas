@@ -74,22 +74,20 @@ export async function GET(request: NextRequest) {
     ).length;
 
     const totalFormationsCompleted = completedBuilds.length;
-    const totalFormationsStarted = userBuilds.length;
+    // Supprimer totalFormationsStarted car on ne track plus les formations démarrées
 
 
-    // Activité récente (dernières formations lancées)
-    const recentActivity = userBuilds.slice(0, 10).map(build => ({
+    // Activité récente (dernières formations terminées)
+    const recentActivity = completedBuilds.slice(0, 10).map(build => ({
       id: build.id,
-      type: build.completed ? 'completion' : 'start' as const,
+      type: 'completion' as const,
       buildName: build.buildName,
       buildType: build.buildType.toLowerCase() as 'wisetrainer' | 'wisetour',
-      timestamp: build.completed ? (build.completedAt || build.updatedAt) : build.startedAt,
-      progress: build.progress,
+      timestamp: build.completedAt || build.updatedAt,
     }));
 
     const userStats = {
       totalFormationsCompleted,
-      totalFormationsStarted,
       wisetrainerCompletions,
       wisetourVisits,
       recentActivity,

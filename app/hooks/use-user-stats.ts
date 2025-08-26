@@ -4,7 +4,6 @@ import { useSession } from "next-auth/react";
 
 export interface UserStats {
   totalFormationsCompleted: number;
-  totalFormationsStarted: number;
   wisetrainerCompletions: number;
   wisetourVisits: number;
   recentActivity: RecentActivity[];
@@ -12,11 +11,10 @@ export interface UserStats {
 
 export interface RecentActivity {
   id: string;
-  type: 'completion' | 'start' | 'progress';
+  type: 'completion';
   buildName: string;
   buildType: 'wisetrainer' | 'wisetour';
   timestamp: string;
-  progress?: number;
 }
 
 
