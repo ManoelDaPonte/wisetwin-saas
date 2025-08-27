@@ -14,7 +14,10 @@ import {
 } from "lucide-react";
 import { useCompletedFormations } from "@/app/hooks/use-completed-formations";
 import { useContainer } from "@/app/hooks/use-container";
-import { useOrganizationStore, useIsPersonalSpace } from "@/stores/organization-store";
+import {
+	useOrganizationStore,
+	useIsPersonalSpace,
+} from "@/stores/organization-store";
 import { CompletedFormation } from "@/types";
 import {
 	Card,
@@ -53,23 +56,22 @@ export default function CertificationsPage() {
 		field: "completedAt",
 		direction: "desc", // Plus récent d'abord
 	});
-	const [downloadingItems, setDownloadingItems] = useState<Set<string>>(new Set());
+	const [downloadingItems, setDownloadingItems] = useState<Set<string>>(
+		new Set()
+	);
 
 	const { containerId, organizationId, isReady } = useContainer();
 	const isPersonalSpace = useIsPersonalSpace();
-	
-	const { 
-		completedFormations, 
-		isLoading, 
-		error 
-	} = useCompletedFormations({ buildType: "wisetrainer" }); // Seulement WiseTrainer
+
+	const { completedFormations, isLoading, error } = useCompletedFormations({
+		buildType: "wisetrainer",
+	}); // Seulement WiseTrainer
 
 	const filteredAndSortedFormations = useMemo(() => {
 		if (!completedFormations) return [];
 
-		const filtered = completedFormations.filter(
-			(formation) =>
-				formation.buildName.toLowerCase().includes(searchTerm.toLowerCase())
+		const filtered = completedFormations.filter((formation) =>
+			formation.buildName.toLowerCase().includes(searchTerm.toLowerCase())
 		);
 
 		// Tri
@@ -101,7 +103,9 @@ export default function CertificationsPage() {
 		);
 	}, [filteredAndSortedFormations, currentPage, itemsPerPage]);
 
-	const totalPages = Math.ceil(filteredAndSortedFormations.length / itemsPerPage);
+	const totalPages = Math.ceil(
+		filteredAndSortedFormations.length / itemsPerPage
+	);
 
 	const handleSort = (field: SortField) => {
 		setSortState((prev) => ({
@@ -119,8 +123,8 @@ export default function CertificationsPage() {
 			return;
 		}
 
-		setDownloadingItems(prev => new Set(prev).add(formation.id));
-		
+		setDownloadingItems((prev) => new Set(prev).add(formation.id));
+
 		try {
 			// Utiliser l'API appropriée selon le contexte
 			let apiUrl: string;
@@ -172,7 +176,7 @@ export default function CertificationsPage() {
 					: "Erreur lors du téléchargement"
 			);
 		} finally {
-			setDownloadingItems(prev => {
+			setDownloadingItems((prev) => {
 				const newSet = new Set(prev);
 				newSet.delete(formation.id);
 				return newSet;
@@ -211,7 +215,8 @@ export default function CertificationsPage() {
 			<div className="container mx-auto py-8">
 				<Alert variant="destructive">
 					<AlertDescription>
-						Erreur lors du chargement des certifications: {error.message}
+						Erreur lors du chargement des certifications:{" "}
+						{error.message}
 					</AlertDescription>
 				</Alert>
 			</div>
@@ -219,7 +224,7 @@ export default function CertificationsPage() {
 	}
 
 	return (
-		<div className="container mx-auto py-8">
+		<div className="container mx-auto">
 			<Card className="flex flex-col h-full">
 				<CardHeader className="flex-shrink-0">
 					<div className="flex items-center justify-between">
@@ -229,7 +234,8 @@ export default function CertificationsPage() {
 								Mes Certifications
 							</CardTitle>
 							<CardDescription>
-								Téléchargez les certificats de vos formations terminées
+								Téléchargez les certificats de vos formations
+								terminées
 							</CardDescription>
 						</div>
 						<div className="flex items-center gap-2">
@@ -250,12 +256,15 @@ export default function CertificationsPage() {
 					{!isLoading && filteredAndSortedFormations.length > 0 && (
 						<div className="text-sm text-muted-foreground">
 							{filteredAndSortedFormations.length} certification
-							{filteredAndSortedFormations.length > 1 ? "s" : ""} disponible
+							{filteredAndSortedFormations.length > 1
+								? "s"
+								: ""}{" "}
+							disponible
 							{filteredAndSortedFormations.length > 1 ? "s" : ""}
 						</div>
 					)}
 				</CardHeader>
-				
+
 				<CardContent className="flex-1 flex flex-col min-h-0">
 					{isLoading ? (
 						<div className="space-y-4 flex-1">
@@ -296,51 +305,75 @@ export default function CertificationsPage() {
 										</TableRow>
 									</TableHeader>
 									<TableBody>
-										{paginatedFormations.map((formation) => (
-											<TableRow key={formation.id}>
-												<TableCell>
-													<div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center">
-														<Award className="h-5 w-5 text-muted-foreground" />
-													</div>
-												</TableCell>
-												<TableCell>
-													<div className="space-y-1">
-														<div className="font-medium">
-															{formation.buildName}
+										{paginatedFormations.map(
+											(formation) => (
+												<TableRow key={formation.id}>
+													<TableCell>
+														<div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center">
+															<Award className="h-5 w-5 text-muted-foreground" />
 														</div>
-													</div>
-												</TableCell>
-												<TableCell>
-													<div className="space-y-1">
-														<div className="text-sm">
-															{format(new Date(formation.completedAt), "d MMMM yyyy", {
-																locale: fr,
-															})}
+													</TableCell>
+													<TableCell>
+														<div className="space-y-1">
+															<div className="font-medium">
+																{
+																	formation.buildName
+																}
+															</div>
 														</div>
-														<div className="text-xs text-muted-foreground">
-															{formatDistanceToNow(new Date(formation.completedAt), {
-																addSuffix: true,
-																locale: fr,
-															})}
+													</TableCell>
+													<TableCell>
+														<div className="space-y-1">
+															<div className="text-sm">
+																{format(
+																	new Date(
+																		formation.completedAt
+																	),
+																	"d MMMM yyyy",
+																	{
+																		locale: fr,
+																	}
+																)}
+															</div>
+															<div className="text-xs text-muted-foreground">
+																{formatDistanceToNow(
+																	new Date(
+																		formation.completedAt
+																	),
+																	{
+																		addSuffix:
+																			true,
+																		locale: fr,
+																	}
+																)}
+															</div>
 														</div>
-													</div>
-												</TableCell>
-												<TableCell>
-													<Button
-														variant="outline"
-														size="sm"
-														onClick={() => handleDownloadCertificate(formation)}
-														disabled={downloadingItems.has(formation.id)}
-														className="flex items-center gap-2"
-													>
-														<Download className="h-4 w-4" />
-														{downloadingItems.has(formation.id) 
-															? "Génération..." 
-															: "Télécharger"}
-													</Button>
-												</TableCell>
-											</TableRow>
-										))}
+													</TableCell>
+													<TableCell>
+														<Button
+															variant="outline"
+															size="sm"
+															onClick={() =>
+																handleDownloadCertificate(
+																	formation
+																)
+															}
+															disabled={downloadingItems.has(
+																formation.id
+															)}
+															className="flex items-center gap-2"
+														>
+															<Download className="h-4 w-4" />
+															{downloadingItems.has(
+																formation.id
+															)
+																? "Génération..."
+																: "Télécharger"}
+														</Button>
+													</TableCell>
+												</TableRow>
+											)
+										)}
 									</TableBody>
 								</Table>
 							</div>
@@ -350,8 +383,11 @@ export default function CertificationsPage() {
 								<div className="flex items-center justify-between space-x-2 py-4 flex-shrink-0 border-t">
 									<div className="text-sm text-muted-foreground">
 										Page {currentPage} sur {totalPages} (
-										{filteredAndSortedFormations.length} certification
-										{filteredAndSortedFormations.length > 1 ? "s" : ""}
+										{filteredAndSortedFormations.length}{" "}
+										certification
+										{filteredAndSortedFormations.length > 1
+											? "s"
+											: ""}
 										)
 									</div>
 									<div className="flex items-center space-x-2">
@@ -369,12 +405,19 @@ export default function CertificationsPage() {
 										</Button>
 										<div className="flex items-center space-x-1">
 											{Array.from(
-												{ length: Math.min(5, totalPages) },
+												{
+													length: Math.min(
+														5,
+														totalPages
+													),
+												},
 												(_, i) => {
 													let pageNum;
 													if (totalPages <= 5) {
 														pageNum = i + 1;
-													} else if (currentPage <= 3) {
+													} else if (
+														currentPage <= 3
+													) {
 														pageNum = i + 1;
 													} else if (
 														currentPage >=
@@ -415,10 +458,15 @@ export default function CertificationsPage() {
 											size="sm"
 											onClick={() =>
 												setCurrentPage((prev) =>
-													Math.min(totalPages, prev + 1)
+													Math.min(
+														totalPages,
+														prev + 1
+													)
 												)
 											}
-											disabled={currentPage === totalPages}
+											disabled={
+												currentPage === totalPages
+											}
 										>
 											Suivant
 										</Button>
@@ -436,7 +484,8 @@ export default function CertificationsPage() {
 							</p>
 							{!searchTerm && (
 								<p className="text-sm mt-1">
-									Terminez des formations pour obtenir vos premiers certificats
+									Terminez des formations pour obtenir vos
+									premiers certificats
 								</p>
 							)}
 						</div>
