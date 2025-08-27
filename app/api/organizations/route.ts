@@ -30,6 +30,7 @@ export const GET = withAuth(async (req: AuthenticatedRequest) => {
         id: member.organization.id,
         name: member.organization.name,
         description: member.organization.description,
+        maxUsers: member.organization.maxUsers,
         role: member.role,
         azureContainerId: member.organization.azureContainerId,
       })
@@ -41,6 +42,7 @@ export const GET = withAuth(async (req: AuthenticatedRequest) => {
         id: org.id,
         name: org.name,
         description: org.description,
+        maxUsers: org.maxUsers,
         role: "OWNER" as const,
         azureContainerId: org.azureContainerId,
       })
@@ -92,6 +94,7 @@ export const POST = withAuth(async (req: AuthenticatedRequest) => {
       id: updatedOrganization.id,
       name: updatedOrganization.name,
       description: updatedOrganization.description,
+      maxUsers: updatedOrganization.maxUsers,
       role: "OWNER",
       azureContainerId: updatedOrganization.azureContainerId,
     })

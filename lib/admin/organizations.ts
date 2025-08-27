@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { AdminOrganization } from "@/types/admin";
 
-export { AdminOrganization };
+export type { AdminOrganization };
 
 export async function getAllOrganizations(): Promise<AdminOrganization[]> {
   const organizations = await prisma.organization.findMany({
@@ -9,6 +9,7 @@ export async function getAllOrganizations(): Promise<AdminOrganization[]> {
       id: true,
       name: true,
       description: true,
+      maxUsers: true,
       azureContainerId: true,
       createdAt: true,
       updatedAt: true,
@@ -42,6 +43,7 @@ export async function getAllOrganizations(): Promise<AdminOrganization[]> {
         name: org.name,
         description: org.description || undefined,
         azureContainerId: org.azureContainerId,
+        maxUsers: org.maxUsers,
         createdAt: org.createdAt,
         updatedAt: org.updatedAt,
         owner: {
@@ -49,7 +51,7 @@ export async function getAllOrganizations(): Promise<AdminOrganization[]> {
           name: org.owner.name || undefined,
           email: org.owner.email,
         },
-        membersCount: org._count.members,
+        membersCount: org._count.members + 1, // +1 pour inclure le propriétaire
         buildsCount,
         invitationsCount: org._count.invitations,
       };
@@ -66,6 +68,7 @@ export async function getOrganizationById(orgId: string): Promise<AdminOrganizat
       id: true,
       name: true,
       description: true,
+      maxUsers: true,
       azureContainerId: true,
       createdAt: true,
       updatedAt: true,
@@ -92,6 +95,7 @@ export async function getOrganizationById(orgId: string): Promise<AdminOrganizat
     name: org.name,
     description: org.description || undefined,
     azureContainerId: org.azureContainerId,
+    maxUsers: org.maxUsers,
     createdAt: org.createdAt,
     updatedAt: org.updatedAt,
     owner: {
@@ -99,8 +103,55 @@ export async function getOrganizationById(orgId: string): Promise<AdminOrganizat
       name: org.owner.name || undefined,
       email: org.owner.email,
     },
-    membersCount: org._count.members,
+    membersCount: org._count.members + 1, // +1 pour inclure le propriétaire
     buildsCount: 0, // TODO: Compter depuis Azure
     invitationsCount: org._count.invitations,
+  };
+}
+
+export async function updateOrganizationMaxUsers(orgId: string, maxUsers: number): Promise<AdminOrganization | null> {
+  const updatedOrg = await prisma.organization.update({
+    where: { id: orgId },
+    data: { maxUsers },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      maxUsers: true,
+      azureContainerId: true,
+      createdAt: true,
+      updatedAt: true,
+      owner: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+      _count: {
+        select: {
+          members: true,
+          invitations: true,
+        },
+      },
+    },
+  });
+
+  return {
+    id: updatedOrg.id,
+    name: updatedOrg.name,
+    description: updatedOrg.description || undefined,
+    azureContainerId: updatedOrg.azureContainerId,
+    maxUsers: updatedOrg.maxUsers,
+    createdAt: updatedOrg.createdAt,
+    updatedAt: updatedOrg.updatedAt,
+    owner: {
+      id: updatedOrg.owner.id,
+      name: updatedOrg.owner.name || undefined,
+      email: updatedOrg.owner.email,
+    },
+    membersCount: updatedOrg._count.members,
+    buildsCount: 0,
+    invitationsCount: updatedOrg._count.invitations,
   };
 }

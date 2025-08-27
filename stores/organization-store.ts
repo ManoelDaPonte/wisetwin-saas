@@ -26,7 +26,13 @@ export const useOrganizationStore = create<OrganizationStore>()(
       organizations: [],
       
       // Actions
-      setOrganizations: (organizations) => set({ organizations }),
+      setOrganizations: (organizations) => set((state) => ({
+        organizations,
+        // Mettre à jour activeOrganization si elle existe dans la nouvelle liste
+        activeOrganization: state.activeOrganization 
+          ? organizations.find(org => org.id === state.activeOrganization?.id) || state.activeOrganization
+          : null
+      })),
       
       switchToOrganization: (organization) => set({ 
         activeOrganization: organization 

@@ -80,6 +80,26 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Vérifier la limite d'utilisateurs
+    const orgDetails = await prisma.organization.findUnique({
+      where: { id: invitation.organizationId },
+      include: {
+        _count: {
+          select: { members: true }
+        }
+      }
+    });
+
+    const currentMemberCount = (orgDetails?._count.members || 0) + 1; // +1 pour le propriétaire
+    const maxUsers = orgDetails?.maxUsers || 1;
+
+    if (currentMemberCount + 1 > maxUsers) { // +1 pour la personne qui accepte l'invitation
+      return NextResponse.json(
+        { error: `Limite d'utilisateurs atteinte (${maxUsers} maximum). Cette organisation ne peut plus accepter de nouveaux membres.` },
+        { status: 403 }
+      );
+    }
+
     // Ajouter l'utilisateur à l'organisation
     await prisma.organizationMember.create({
       data: {

@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useContainer } from "@/app/hooks/use-container";
-import { Build } from "@/lib/azure-types";
+import { Build } from "@/types/azure";
 import {
 	Card,
 	CardContent,
@@ -288,67 +288,175 @@ export function BuildsTable({
 											<TableCell>
 												<div className="space-y-1">
 													<div className="font-medium">
-														{(build.metadata?.title && typeof build.metadata.title === 'string') ? build.metadata.title : build.name}
+														{build.metadata
+															?.title &&
+														typeof build.metadata
+															.title === "string"
+															? build.metadata
+																	.title
+															: build.name}
 													</div>
-													{((build.metadata?.description && typeof build.metadata.description === 'string') || build.description) && (
+													{((build.metadata
+														?.description &&
+														typeof build.metadata
+															.description ===
+															"string") ||
+														build.description) && (
 														<div className="text-sm text-muted-foreground line-clamp-2 max-w-xs">
-															{(build.metadata?.description && typeof build.metadata.description === 'string') ? build.metadata.description : build.description}
+															{build.metadata
+																?.description &&
+															typeof build
+																.metadata
+																.description ===
+																"string"
+																? build.metadata
+																		.description
+																: build.description}
 														</div>
 													)}
-													{build.metadata?.objectives && Array.isArray(build.metadata.objectives) && build.metadata.objectives.length > 0 && (
-														<div className="text-xs text-blue-600 dark:text-blue-400">
-															{build.metadata.objectives.length} objectif{build.metadata.objectives.length > 1 ? 's' : ''}
-														</div>
-													)}
+													{build.metadata
+														?.objectives &&
+														Array.isArray(
+															build.metadata
+																.objectives
+														) &&
+														build.metadata
+															.objectives.length >
+															0 && (
+															<div className="text-xs text-blue-600 dark:text-blue-400">
+																{
+																	build
+																		.metadata
+																		.objectives
+																		.length
+																}{" "}
+																objectif
+																{build.metadata
+																	.objectives
+																	.length > 1
+																	? "s"
+																	: ""}
+															</div>
+														)}
 												</div>
 											</TableCell>
 											<TableCell>
 												<div className="flex items-center gap-2 flex-wrap">
-													{((build.metadata?.category && typeof build.metadata.category === 'string') || build.category) && (
+													{((build.metadata
+														?.category &&
+														typeof build.metadata
+															.category ===
+															"string") ||
+														build.category) && (
 														<Badge variant="outline">
-															{(build.metadata?.category && typeof build.metadata.category === 'string') ? build.metadata.category : build.category}
+															{build.metadata
+																?.category &&
+															typeof build
+																.metadata
+																.category ===
+																"string"
+																? build.metadata
+																		.category
+																: build.category}
 														</Badge>
 													)}
-													{build.metadata?.difficulty && typeof build.metadata.difficulty === 'string' && (
-														<Badge variant="secondary" className="text-xs">
-															{build.metadata.difficulty}
-														</Badge>
-													)}
+													{build.metadata
+														?.difficulty &&
+														typeof build.metadata
+															.difficulty ===
+															"string" && (
+															<Badge
+																variant="secondary"
+																className="text-xs"
+															>
+																{
+																	build
+																		.metadata
+																		.difficulty
+																}
+															</Badge>
+														)}
 													{mode === "completed" && (
-														<Badge 
-															variant="secondary" 
+														<Badge
+															variant="secondary"
 															className="bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:text-green-100"
 														>
 															<CheckCircle className="w-3 h-3 mr-1" />
 															Terminé
 														</Badge>
 													)}
-													{build.metadata?.tags && Array.isArray(build.metadata.tags) && build.metadata.tags.length > 0 && (
-														<div className="flex gap-1">
-															{build.metadata.tags.slice(0, 2).map((tag, index) => (
-																<Badge key={index} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
-																	{tag}
-																</Badge>
-															))}
-															{build.metadata.tags.length > 2 && (
-																<Badge variant="outline" className="text-xs">
-																	+{build.metadata.tags.length - 2}
-																</Badge>
-															)}
-														</div>
-													)}
+													{build.metadata?.tags &&
+														Array.isArray(
+															build.metadata.tags
+														) &&
+														build.metadata.tags
+															.length > 0 && (
+															<div className="flex gap-1">
+																{build.metadata.tags
+																	.slice(0, 2)
+																	.map(
+																		(
+																			tag,
+																			index
+																		) => (
+																			<Badge
+																				key={
+																					index
+																				}
+																				variant="outline"
+																				className="text-xs bg-blue-50 text-blue-700 border-blue-200"
+																			>
+																				{
+																					tag
+																				}
+																			</Badge>
+																		)
+																	)}
+																{build.metadata
+																	.tags
+																	.length >
+																	2 && (
+																	<Badge
+																		variant="outline"
+																		className="text-xs"
+																	>
+																		+
+																		{build
+																			.metadata
+																			.tags
+																			.length -
+																			2}
+																	</Badge>
+																)}
+															</div>
+														)}
 												</div>
 											</TableCell>
 											<TableCell>
 												<div className="space-y-1">
 													<span className="text-sm text-muted-foreground">
-														{(build.metadata?.version && typeof build.metadata.version === 'string') ? build.metadata.version : (build.version || "1.0.0")}
+														{build.metadata
+															?.version &&
+														typeof build.metadata
+															.version ===
+															"string"
+															? build.metadata
+																	.version
+															: build.version ||
+															  "1.0.0"}
 													</span>
-													{build.metadata?.duration && typeof build.metadata.duration === 'string' && (
-														<div className="text-xs text-orange-600 dark:text-orange-400">
-															{build.metadata.duration}
-														</div>
-													)}
+													{build.metadata?.duration &&
+														typeof build.metadata
+															.duration ===
+															"string" && (
+															<div className="text-xs text-orange-600 dark:text-orange-400">
+																{
+																	build
+																		.metadata
+																		.duration
+																}
+															</div>
+														)}
 												</div>
 											</TableCell>
 											<TableCell>
@@ -379,7 +487,9 @@ export function BuildsTable({
 													className="flex items-center gap-2"
 												>
 													<Play className="h-4 w-4" />
-													{mode === "completed" ? "Relancer formation" : "Lancer formation"}
+													{mode === "completed"
+														? "Relancer formation"
+														: "Lancer formation"}
 												</Button>
 											</TableCell>
 										</TableRow>

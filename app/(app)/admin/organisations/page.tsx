@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useAdminOrganizations } from "../hooks/use-admin-organizations";
 import {
 	AdminTable,
@@ -9,12 +10,15 @@ import {
 import { AdminOrganization } from "@/lib/admin/organizations";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Mail, Trash2, Building2 } from "lucide-react";
+import { Mail, Trash2, Building2, Edit } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+import { EditOrganizationDialog } from "../components/edit-organization-dialog";
 
 export default function AdminOrganizationsPage() {
-	const { data, isLoading, error } = useAdminOrganizations();
+	const { data, isLoading, error, refetch } = useAdminOrganizations();
+	const [editingOrganization, setEditingOrganization] = useState<AdminOrganization | null>(null);
+	const [editDialogOpen, setEditDialogOpen] = useState(false);
 
 	const columns: AdminTableColumn<AdminOrganization>[] = [
 		{
@@ -56,7 +60,7 @@ export default function AdminOrganizationsPage() {
 			key: "membersCount",
 			label: "Membres",
 			render: (org) => (
-				<Badge variant="outline">{org.membersCount}</Badge>
+				<Badge variant="outline">{org.membersCount} / {org.maxUsers}</Badge>
 			),
 		},
 		{
@@ -100,6 +104,15 @@ export default function AdminOrganizationsPage() {
 
 	const actions: AdminTableAction<AdminOrganization>[] = [
 		{
+			label: "Modifier",
+			icon: <Edit className="h-4 w-4 mr-1" />,
+			onClick: (org) => {
+				setEditingOrganization(org);
+				setEditDialogOpen(true);
+			},
+			variant: "outline",
+		},
+		{
 			label: "Contact owner",
 			icon: <Mail className="h-4 w-4 mr-1" />,
 			onClick: (org) => {
@@ -131,6 +144,16 @@ export default function AdminOrganizationsPage() {
 				searchPlaceholder="Rechercher une organisation..."
 				itemsPerPage={15}
 				emptyMessage="Aucune organisation trouvée"
+			/>
+
+			<EditOrganizationDialog
+				organization={editingOrganization}
+				open={editDialogOpen}
+				onOpenChange={setEditDialogOpen}
+				onUpdate={() => {
+					refetch();
+					setEditingOrganization(null);
+				}}
 			/>
 		</div>
 	);

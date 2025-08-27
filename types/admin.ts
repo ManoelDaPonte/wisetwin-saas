@@ -18,6 +18,7 @@ export interface AdminOrganization {
   name: string;
   description?: string;
   azureContainerId: string;
+  maxUsers: number;
   createdAt: Date;
   updatedAt: Date;
   owner: {

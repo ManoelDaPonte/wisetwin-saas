@@ -115,7 +115,7 @@ export default function DashboardPage() {
 	}
 
 	return (
-		<div className="container mx-auto py-8 space-y-8">
+		<div className="space-y-8">
 			{/* Résumé par type */}
 			<div className="grid gap-4 md:grid-cols-2">
 				<Card>
