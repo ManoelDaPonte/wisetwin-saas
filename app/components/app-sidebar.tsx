@@ -4,17 +4,10 @@ import * as React from "react";
 import {
 	Home,
 	LayoutDashboard,
-	Boxes,
 	Building2,
-	Users,
-	Settings,
-	Shield,
-	Award,
-	BarChart3,
 	Box,
 	Book,
 	Crown,
-	GraduationCap,
 } from "lucide-react";
 import {
 	useIsPersonalSpace,
@@ -116,7 +109,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	const organizationNavItems = React.useMemo(() => {
 		if (isPersonalSpace) return [];
 
-		const isMember = activeOrganization?.role === "MEMBER";
 
 		const items: NavigationItem[] = [
 			{

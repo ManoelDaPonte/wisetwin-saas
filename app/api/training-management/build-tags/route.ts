@@ -1,11 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { withOrgAuth, OrgAuthenticatedRequest } from "@/lib/auth-wrapper";
 import { prisma } from "@/lib/prisma";
 import { 
   createBuildTagSchema,
   bulkAssignBuildTagsSchema,
-  bulkRemoveBuildTagsSchema,
-  updateBuildTagSchema
+  bulkRemoveBuildTagsSchema
 } from "@/validators/training";
 
 // GET /api/training-management/build-tags - Récupérer les assignments build-tag
