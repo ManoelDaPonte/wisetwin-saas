@@ -24,6 +24,12 @@ model User {
   OrganizationMember OrganizationMember[]
   sentInvitations OrganizationInvitation[] @relation("InvitedBy")
   followedBuilds UserBuild[]
+  
+  // Relations pour le système de formations
+  memberTags    MemberTag[]
+  assignedTags  MemberTag[] @relation("TagAssignedBy")
+  buildTags     BuildTag[]
+  trainingCompletions TrainingCompletion[]
 }
 
 model Organization {
@@ -38,6 +44,9 @@ model Organization {
   ownerId         String
   members         OrganizationMember[]
   invitations     OrganizationInvitation[]
+  
+  // Relations pour le système de formations
+  trainingTags    TrainingTag[]
 }
 
 model OrganizationMember {
@@ -117,4 +126,114 @@ enum InvitationStatus {
 enum BuildType {
   WISETOUR
   WISETRAINER
+}
+
+enum Priority {
+  LOW
+  MEDIUM  
+  HIGH
+}
+
+// === SYSTÈME DE GESTION DE FORMATIONS ===
+
+// Tags pour catégoriser les collaborateurs - représente un plan de formation complet
+model TrainingTag {
+  id             String @id @default(cuid())
+  name           String
+  color          String? // Code couleur hex pour l'interface
+  description    String?
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  // Configuration du plan de formation
+  dueDate        DateTime? // Date limite pour ce plan de formation
+  priority       Priority @default(MEDIUM) // Priorité du plan complet
+  
+  // Relations
+  memberTags     MemberTag[]
+  buildTags      BuildTag[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([name, organizationId]) // Noms uniques par organisation
+  @@index([organizationId])
+  @@index([dueDate])
+}
+
+// Relations membre-tag (many-to-many)
+model MemberTag {
+  id           String @id @default(cuid())
+  userId       String
+  tagId        String
+  assignedById String // Qui a assigné ce tag
+  
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tag        TrainingTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  assignedBy User        @relation("TagAssignedBy", fields: [assignedById], references: [id])
+  
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, tagId]) // Un utilisateur ne peut avoir le même tag qu'une fois
+  @@index([userId])
+  @@index([tagId])
+}
+
+// Assignment des builds Unity aux tags - association simple
+model BuildTag {
+  id          String @id @default(cuid())
+  tagId       String
+  buildName   String  // Nom du build Unity (ex: "Formation Sécurité v1.2")
+  buildType   BuildType // WISETOUR ou WISETRAINER
+  containerId String  // Container Azure où se trouve le build
+  
+  // Métadonnées
+  assignedById String
+  
+  // Relations
+  tag         TrainingTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  assignedBy  User @relation(fields: [assignedById], references: [id])
+  completions TrainingCompletion[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([tagId, buildName, buildType, containerId])
+  @@index([tagId])
+  @@index([containerId, buildType])
+  @@index([buildName, buildType])
+}
+
+// Suivi des formations avec notifications
+model TrainingCompletion {
+  id          String @id @default(cuid())
+  buildTagId  String
+  userId      String
+  
+  // Statuts de formation
+  status      TrainingStatus @default(NOT_STARTED)
+  startedAt   DateTime?
+  completedAt DateTime?
+  
+  // Notifications
+  lastReminderSent DateTime?
+  reminderCount    Int @default(0)
+  
+  // Relations
+  buildTag    BuildTag @relation(fields: [buildTagId], references: [id], onDelete: Cascade)
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([buildTagId, userId])
+  @@index([userId, status])
+  @@index([buildTagId])
+}
+
+enum TrainingStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  OVERDUE
 }

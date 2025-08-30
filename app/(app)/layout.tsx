@@ -16,7 +16,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 			<SidebarInset className="flex flex-col min-h-screen">
 				<LogoBackground />
 				<div className="relative z-10 flex flex-col flex-1 min-h-0">
-					<header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+					<header className="sticky top-0 z-50 flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 bg-background/80 backdrop-blur-md border-border/40">
 						<div className="flex items-center gap-2 px-4">
 							<SidebarTrigger className="-ml-1" />
 							<Separator

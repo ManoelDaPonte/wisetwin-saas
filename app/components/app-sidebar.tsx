@@ -14,6 +14,7 @@ import {
 	Box,
 	Book,
 	Crown,
+	GraduationCap,
 } from "lucide-react";
 import {
 	useIsPersonalSpace,
@@ -132,18 +133,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 						url: "/organisation/membres",
 					},
 					{
+						title: "Plan de formation",
+						url: "/organisation/plan-de-formation",
+					},
+					{
 						title: "Paramètres",
 						url: "/organisation/parametres",
 					},
-					// Tableau de bord seulement pour OWNER et ADMIN
-					...(isMember
-						? []
-						: [
-								{
-									title: "Tableau de bord",
-									url: "/organisation/tableau-de-bord",
-								},
-						  ]),
 				],
 			},
 		];
@@ -164,7 +160,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				icon: Crown,
 				items: [
 					{
-						title: "Formations",
+						title: "Formations Unity",
 						url: "/admin/formations",
 					},
 					{

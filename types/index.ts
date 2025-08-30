@@ -18,4 +18,7 @@ export * from "./api";
 // Métadonnées Unity
 export * from "./metadata-types";
 
+// Système de formations
+export * from "./training";
+
 // Note: next-auth.d.ts is not exported as it's a TypeScript declaration file
