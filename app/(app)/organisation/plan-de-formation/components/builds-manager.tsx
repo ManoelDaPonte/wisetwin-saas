@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
@@ -33,27 +32,26 @@ import {
 } from "@/components/ui/dialog";
 import {
   Search,
-  BookOpen,
   Plus,
   Minus,
   Loader2,
   AlertCircle,
-  Play,
   FileCode,
 } from "lucide-react";
 import { useBuildsWithTags, useBulkAssignBuildTags, useBulkRemoveBuildTags, createBuildId } from "../hooks/use-build-tags";
 import { useTrainingTags } from "../hooks/use-training-tags";
 import { TagBadge } from "./tag-badge";
-import { BuildWithTags, BulkAssignBuildTagsData, BulkRemoveBuildTagsData } from "@/types/training";
+import { BulkAssignBuildTagsData, BulkRemoveBuildTagsData } from "@/types/training";
 import { BuildType } from "@/types";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+import Image from "next/image"
 
 interface BuildsManagerProps {
   organizationId: string;
 }
 
-export function BuildsManager({ organizationId }: BuildsManagerProps) {
+export function BuildsManager({}: BuildsManagerProps) {
   const [search, setSearch] = useState("");
   const [selectedBuilds, setSelectedBuilds] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -369,7 +367,7 @@ export function BuildsManager({ organizationId }: BuildsManagerProps) {
                         checked={selectedBuilds.length === filteredBuilds.length && filteredBuilds.length > 0}
                         onCheckedChange={(checked) => {
                           if (checked) {
-                            setSelectedBuilds(filteredBuilds.map(b => createBuildId(b.name, b.type, b.containerId)));
+                            setSelectedBuilds(filteredBuilds.map(b => createBuildId(b.name, b.type.toLowerCase() as BuildType, b.containerId)));
                           } else {
                             setSelectedBuilds([]);
                           }
@@ -383,7 +381,7 @@ export function BuildsManager({ organizationId }: BuildsManagerProps) {
                 </TableHeader>
                 <TableBody>
                   {filteredBuilds.map((build) => {
-                    const buildId = createBuildId(build.name, build.type, build.containerId);
+                    const buildId = createBuildId(build.name, build.type.toLowerCase() as BuildType, build.containerId);
                     return (
                       <TableRow key={buildId}>
                         <TableCell>
@@ -395,9 +393,11 @@ export function BuildsManager({ organizationId }: BuildsManagerProps) {
                         <TableCell>
                           <div className="flex items-center gap-3">
                             {build.imageUrl ? (
-                              <img
+                              <Image
                                 src={build.imageUrl}
                                 alt={build.name}
+                                width={40}
+                                height={40}
                                 className="h-10 w-10 object-cover rounded-md"
                               />
                             ) : (

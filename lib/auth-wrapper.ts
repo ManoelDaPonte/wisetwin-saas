@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
-import { AuthenticatedRequest, OrgAuthenticatedRequest, RouteHandler, OrgRouteHandler, Role } from "@/types/auth";
+import { AuthenticatedRequest, OrgAuthenticatedRequest, RouteHandler, OrgRouteHandler, Role } from "@/types";
 
 // Re-export types for backward compatibility
-export { AuthenticatedRequest, OrgAuthenticatedRequest, RouteHandler, OrgRouteHandler, Role };
+export type { AuthenticatedRequest, OrgAuthenticatedRequest, RouteHandler, OrgRouteHandler, Role };
 
 export function withAuth(handler: RouteHandler) {
-  return async (request: NextRequest, context?: any) => {
+  return async (request: NextRequest, context?: unknown) => {
     try {
       const session = await getServerSession(authOptions);
       
@@ -40,16 +40,16 @@ export function withAuth(handler: RouteHandler) {
 }
 
 export function withOrgAuth(handler: OrgRouteHandler) {
-  return withAuth(async (request: AuthenticatedRequest, context?: any) => {
+  return withAuth(async (request: AuthenticatedRequest, context?: unknown) => {
     try {
       // Get organizationId from query params, body, or route params
       const url = new URL(request.url);
       let organizationId = url.searchParams.get("organizationId");
       
       // Try to get from route params if available (Next.js 15 requires await)
-      if (!organizationId && context?.params) {
-        const params = await context.params;
-        organizationId = params.orgId;
+      if (!organizationId && context && typeof context === 'object' && 'params' in context) {
+        const params = await (context as { params: Promise<{ orgId?: string }> }).params;
+        organizationId = params?.orgId || null;
       }
       
       if (!organizationId) {

@@ -72,7 +72,7 @@ export const CreateTrainingTagSchema = z.object({
   description: z.string()
     .max(500, "La description ne peut pas dépasser 500 caractères")
     .optional(),
-  dueDate: z.string().optional().transform((val) => val ? new Date(val) : undefined),
+  dueDate: z.string().nullable().optional(),
   priority: PrioritySchema.default("MEDIUM").optional(),
 });
 

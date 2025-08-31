@@ -139,7 +139,7 @@ export function validateMetadata(data: unknown): {
     try {
       const validData = FormationMetadataSchemaPermissive.parse(data);
       return { success: true, data: validData as FormationMetadata };
-    } catch (permissiveError) {
+    } catch {
       
       if (error instanceof z.ZodError) {
         const errors: Record<string, string[]> = {};
@@ -161,19 +161,19 @@ export function validateMetadata(data: unknown): {
 }
 
 // Fonction pour transformer vos données existantes au bon format
-export function normalizeMetadataForValidation(data: any): any {
+export function normalizeMetadataForValidation(data: unknown): unknown {
   if (!data || typeof data !== 'object') return data;
   
-  const normalized = { ...data };
+  const normalized = { ...data } as Record<string, unknown>;
   
   // Corriger la catégorie si elle n'est pas dans les valeurs autorisées
-  if (normalized.category && !["Débutant", "Intermédiaire", "Avancé", "Expert", "Introduction", "Général", "Spécialisé"].includes(normalized.category)) {
+  if (typeof normalized.category === 'string' && !["Débutant", "Intermédiaire", "Avancé", "Expert", "Introduction", "Général", "Spécialisé"].includes(normalized.category)) {
     console.log(`[Normalize] Catégorie '${normalized.category}' convertie en 'Général'`);
     normalized.category = "Général";
   }
   
   // Corriger la difficulté si nécessaire
-  if (normalized.difficulty && !["Très facile", "Facile", "Moyen", "Difficile", "Très difficile"].includes(normalized.difficulty)) {
+  if (typeof normalized.difficulty === 'string' && !["Très facile", "Facile", "Moyen", "Difficile", "Très difficile"].includes(normalized.difficulty)) {
     console.log(`[Normalize] Difficulté '${normalized.difficulty}' convertie en 'Facile'`);
     normalized.difficulty = "Facile";
   }
@@ -184,11 +184,11 @@ export function normalizeMetadataForValidation(data: any): any {
   }
   
   // S'assurer que les dates sont au bon format
-  if (normalized.createdAt && !isValidISODate(normalized.createdAt)) {
+  if (typeof normalized.createdAt === 'string' && !isValidISODate(normalized.createdAt)) {
     normalized.createdAt = new Date().toISOString();
   }
   
-  if (normalized.updatedAt && !isValidISODate(normalized.updatedAt)) {
+  if (typeof normalized.updatedAt === 'string' && !isValidISODate(normalized.updatedAt)) {
     normalized.updatedAt = new Date().toISOString();
   }
   

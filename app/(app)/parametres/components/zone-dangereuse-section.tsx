@@ -4,7 +4,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Separator } from "@/components/ui/separator"
 import { Trash2 } from "lucide-react"
 import { useUserActions } from "../hooks/use-user-actions"
 import { useState } from "react"

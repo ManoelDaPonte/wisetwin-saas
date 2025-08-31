@@ -128,7 +128,7 @@ export interface CreateTrainingTagData {
   name: string;
   color?: string;
   description?: string;
-  dueDate?: string;
+  dueDate?: string | null;
   priority?: "LOW" | "MEDIUM" | "HIGH";
 }
 
@@ -143,6 +143,25 @@ export interface UpdateTrainingTagData {
 export interface AssignTagToMemberData {
   userId: string;
   tagId: string;
+}
+
+export interface CreateTrainingAssignmentData {
+  tagId: string;
+  unityBuildId?: string;
+  title: string;
+  description?: string;
+  dueDate?: string;
+  priority: "LOW" | "MEDIUM" | "HIGH";
+  status: string;
+}
+
+export interface UpdateTrainingAssignmentData {
+  title?: string;
+  description?: string;
+  dueDate?: string | null;
+  priority?: "LOW" | "MEDIUM" | "HIGH";
+  status?: string;
+  unityBuildId?: string;
 }
 
 export interface CreateBuildTagData {
@@ -227,6 +246,32 @@ export interface BuildWithTags {
 export interface TrainingTagsResponse {
   tags: TrainingTag[];
   total: number;
+}
+
+export interface TrainingAssignmentWithStats extends TrainingAssignment {
+  progress: {
+    total: number;
+    completed: number;
+    inProgress: number;
+    notStarted: number;
+    overdue: number;
+    completionRate: number;
+  };
+  recentCompletions: Array<{
+    userId: string;
+    userName: string | null;
+    userEmail: string;
+    completedAt: Date;
+  }>;
+}
+
+export interface TrainingAssignmentsResponse {
+  assignments: TrainingAssignment[];
+  total: number;
+}
+
+export interface BulkCreateAssignmentsData {
+  assignments: CreateTrainingAssignmentData[];
 }
 
 export interface MemberTagsResponse {

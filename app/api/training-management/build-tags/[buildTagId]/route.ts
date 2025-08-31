@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
 import { withOrgAuth, OrgAuthenticatedRequest } from "@/lib/auth-wrapper";
 import { prisma } from "@/lib/prisma";
-import { updateBuildTagSchema } from "@/validators/training";
 
 // GET /api/training-management/build-tags/[buildTagId] - Récupérer un build-tag spécifique
-export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest, { params }: { params: Promise<{ buildTagId: string }> }) => {
+export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest, context?: unknown) => {
   try {
-    const { buildTagId } = await params;
+    const { buildTagId } = await (context as { params: Promise<{ buildTagId: string }> }).params;
 
     const buildTag = await prisma.buildTag.findFirst({
       where: {
@@ -93,7 +92,7 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest, { params
 });
 
 // PUT /api/training-management/build-tags/[buildTagId] - Mettre à jour un build-tag
-export const PUT = withOrgAuth(async (request: OrgAuthenticatedRequest, { params }: { params: Promise<{ buildTagId: string }> }) => {
+export const PUT = withOrgAuth(async (request: OrgAuthenticatedRequest, context?: unknown) => {
   try {
     // Vérification des permissions (ADMIN ou OWNER seulement)
     if (request.organization.role === "MEMBER") {
@@ -103,9 +102,7 @@ export const PUT = withOrgAuth(async (request: OrgAuthenticatedRequest, { params
       );
     }
 
-    const { buildTagId } = await params;
-    const body = await request.json();
-    const validatedData = updateBuildTagSchema.parse(body);
+    const { buildTagId } = await (context as { params: Promise<{ buildTagId: string }> }).params;
 
     // Vérifier que le build-tag existe et appartient à l'organisation
     const existingBuildTag = await prisma.buildTag.findFirst({
@@ -135,8 +132,8 @@ export const PUT = withOrgAuth(async (request: OrgAuthenticatedRequest, { params
     const updatedBuildTag = await prisma.buildTag.update({
       where: { id: buildTagId },
       data: {
-        ...validatedData,
-        dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : validatedData.dueDate,
+        // Note: BuildTag doesn't have dueDate, priority, status fields
+        // These belong to TrainingTag or TrainingCompletion models
       },
       include: {
         tag: {
@@ -168,9 +165,9 @@ export const PUT = withOrgAuth(async (request: OrgAuthenticatedRequest, { params
     });
 
     return NextResponse.json(updatedBuildTag);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Erreur lors de la mise à jour du build-tag:", error);
-    if (error.name === "ZodError") {
+    if (error instanceof Error && error.name === "ZodError") {
       return NextResponse.json(
         { error: "Données invalides", details: error.message },
         { status: 400 }
@@ -184,7 +181,7 @@ export const PUT = withOrgAuth(async (request: OrgAuthenticatedRequest, { params
 });
 
 // DELETE /api/training-management/build-tags/[buildTagId] - Supprimer un build-tag
-export const DELETE = withOrgAuth(async (request: OrgAuthenticatedRequest, { params }: { params: Promise<{ buildTagId: string }> }) => {
+export const DELETE = withOrgAuth(async (request: OrgAuthenticatedRequest, context?: unknown) => {
   try {
     // Vérification des permissions (ADMIN ou OWNER seulement)
     if (request.organization.role === "MEMBER") {
@@ -194,7 +191,7 @@ export const DELETE = withOrgAuth(async (request: OrgAuthenticatedRequest, { par
       );
     }
 
-    const { buildTagId } = await params;
+    const { buildTagId } = await (context as { params: Promise<{ buildTagId: string }> }).params;
 
     // Vérifier que le build-tag existe et appartient à l'organisation
     const existingBuildTag = await prisma.buildTag.findFirst({

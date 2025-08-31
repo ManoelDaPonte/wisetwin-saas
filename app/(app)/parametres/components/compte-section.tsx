@@ -47,7 +47,7 @@ export function CompteSection() {
 			</CardHeader>
 			<CardContent className="space-y-6">
 				<div className="space-y-2">
-					<Label htmlFor="username">Nom d'utilisateur</Label>
+					<Label htmlFor="username">Nom d&apos;utilisateur</Label>
 					<div className="flex gap-2">
 						<Input
 							id="username"

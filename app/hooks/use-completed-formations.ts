@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useContainer } from "./use-container";
 import { 
   BuildType, 
-  CompletedFormation,
+  Build,
   CompletedFormationsResponse,
   CompletedFormationsOptions,
   MarkCompletedParams
@@ -117,12 +117,12 @@ export function useCompletedFormationsWithDetails(buildType: BuildType) {
       
       // Filtrer seulement ceux qui sont terminés
       const completedBuildNames = new Set(completedFormations.map(f => f.buildName));
-      const completedBuildsWithDetails = allBuilds.filter((build: any) => 
+      const completedBuildsWithDetails = allBuilds.filter((build: Build) => 
         completedBuildNames.has(build.name) || completedBuildNames.has(build.id || "")
       );
 
       // Ajouter les informations de completion
-      const buildsWithCompletionInfo = completedBuildsWithDetails.map((build: any) => {
+      const buildsWithCompletionInfo = completedBuildsWithDetails.map((build: Build) => {
         const completion = completedFormations.find(f => 
           f.buildName === build.name || f.buildName === (build.id || "")
         );

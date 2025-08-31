@@ -30,7 +30,7 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
     const memberCompletions = await prisma.userBuild.findMany({
       where: {
         userId: { in: memberIds },
-        buildType: buildType.toUpperCase() as any,
+        buildType: buildType.toUpperCase() as "WISETOUR" | "WISETRAINER",
         containerId: request.organization.azureContainerId,
         completed: true,
       },

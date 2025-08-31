@@ -36,12 +36,13 @@ import { useMemberCompletions } from "../hooks/use-member-completions";
 import { TagBadge } from "./tag-badge";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import Image from "next/image";
 
 interface ProgressDashboardProps {
 	organizationId: string;
 }
 
-export function ProgressDashboard({ organizationId }: ProgressDashboardProps) {
+export function ProgressDashboard({}: ProgressDashboardProps) {
 	const [selectedTagId, setSelectedTagId] = useState<string>("all");
 	const [expandedMembers, setExpandedMembers] = useState<Set<string>>(
 		new Set()
@@ -353,8 +354,8 @@ export function ProgressDashboard({ organizationId }: ProgressDashboardProps) {
 										Aucun plan de formation créé
 									</p>
 									<p className="text-sm text-muted-foreground">
-										Créez votre premier tag dans l'onglet
-										"Tags"
+										Créez votre premier tag dans
+										l&apos;onglet &quot;Tags&quot;
 									</p>
 								</div>
 							) : (
@@ -868,13 +869,15 @@ export function ProgressDashboard({ organizationId }: ProgressDashboardProps) {
 																									>
 																										<div className="flex items-center gap-2">
 																											{build.imageUrl ? (
-																												<img
+																												<Image
 																													src={
 																														build.imageUrl
 																													}
 																													alt={
 																														build.name
 																													}
+																													width={16}
+																													height={16}
 																													className="w-4 h-4 object-cover rounded"
 																												/>
 																											) : (
@@ -990,13 +993,15 @@ export function ProgressDashboard({ organizationId }: ProgressDashboardProps) {
 																									>
 																										<div className="flex items-center gap-2">
 																											{build.imageUrl ? (
-																												<img
+																												<Image
 																													src={
 																														build.imageUrl
 																													}
 																													alt={
 																														build.name
 																													}
+																													width={16}
+																													height={16}
 																													className="w-4 h-4 object-cover rounded"
 																												/>
 																											) : (

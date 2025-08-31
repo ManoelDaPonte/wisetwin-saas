@@ -2,7 +2,7 @@
 
 import React from "react"
 import { Building2, User, Check } from "lucide-react"
-import { type Organization } from "@/app/stores/organization-store"
+import { type Organization } from "@/stores/organization-store"
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 

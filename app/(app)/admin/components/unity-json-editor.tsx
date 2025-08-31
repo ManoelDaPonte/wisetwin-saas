@@ -3,26 +3,17 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AdminFormation } from "@/lib/admin/formations";
 import { XCircle } from "lucide-react";
-import { toast } from "sonner";
 
 interface UnityJsonEditorProps {
-	data: any;
-	onChange: (data: any) => void;
-	formation: AdminFormation;
-	onSave?: () => void;
-	onCancel?: () => void;
+	data: Record<string, unknown>;
+	onChange: (data: Record<string, unknown>) => void;
 }
 
 export function UnityJsonEditor({
 	data,
 	onChange,
-	formation,
-	onSave,
-	onCancel,
 }: UnityJsonEditorProps) {
 	const [jsonString, setJsonString] = useState("");
 	const [isValid, setIsValid] = useState(true);
@@ -34,7 +25,7 @@ export function UnityJsonEditor({
 			setJsonString(JSON.stringify(data || {}, null, 2));
 			setIsValid(true);
 			setValidationError("");
-		} catch (error) {
+		} catch {
 			setJsonString("{}");
 			setIsValid(false);
 			setValidationError("Erreur lors de l'initialisation");

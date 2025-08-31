@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react"
 import { useOrganizationStore } from "@/stores/organization-store"
+import { Organization } from "@/types"
 
 export function useOrganizations() {
   const [isLoading, setIsLoading] = useState(false)
@@ -46,7 +47,7 @@ export function useOrganizations() {
       const newOrg = await response.json()
       const updatedOrgs = await fetchOrganizations() // Refresh the list
       // Return the organization from the updated list to ensure consistency
-      const createdOrg = updatedOrgs.find((org: any) => org.id === newOrg.id) || newOrg
+      const createdOrg = updatedOrgs.find((org: Organization) => org.id === newOrg.id) || newOrg
       return createdOrg
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to create organization"

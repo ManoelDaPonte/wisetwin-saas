@@ -302,7 +302,7 @@ export const GET = withOrgAuth(async (request) => {
         userId_buildName_buildType_containerId: {
           userId: request.user.id,
           buildName: buildName,
-          buildType: buildType.toUpperCase() as any,
+          buildType: buildType.toUpperCase() as "WISETOUR" | "WISETRAINER",
           containerId: request.organization.azureContainerId,
         },
       },

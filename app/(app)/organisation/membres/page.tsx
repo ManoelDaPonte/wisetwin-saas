@@ -13,8 +13,6 @@ export default function MembersPage() {
 		invitations,
 		isLoading,
 		error,
-		fetchMembers,
-		inviteMember,
 		updateMemberRole,
 		removeMember,
 		cancelInvitation,

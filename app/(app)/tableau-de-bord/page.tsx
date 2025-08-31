@@ -2,7 +2,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUserStats } from "@/app/hooks/use-user-stats";
 import { useSession } from "next-auth/react";
@@ -10,40 +9,9 @@ import {
 	useIsPersonalSpace,
 	useOrganizationStore,
 } from "@/stores/organization-store";
-import { BookOpen, Calendar, Users, CheckCircle2, Eye } from "lucide-react";
+import { BookOpen, Calendar, CheckCircle2, Eye } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
-
-function StatsCard({
-	title,
-	value,
-	description,
-	icon: Icon,
-	isLoading,
-}: {
-	title: string;
-	value: string | number;
-	description: string;
-	icon: any;
-	isLoading: boolean;
-}) {
-	return (
-		<Card>
-			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-				<CardTitle className="text-sm font-medium">{title}</CardTitle>
-				<Icon className="h-4 w-4 text-muted-foreground" />
-			</CardHeader>
-			<CardContent>
-				{isLoading ? (
-					<Skeleton className="h-8 w-16" />
-				) : (
-					<div className="text-2xl font-bold">{value}</div>
-				)}
-				<p className="text-xs text-muted-foreground">{description}</p>
-			</CardContent>
-		</Card>
-	);
-}
 
 function RecentActivityItem({
 	activity,
@@ -91,8 +59,8 @@ function RecentActivityItem({
 
 export default function DashboardPage() {
 	const { data: session } = useSession();
-	const { activeOrganization } = useOrganizationStore();
-	const isPersonalSpace = useIsPersonalSpace();
+	const {} = useOrganizationStore();
+	const {} = useIsPersonalSpace();
 	const {
 		stats,
 		isLoading: isStatsLoading,

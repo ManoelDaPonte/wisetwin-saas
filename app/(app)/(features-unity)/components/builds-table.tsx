@@ -35,6 +35,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import Image from "next/image";
 
 interface BuildsTableProps {
 	builds: { builds: Build[] } | undefined;
@@ -274,9 +275,11 @@ export function BuildsTable({
 										<TableRow key={build.id || build.name}>
 											<TableCell>
 												{build.imageUrl ? (
-													<img
+													<Image
 														src={build.imageUrl}
 														alt={build.name}
+														width={40}
+														height={40}
 														className="h-10 w-10 object-cover rounded-md"
 													/>
 												) : (

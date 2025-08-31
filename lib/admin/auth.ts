@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { canAccessAdminPanel } from "@/lib/admin/permissions";
-import { SuperAdminRequest } from "@/types/auth";
+import { SuperAdminRequest } from "@/types";
 
-export { SuperAdminRequest };
+export type { SuperAdminRequest };
 
 export function withSuperAdmin(
   handler: (req: SuperAdminRequest) => Promise<NextResponse>

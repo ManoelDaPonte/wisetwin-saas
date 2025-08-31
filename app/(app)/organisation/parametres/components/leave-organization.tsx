@@ -40,14 +40,14 @@ export function LeaveOrganization({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Quitter l'organisation</CardTitle>
+        <CardTitle>Quitter l&apos;organisation</CardTitle>
         <CardDescription>
           Vous ne pourrez plus accéder aux ressources de cette organisation
         </CardDescription>
       </CardHeader>
       <CardContent>
         <p className="text-sm text-muted-foreground mb-4">
-          Si vous quittez cette organisation, vous perdrez l'accès à tous ses projets et ressources.
+          Si vous quittez cette organisation, vous perdrez l&apos;accès à tous ses projets et ressources.
           Vous devrez être réinvité pour y accéder à nouveau.
         </p>
         
@@ -55,15 +55,15 @@ export function LeaveOrganization({
           <DialogTrigger asChild>
             <Button variant="outline">
               <LogOut className="h-4 w-4 mr-2" />
-              Quitter l'organisation
+              Quitter l&apos;organisation
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Êtes-vous sûr de vouloir quitter ?</DialogTitle>
               <DialogDescription>
-                Vous allez quitter l'organisation "{organizationName}".
-                Cette action est irréversible et vous perdrez l'accès à toutes les ressources.
+                Vous allez quitter l&apos;organisation &quot;{organizationName}&quot;.
+                Cette action est irréversible et vous perdrez l&apos;accès à toutes les ressources.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>

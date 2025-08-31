@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
-import { AdminUser } from "@/types/admin";
+import { AdminUser } from "@/types";
 
-export { AdminUser };
+export type { AdminUser };
 
 export async function getAllUsers(): Promise<AdminUser[]> {
   const users = await prisma.user.findMany({

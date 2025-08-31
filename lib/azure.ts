@@ -1,6 +1,6 @@
 import { BlobServiceClient, BlobSASPermissions } from "@azure/storage-blob";
 import { env } from "@/lib/env";
-import { BuildType, BuildFile, Build, BuildUrls, AzureError, isAzureError } from "@/types/azure";
+import { BuildType, BuildFile, Build, BuildUrls, isAzureError } from "@/types/azure";
 
 const blobServiceClient = BlobServiceClient.fromConnectionString(
   env.AZURE_STORAGE_CONNECTION_STRING
@@ -149,7 +149,7 @@ export async function listBuilds(
         buildType,
         files: buildFileObj,
         totalSize,
-        lastModified,
+        lastModified: lastModified ? lastModified.toISOString() : undefined,
       });
     }
   }

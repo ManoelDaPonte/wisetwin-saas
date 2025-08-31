@@ -82,7 +82,7 @@ export function MembersTable({
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle>Membres de l'organisation</CardTitle>
+				<CardTitle>Membres de l&apos;organisation</CardTitle>
 				<CardDescription>
 					Gérez les membres et les invitations de votre organisation
 				</CardDescription>
@@ -195,7 +195,7 @@ export function MembersTable({
 													>
 														<UserMinus className="mr-2 h-4 w-4" />
 														Retirer de
-														l'organisation
+														l&apos;organisation
 													</DropdownMenuItem>
 												</DropdownMenuContent>
 											</DropdownMenu>

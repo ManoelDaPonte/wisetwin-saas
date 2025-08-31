@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { AdminFormation, AdminFormationsResponse } from "@/types";
+import { AdminFormationsResponse } from "@/types";
 
 async function fetchAdminFormations(): Promise<AdminFormationsResponse> {
   const response = await fetch("/api/admin/formations");

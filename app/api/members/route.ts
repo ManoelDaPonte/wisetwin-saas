@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { withOrgAuth, OrgAuthenticatedRequest } from "@/lib/auth-wrapper"
 import { prisma } from "@/lib/prisma"
 import { sendInvitationEmail } from "@/lib/email-service"
@@ -276,7 +276,7 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
         role: invitation.role,
         expiresAt: invitation.expiresAt
       })
-    } catch (emailError) {
+    } catch {
       // On ne bloque pas la création de l'invitation si l'email échoue
     }
 

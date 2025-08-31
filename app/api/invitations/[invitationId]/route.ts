@@ -5,10 +5,10 @@ import { prisma } from "@/lib/prisma"
 // DELETE /api/invitations/[invitationId] - Annuler une invitation
 export const DELETE = withOrgAuth(async (
   request: OrgAuthenticatedRequest,
-  context: { params: Promise<{ invitationId: string }> }
+  context?: unknown
 ) => {
   try {
-    const { invitationId } = await context.params
+    const { invitationId } = await (context as { params: Promise<{ invitationId: string }> }).params
     
     // Vérifier les permissions
     if (request.organization.role === "MEMBER") {

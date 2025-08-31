@@ -3,9 +3,9 @@ import { withOrgAuth, OrgAuthenticatedRequest } from "@/lib/auth-wrapper";
 import { prisma } from "@/lib/prisma";
 
 // GET /api/training-management/member-tags/[memberTagId] - Récupérer un member-tag spécifique
-export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest, { params }: { params: Promise<{ memberTagId: string }> }) => {
+export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest, context?: unknown) => {
   try {
-    const { memberTagId } = await params;
+    const { memberTagId } = await (context as { params: Promise<{ memberTagId: string }> }).params;
 
     const memberTag = await prisma.memberTag.findFirst({
       where: {
@@ -60,7 +60,7 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest, { params
 });
 
 // DELETE /api/training-management/member-tags/[memberTagId] - Supprimer un assignment tag-membre
-export const DELETE = withOrgAuth(async (request: OrgAuthenticatedRequest, { params }: { params: Promise<{ memberTagId: string }> }) => {
+export const DELETE = withOrgAuth(async (request: OrgAuthenticatedRequest, context?: unknown) => {
   try {
     // Vérification des permissions (ADMIN ou OWNER seulement)
     if (request.organization.role === "MEMBER") {
@@ -70,7 +70,7 @@ export const DELETE = withOrgAuth(async (request: OrgAuthenticatedRequest, { par
       );
     }
 
-    const { memberTagId } = await params;
+    const { memberTagId } = await (context as { params: Promise<{ memberTagId: string }> }).params;
 
     // Vérifier que l'assignment existe et appartient à l'organisation
     const existingMemberTag = await prisma.memberTag.findFirst({

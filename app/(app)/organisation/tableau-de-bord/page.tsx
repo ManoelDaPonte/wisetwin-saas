@@ -64,7 +64,7 @@ export default function OrganizationDashboardPage() {
 					Tableau de bord des formations
 				</h1>
 				<p className="text-muted-foreground">
-					Suivez l'avancement des formations de vos équipes
+					Suivez l&apos;avancement des formations de vos équipes
 				</p>
 			</div>
 

@@ -33,7 +33,7 @@ export default function SettingsPage() {
 		<div className="container mx-auto py-8 space-y-8 max-w-4xl">
 			<div>
 				<h1 className="text-3xl font-bold">
-					Paramètres de l'organisation
+					Paramètres de l&apos;organisation
 				</h1>
 				<p className="text-muted-foreground">
 					Gérez les paramètres et la configuration de{" "}

@@ -58,7 +58,7 @@ export function MetadataEditor({
 	const [newTag, setNewTag] = useState("");
 	const [newObjective, setNewObjective] = useState("");
 	const [newPrerequisite, setNewPrerequisite] = useState("");
-	const [unityData, setUnityData] = useState<any>(
+	const [unityData, setUnityData] = useState<Record<string, unknown>>(
 		initialMetadata.unity || {}
 	);
 
@@ -84,15 +84,15 @@ export function MetadataEditor({
 		},
 	});
 
-	const onSubmit = async (data: any) => {
-		const metadataToSave = {
+	const onSubmit = async (data: Record<string, unknown>) => {
+		const metadataToSave: FormationMetadata = {
 			...data,
 			tags,
 			objectives,
 			prerequisites,
 			unity: unityData, // Inclure les données Unity
 			updatedAt: new Date().toISOString(),
-		};
+		} as FormationMetadata;
 
 		try {
 			await saveMetadata(metadataToSave);
@@ -539,7 +539,6 @@ export function MetadataEditor({
 						<UnityJsonEditor
 							data={unityData}
 							onChange={setUnityData}
-							formation={formation}
 						/>
 					</TabsContent>
 				</Tabs>

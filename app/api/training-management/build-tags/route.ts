@@ -23,7 +23,7 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
         organizationId: request.organization.id,
       },
       ...(tagId && { tagId }),
-      ...(buildType && { buildType }),
+      ...(buildType && { buildType: buildType as "WISETOUR" | "WISETRAINER" }),
       ...(containerId && { containerId }),
       ...(priority && { priority }),
     };
@@ -123,7 +123,13 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
       }
 
       // Créer les assignments (combinaisons build-tag)
-      const assignments: any[] = [];
+      const assignments: Array<{
+        tagId: string;
+        buildName: string;
+        buildType: "WISETOUR" | "WISETRAINER";
+        containerId: string;
+        assignedById: string;
+      }> = [];
       for (const buildId of buildIds) {
         // Déconstruire buildId en buildName, buildType, containerId
         // Format attendu: "buildName|buildType|containerId"
@@ -176,9 +182,9 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
             },
           });
           createdAssignments.push(created);
-        } catch (error: any) {
+        } catch (error: unknown) {
           // Ignorer les doublons (unique constraint violation)
-          if (error.code !== 'P2002') {
+          if (error && typeof error === 'object' && 'code' in error && error.code !== 'P2002') {
             throw error;
           }
         }
@@ -238,15 +244,15 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
 
       return NextResponse.json(buildTag, { status: 201 });
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Erreur lors de la création des build-tags:", error);
-    if (error.name === "ZodError") {
+    if (error instanceof Error && error.name === "ZodError") {
       return NextResponse.json(
         { error: "Données invalides", details: error.message },
         { status: 400 }
       );
     }
-    if (error.code === 'P2002') {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
       return NextResponse.json(
         { error: "Cette combinaison build-tag existe déjà" },
         { status: 409 }
@@ -290,7 +296,7 @@ export const DELETE = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
         deleteConditions.push({
           tagId,
           buildName,
-          buildType,
+          buildType: buildType as "WISETOUR" | "WISETRAINER",
           containerId,
           tag: {
             organizationId: request.organization.id,
@@ -312,9 +318,9 @@ export const DELETE = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
       message: `${deletedCount} assignments supprimés`,
       deletedCount,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Erreur lors de la suppression des build-tags:", error);
-    if (error.name === "ZodError") {
+    if (error instanceof Error && error.name === "ZodError") {
       return NextResponse.json(
         { error: "Données invalides", details: error.message },
         { status: 400 }

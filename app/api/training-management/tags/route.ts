@@ -64,7 +64,7 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
     ]);
 
     const response: TrainingTagsResponse = {
-      tags,
+      tags: tags as TrainingTagsResponse['tags'], // Type mismatch between Prisma and interface
       total,
     };
 

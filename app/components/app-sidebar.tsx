@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import {
 	useIsPersonalSpace,
-	useOrganizationStore,
 } from "@/stores/organization-store";
 import { useSession } from "next-auth/react";
 import { canAccessAdminPanel } from "@/lib/admin/permissions";
@@ -41,7 +40,7 @@ type NavigationItem = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	const isPersonalSpace = useIsPersonalSpace();
-	const { activeOrganization } = useOrganizationStore();
+	// Récupération du contexte de l'organisation
 	const { data: session } = useSession();
 
 	// Groupes de navigation
@@ -109,7 +108,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	const organizationNavItems = React.useMemo(() => {
 		if (isPersonalSpace) return [];
 
-
 		const items: NavigationItem[] = [
 			{
 				title: "Organisation",
@@ -137,7 +135,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 		];
 
 		return items;
-	}, [isPersonalSpace, activeOrganization?.role]);
+	}, [isPersonalSpace]);
 
 	// Navigation Super-admin (seulement pour @wisetwin.eu)
 	const superAdminNavItems = React.useMemo(() => {

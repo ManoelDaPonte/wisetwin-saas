@@ -32,7 +32,13 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
     const { userId, tagId, limit = 50, offset = 0 } = queryValidation.data;
 
     // Conditions de recherche
-    const whereConditions: any = {
+    const whereConditions: {
+      tag: {
+        organizationId: string;
+      };
+      userId?: string;
+      tagId?: string;
+    } = {
       tag: {
         organizationId: request.organization.id,
       },
@@ -87,7 +93,7 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
     ]);
 
     const response: MemberTagsResponse = {
-      memberTags,
+      memberTags: memberTags as MemberTagsResponse['memberTags'], // Type mismatch due to Prisma include vs interface
       total,
     };
 

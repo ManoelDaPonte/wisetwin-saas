@@ -54,7 +54,7 @@ export function GeneralSettings({
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="org-name">Nom de l'organisation</Label>
+            <Label htmlFor="org-name">Nom de l&apos;organisation</Label>
             <Input 
               id="org-name"
               value={organizationName}

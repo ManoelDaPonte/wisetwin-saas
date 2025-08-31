@@ -3,8 +3,6 @@ import { useOrganizationStore } from "@/stores/organization-store";
 import { useTrainingTags } from "./use-training-tags";
 import { useMemberTags } from "./use-member-tags";
 import { useMembers } from "../../hooks/use-members";
-import { TrainingTag, MemberTag } from "@/types/training";
-import { Member } from "@/types/organization";
 
 /**
  * Hook consolidé pour le système de gestion de formations

@@ -5,7 +5,7 @@ import { useOrganizationStore } from "@/stores/organization-store"
 import { toast } from "sonner"
 import { Member, Invitation, MembersResponse } from "@/types"
 
-export { Member, Invitation }
+export type { Member, Invitation }
 
 export function useMembers() {
   const { activeOrganization } = useOrganizationStore()

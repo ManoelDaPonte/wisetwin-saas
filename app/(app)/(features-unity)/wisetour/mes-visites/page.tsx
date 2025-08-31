@@ -8,10 +8,6 @@ export default function MesVisitesPage() {
     data: builds,
     error,
     isLoading,
-    followBuild,
-    unfollowBuild,
-    isFollowLoading,
-    isUnfollowLoading,
   } = useBuilds("wisetour", { followedOnly: true });
 
   return (
@@ -23,10 +19,6 @@ export default function MesVisitesPage() {
         title="Mes Visites"
         description="Gérez et suivez vos visites industrielles en cours"
         mode="my-trainings"
-        followBuild={followBuild}
-        unfollowBuild={unfollowBuild}
-        isFollowLoading={isFollowLoading}
-        isUnfollowLoading={isUnfollowLoading}
       />
     </div>
   );

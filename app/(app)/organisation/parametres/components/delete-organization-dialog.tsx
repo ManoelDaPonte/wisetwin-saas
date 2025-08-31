@@ -44,7 +44,7 @@ export function DeleteOrganizationDialog({
       <DialogTrigger asChild>
         <Button variant="destructive" size="sm">
           <Trash2 className="h-4 w-4 mr-2" />
-          Supprimer l'organisation
+          Supprimer l&apos;organisation
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -52,7 +52,7 @@ export function DeleteOrganizationDialog({
           <DialogTitle>Êtes-vous absolument sûr ?</DialogTitle>
           <DialogDescription>
             Cette action est irréversible. Cela supprimera définitivement votre organisation
-            "{organizationName}" et supprimera toutes les données associées.
+            &quot;{organizationName}&quot; et supprimera toutes les données associées.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">

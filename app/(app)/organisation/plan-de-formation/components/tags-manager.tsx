@@ -53,19 +53,19 @@ import { CreateTagDialog } from "./create-tag-dialog";
 import { EditTagDialog } from "./edit-tag-dialog";
 import { formatDistanceToNow, format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { TrainingTag, UpdateTrainingTagData } from "@/types/training";
 
 interface TagsManagerProps {
 	organizationId: string;
 }
 
-export function TagsManager({ organizationId }: TagsManagerProps) {
+export function TagsManager({}: TagsManagerProps) {
 	const [search, setSearch] = useState("");
 	const [tagToDelete, setTagToDelete] = useState<string | null>(null);
-	const [tagToEdit, setTagToEdit] = useState<any | null>(null);
+	const [tagToEdit, setTagToEdit] = useState<TrainingTag | null>(null);
 
 	const {
 		tags,
-		total,
 		isLoading,
 		isError,
 		error,
@@ -97,7 +97,7 @@ export function TagsManager({ organizationId }: TagsManagerProps) {
 		}
 	};
 
-	const handleEditTag = (updatedData: any) => {
+	const handleEditTag = (updatedData: UpdateTrainingTagData) => {
 		if (tagToEdit) {
 			updateTag({ tagId: tagToEdit.id, data: updatedData });
 			setTagToEdit(null);
@@ -175,7 +175,9 @@ export function TagsManager({ organizationId }: TagsManagerProps) {
 										<TableHead>Échéance</TableHead>
 										<TableHead>Priorité</TableHead>
 										<TableHead>Créé</TableHead>
-										<TableHead className="w-[100px]">Actions</TableHead>
+										<TableHead className="w-[100px]">
+											Actions
+										</TableHead>
 									</TableRow>
 								</TableHeader>
 								<TableBody>
@@ -420,9 +422,9 @@ export function TagsManager({ organizationId }: TagsManagerProps) {
 							{tagToDelete && (
 								<span className="block mt-2 text-sm">
 									<strong>Note :</strong> Vous ne pouvez
-									supprimer un plan que s'il n'est assigné à
-									aucun collaborateur et n'a aucune formation
-									associée.
+									supprimer un plan que s&apos;il n&apos;est
+									assigné à aucun collaborateur et n&apos;a
+									aucune formation associée.
 								</span>
 							)}
 						</AlertDialogDescription>

@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { organizationId: string } }
+  { params }: { params: Promise<{ organizationId: string }> }
 ) {
   try {
     const session = await getServerSession();
@@ -24,7 +24,7 @@ export async function PATCH(
       );
     }
 
-    const { organizationId } = params;
+    const { organizationId } = await params;
     const { name, description } = await req.json();
 
     // Validation

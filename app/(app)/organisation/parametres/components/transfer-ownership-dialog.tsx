@@ -29,7 +29,6 @@ interface TransferOwnershipDialogProps {
 }
 
 export function TransferOwnershipDialog({
-  organizationName,
   onTransfer,
   isTransferring,
 }: TransferOwnershipDialogProps) {

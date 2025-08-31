@@ -78,7 +78,7 @@ export const GET = withAuth(async (req: AuthenticatedRequest) => {
       const followedBuilds = await prisma.userBuild.findMany({
         where: {
           userId: req.user.id,
-          buildType: buildType.toUpperCase() as any, // Convert to Prisma enum
+          buildType: buildType.toUpperCase() as "WISETOUR" | "WISETRAINER", // Convert to Prisma enum
           containerId: containerId,
         },
         select: {

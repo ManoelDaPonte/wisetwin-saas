@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { withAuth, AuthenticatedRequest } from "@/lib/auth-wrapper";
 import { prisma } from "@/lib/prisma";
 import { listBuilds } from "@/lib/azure-server";
-import { BuildType } from "@/types/azure";
+import { BuildType, Build } from "@/types/azure";
 
 // POST /api/formations/completed - Marquer une formation comme terminée (appelé depuis Unity)
 export const POST = withAuth(async (req: AuthenticatedRequest) => {
@@ -67,7 +67,7 @@ export const POST = withAuth(async (req: AuthenticatedRequest) => {
     // Vérifier que la formation existe réellement dans Azure
     try {
       const azureBuilds = await listBuilds(containerId, buildType);
-      const buildExists = azureBuilds.some((build: any) => 
+      const buildExists = azureBuilds.some((build: Build) => 
         build.name === buildName || build.id === buildName
       );
 
@@ -97,7 +97,7 @@ export const POST = withAuth(async (req: AuthenticatedRequest) => {
         userId_buildName_buildType_containerId: {
           userId: req.user.id,
           buildName,
-          buildType: buildType.toUpperCase() as any,
+          buildType: buildType.toUpperCase() as "WISETOUR" | "WISETRAINER",
           containerId,
         }
       },
@@ -110,7 +110,7 @@ export const POST = withAuth(async (req: AuthenticatedRequest) => {
       create: {
         userId: req.user.id,
         buildName,
-        buildType: buildType.toUpperCase() as any,
+        buildType: buildType.toUpperCase() as "WISETOUR" | "WISETRAINER",
         containerId,
         completed: true,
         completedAt: new Date(),
@@ -151,7 +151,7 @@ export const GET = withAuth(async (req: AuthenticatedRequest) => {
     const containerId = searchParams.get("containerId");
 
     // Construire les conditions de la requête
-    const whereConditions: any = {
+    const whereConditions: Record<string, unknown> = {
       userId: req.user.id,
       completed: true,
     };

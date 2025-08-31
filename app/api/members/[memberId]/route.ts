@@ -1,15 +1,15 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { withOrgAuth, OrgAuthenticatedRequest } from "@/lib/auth-wrapper"
 import { prisma } from "@/lib/prisma"
 
 // PATCH /api/members/[memberId] - Mettre à jour le rôle
 export const PATCH = withOrgAuth(async (
   request: OrgAuthenticatedRequest,
-  context: { params: Promise<{ memberId: string }> }
+  context?: unknown
 ) => {
   try {
     // Récupérer les params (Next.js 15 requiert await)
-    const { memberId } = await context.params;
+    const { memberId } = await (context as { params: Promise<{ memberId: string }> }).params;
     
     // Vérifier les permissions
     if (request.organization.role === "MEMBER") {
@@ -66,11 +66,11 @@ export const PATCH = withOrgAuth(async (
 // DELETE /api/members/[memberId] - Retirer un membre
 export const DELETE = withOrgAuth(async (
   request: OrgAuthenticatedRequest,
-  context: { params: Promise<{ memberId: string }> }
+  context?: unknown
 ) => {
   try {
     // Récupérer les params (Next.js 15 requiert await)
-    const { memberId } = await context.params;
+    const { memberId } = await (context as { params: Promise<{ memberId: string }> }).params;
     
     // Vérifier les permissions
     if (request.organization.role === "MEMBER") {

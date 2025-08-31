@@ -81,13 +81,13 @@ export function JoinOrganizationDialog({ children }: JoinOrganizationDialogProps
           <DialogHeader>
             <DialogTitle>Rejoindre une organisation</DialogTitle>
             <DialogDescription>
-              Entrez le code d'invitation pour rejoindre une organisation.
+              Entrez le code d&apos;invitation pour rejoindre une organisation.
             </DialogDescription>
           </DialogHeader>
           
           <div className="grid gap-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="code">Code d'invitation</Label>
+              <Label htmlFor="code">Code d&apos;invitation</Label>
               <Input
                 id="code"
                 type="text"

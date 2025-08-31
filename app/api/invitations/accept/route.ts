@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { authOptions } from "@/lib/auth-options"
 
 export async function POST(request: NextRequest) {
   try {
@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
         name: invitation.organization.name,
       },
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Erreur interne du serveur" },
       { status: 500 }

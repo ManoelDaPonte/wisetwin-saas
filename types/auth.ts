@@ -31,17 +31,15 @@ export interface SuperAdminRequest extends NextRequest {
 
 export type RouteHandler = (
   request: AuthenticatedRequest,
-  context?: any
+  context?: unknown
 ) => Promise<Response> | Response;
 
 export type OrgRouteHandler = (
   request: OrgAuthenticatedRequest,
-  context?: any
+  context?: unknown
 ) => Promise<Response> | Response;
-
-export type Role = "OWNER" | "ADMIN" | "MEMBER";
 
 export interface OrgAccess {
   hasAccess: boolean;
-  role?: Role;
+  role?: "OWNER" | "ADMIN" | "MEMBER";
 }

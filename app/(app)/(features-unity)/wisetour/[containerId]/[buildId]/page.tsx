@@ -3,10 +3,10 @@ import { getBuildSasUrls } from "@/lib/azure";
 
 // Les props incluent maintenant les paramètres pour l'organisation et le build
 interface WisetourBuildPageProps {
-	params: {
+	params: Promise<{
 		containerId: string; // ou organizationId
 		buildId: string;
-	};
+	}>;
 }
 
 export default async function WiseTrainerBuildPage({

@@ -64,7 +64,7 @@ export function InviteMemberDialog({ children }: InviteMemberDialogProps) {
       await inviteMember(data.email, data.role)
       setOpen(false)
       form.reset()
-    } catch (error) {
+    } catch {
       // L'erreur est déjà gérée par le hook
     }
   }
@@ -84,7 +84,7 @@ export function InviteMemberDialog({ children }: InviteMemberDialogProps) {
           <DialogTitle>Inviter un membre</DialogTitle>
           <DialogDescription>
             Envoyez une invitation par email pour rejoindre votre organisation.
-            L'invitation expirera dans 7 jours.
+            L&apos;invitation expirera dans 7 jours.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -103,7 +103,7 @@ export function InviteMemberDialog({ children }: InviteMemberDialogProps) {
                     />
                   </FormControl>
                   <FormDescription>
-                    L'adresse email de la personne à inviter
+                    L&apos;adresse email de la personne à inviter
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

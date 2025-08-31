@@ -7,10 +7,10 @@ import {
   BuildTag,
   BuildTagsResponse,
   CreateBuildTagData,
-  UpdateBuildTagData,
   BulkAssignBuildTagsData,
   BulkRemoveBuildTagsData,
-  BuildWithTags
+  BuildWithTags,
+  TrainingTag
 } from "@/types/training";
 import { Build, BuildType } from "@/types";
 import { toast } from "sonner";
@@ -127,27 +127,6 @@ async function bulkRemoveBuildTags(
   return response.json();
 }
 
-async function updateBuildTag(
-  buildTagId: string,
-  organizationId: string,
-  data: UpdateBuildTagData
-): Promise<BuildTag> {
-  const response = await fetch(
-    `/api/training-management/build-tags/${buildTagId}?organizationId=${organizationId}`,
-    {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    }
-  );
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Erreur lors de la mise à jour du build-tag");
-  }
-
-  return response.json();
-}
 
 async function deleteBuildTag(
   buildTagId: string,
@@ -290,32 +269,6 @@ export function useBulkRemoveBuildTags() {
   });
 }
 
-export function useUpdateBuildTag() {
-  const queryClient = useQueryClient();
-  const { activeOrganization } = useOrganizationStore();
-
-  return useMutation({
-    mutationFn: ({ buildTagId, data }: { buildTagId: string; data: UpdateBuildTagData }) => {
-      if (!activeOrganization?.id) {
-        throw new Error("Aucune organisation sélectionnée");
-      }
-      return updateBuildTag(buildTagId, activeOrganization.id, data);
-    },
-    onSuccess: (result, variables) => {
-      toast.success("Build-tag mis à jour avec succès");
-      
-      queryClient.invalidateQueries({
-        queryKey: ["build-tags", activeOrganization?.id],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["build-tag", variables.buildTagId, activeOrganization?.id],
-      });
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
-  });
-}
 
 export function useDeleteBuildTag() {
   const queryClient = useQueryClient();
@@ -383,7 +336,7 @@ export function useBuildsWithTags(buildType?: BuildType) {
         const buildTagsData = relatedBuildTags.map(bt => {
           const tag = tags.find(t => t.id === bt.tagId);
           return tag;
-        }).filter(Boolean) as any[];
+        }).filter((tag): tag is TrainingTag => Boolean(tag));
 
         // Calculer les statistiques de progression
         const totalMembers = buildTagsData.reduce((sum, tag) => 

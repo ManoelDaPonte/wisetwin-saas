@@ -4,9 +4,9 @@ import { prisma } from "@/lib/prisma";
 import { UpdateTrainingTagSchema } from "@/validators/training";
 
 // GET /api/training-management/tags/[tagId] - Récupérer un tag spécifique
-export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest, { params }: { params: Promise<{ tagId: string }> }) => {
+export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest, context?: unknown) => {
   try {
-    const { tagId } = await params;
+    const { tagId } = await (context as { params: Promise<{ tagId: string }> }).params;
 
     const tag = await prisma.trainingTag.findFirst({
       where: {
@@ -62,7 +62,7 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest, { params
 });
 
 // PUT /api/training-management/tags/[tagId] - Mettre à jour un tag
-export const PUT = withOrgAuth(async (request: OrgAuthenticatedRequest, { params }: { params: Promise<{ tagId: string }> }) => {
+export const PUT = withOrgAuth(async (request: OrgAuthenticatedRequest, context?: unknown) => {
   try {
     // Vérification des permissions (ADMIN ou OWNER seulement)
     if (request.organization.role === "MEMBER") {
@@ -72,7 +72,7 @@ export const PUT = withOrgAuth(async (request: OrgAuthenticatedRequest, { params
       );
     }
 
-    const { tagId } = await params;
+    const { tagId } = await (context as { params: Promise<{ tagId: string }> }).params;
     const body = await request.json();
 
     // Validation des données
@@ -144,7 +144,7 @@ export const PUT = withOrgAuth(async (request: OrgAuthenticatedRequest, { params
 });
 
 // DELETE /api/training-management/tags/[tagId] - Supprimer un tag
-export const DELETE = withOrgAuth(async (request: OrgAuthenticatedRequest, { params }: { params: Promise<{ tagId: string }> }) => {
+export const DELETE = withOrgAuth(async (request: OrgAuthenticatedRequest, context?: unknown) => {
   try {
     // Vérification des permissions (OWNER seulement pour la suppression)
     if (request.organization.role !== "OWNER") {
@@ -154,7 +154,7 @@ export const DELETE = withOrgAuth(async (request: OrgAuthenticatedRequest, { par
       );
     }
 
-    const { tagId } = await params;
+    const { tagId } = await (context as { params: Promise<{ tagId: string }> }).params;
 
     // Vérification que le tag existe et appartient à l'organisation
     const existingTag = await prisma.trainingTag.findFirst({

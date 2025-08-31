@@ -82,7 +82,7 @@ export function CreateTagDialog({
 			form.reset();
 			setOpen(false);
 		} catch (error) {
-			// L'erreur sera gérée par le hook
+			console.error(error);
 		}
 	};
 
@@ -96,10 +96,13 @@ export function CreateTagDialog({
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[525px]">
 				<DialogHeader>
-					<DialogTitle>Créer un nouveau plan de formation</DialogTitle>
+					<DialogTitle>
+						Créer un nouveau plan de formation
+					</DialogTitle>
 					<DialogDescription>
-						Les plans de formation permettent de catégoriser vos collaborateurs
-						pour faciliter l'assignment et le suivi des formations.
+						Les plans de formation permettent de catégoriser vos
+						collaborateurs pour faciliter l&apos;assignment et le
+						suivi des formations.
 					</DialogDescription>
 				</DialogHeader>
 
@@ -114,7 +117,9 @@ export function CreateTagDialog({
 							name="name"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Nom du plan de formation</FormLabel>
+									<FormLabel>
+										Nom du plan de formation
+									</FormLabel>
 									<FormControl>
 										<Input
 											placeholder="Ex: Formation nouveaux employés"
@@ -235,7 +240,11 @@ export function CreateTagDialog({
 												Date limite (optionnel)
 											</FormLabel>
 											<FormControl>
-												<Input type="date" {...field} />
+												<Input 
+													type="date" 
+													{...field}
+													value={field.value || ""}
+												/>
 											</FormControl>
 											<FormMessage />
 										</FormItem>
@@ -287,8 +296,8 @@ export function CreateTagDialog({
 
 							<FormDescription className="text-xs">
 								<AlertCircle className="w-3 h-3 inline mr-1" />
-								La date limite et la priorité s'appliquent à
-								toutes les formations assignées à ce plan
+								La date limite et la priorité s&apos;appliquent
+								à toutes les formations assignées à ce plan
 							</FormDescription>
 						</div>
 

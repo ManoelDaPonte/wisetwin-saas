@@ -65,7 +65,7 @@ export function useHoverPrefetch() {
 			
 			console.log("✅ Strategy found:", strategy);
 
-			const prefetchPromises: Promise<any>[] = [];
+			const prefetchPromises: Promise<unknown>[] = [];
 
 			// Prefetch members
 			if (strategy.members && activeOrganization) {

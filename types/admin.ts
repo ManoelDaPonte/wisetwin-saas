@@ -11,6 +11,7 @@ export interface AdminUser {
   organizationsCount: number;
   buildsCount: number;
   lastLogin?: Date;
+  [key: string]: unknown;
 }
 
 export interface AdminOrganization {
@@ -29,6 +30,7 @@ export interface AdminOrganization {
   membersCount: number;
   buildsCount: number;
   invitationsCount: number;
+  [key: string]: unknown;
 }
 
 export interface AdminFormation {
@@ -42,6 +44,7 @@ export interface AdminFormation {
   lastModified?: Date;
   hasMetadata: boolean;
   title?: string; // Titre depuis les métadonnées
+  [key: string]: unknown; // Index signature pour compatibilité avec Record<string, unknown>
 }
 
 export interface MetadataService {

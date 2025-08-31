@@ -154,7 +154,7 @@ export function useAssignTagToMember() {
       }
       return assignTagToMember(activeOrganization.id, data);
     },
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       toast.success("Tag assigné avec succès");
       
       // Invalider les caches pertinents

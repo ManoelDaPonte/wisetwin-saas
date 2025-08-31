@@ -3,7 +3,7 @@ import { useOrganizationStore } from '@/stores/organization-store'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { useOrganizations } from '@/app/hooks/use-organizations'
-import { UpdateOrganizationData, TransferOwnershipData } from "@/types"
+import { UpdateOrganizationData, TransferOwnershipData, Organization } from "@/types"
 
 export function useOrganizationSettings() {
   const queryClient = useQueryClient()
@@ -110,7 +110,7 @@ export function useOrganizationSettings() {
       const organizations = await fetchOrganizations()
       
       // Trouver l'organisation mise à jour avec le nouveau rôle
-      const updatedOrgWithRole = organizations.find((org: any) => org.id === updatedOrg.id)
+      const updatedOrgWithRole = organizations.find((org: Organization) => org.id === updatedOrg.id)
       
       if (updatedOrgWithRole && activeOrganization?.id === updatedOrg.id) {
         // Mettre à jour l'organisation active avec le nouveau rôle

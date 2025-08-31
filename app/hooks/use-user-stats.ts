@@ -48,7 +48,7 @@ export function useUserStats() {
 
   const query = useQuery({
     queryKey: ["userStats", containerId, organizationId, session?.user?.id],
-    queryFn: () => fetchUserStats(containerId!, organizationId, session?.user?.id!),
+    queryFn: () => fetchUserStats(containerId!, organizationId, session?.user?.id || ''),
     enabled: isReady && !!session?.user?.id && !!containerId,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes

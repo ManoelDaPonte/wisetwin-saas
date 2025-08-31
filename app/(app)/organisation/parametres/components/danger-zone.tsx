@@ -62,9 +62,9 @@ export function DangerZone({
           <Separator />
           
           <div>
-            <h4 className="text-sm font-medium mb-2">Supprimer l'organisation</h4>
+            <h4 className="text-sm font-medium mb-2">Supprimer l&apos;organisation</h4>
             <p className="text-sm text-muted-foreground mb-3">
-              Une fois supprimée, l'organisation et toutes ses données seront définitivement perdues
+              Une fois supprimée, l&apos;organisation et toutes ses données seront définitivement perdues
             </p>
             <DeleteOrganizationDialog 
               organizationName={organizationName}

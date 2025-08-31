@@ -33,7 +33,7 @@ export function ApparenceSection() {
     <Card>
       <CardHeader>
         <CardTitle>Apparence</CardTitle>
-        <CardDescription>Personnalisez l'apparence de l'application</CardDescription>
+        <CardDescription>Personnalisez l&apos;apparence de l&apos;application</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">

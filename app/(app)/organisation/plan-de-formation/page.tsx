@@ -2,22 +2,9 @@
 
 import { useState } from "react";
 import { useOrganizationStore } from "@/stores/organization-store";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-	Users,
-	Tags,
-	BookOpen,
-	BarChart3,
-} from "lucide-react";
+import { Users, Tags, BookOpen, BarChart3 } from "lucide-react";
 import { TagsManager } from "./components/tags-manager";
 import { MemberTagsManager } from "./components/member-tags-manager";
 import { BuildsManager } from "./components/builds-manager";

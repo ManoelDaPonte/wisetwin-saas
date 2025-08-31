@@ -1,8 +1,8 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { Organization } from '@/types/organization'
+import { Organization } from '@/types'
 
-export { Organization }
+export type { Organization }
 
 interface OrganizationStore {
   // État

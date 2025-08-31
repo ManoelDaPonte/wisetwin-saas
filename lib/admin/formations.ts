@@ -1,10 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { listBuilds } from "@/lib/azure";
 import { getFormationMetadata } from "./metadata-service";
-import { BuildType } from "@/types/azure";
-import { AdminFormation } from "@/types/admin";
+import { AdminFormation } from "@/types";
 
-export { AdminFormation };
+export type { AdminFormation };
 
 export async function getAllFormations(): Promise<AdminFormation[]> {
   const formations: AdminFormation[] = [];
@@ -63,7 +62,7 @@ export async function getAllFormations(): Promise<AdminFormation[]> {
           containerId: org.azureContainerId,
           containerType: 'organization',
           organizationName: org.name,
-          lastModified: build.lastModified,
+          lastModified: build.lastModified ? new Date(build.lastModified) : undefined,
           hasMetadata,
           title,
         });
@@ -108,7 +107,7 @@ export async function getAllFormations(): Promise<AdminFormation[]> {
           containerId: user.azureContainerId!,
           containerType: 'personal',
           userEmail: user.email,
-          lastModified: build.lastModified,
+          lastModified: build.lastModified ? new Date(build.lastModified) : undefined,
           hasMetadata,
           title,
         });

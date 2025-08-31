@@ -58,7 +58,7 @@ export function AppBreadcrumb() {
 
 	return (
 		<BreadcrumbList>
-			{breadcrumbs.map((breadcrumb, index) => (
+			{breadcrumbs.map((breadcrumb) => (
 				<div key={breadcrumb.path} className="flex items-center">
 					<BreadcrumbItem>
 						{breadcrumb.isLast ? (
