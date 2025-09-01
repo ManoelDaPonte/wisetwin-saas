@@ -16,19 +16,24 @@ export const PATCH = withAuth(async (request: AuthenticatedRequest) => {
       );
     }
 
-    const { name } = validation.data;
+    const { firstName, name } = validation.data;
 
-    if (!name) {
+    if (!firstName && !name) {
       return NextResponse.json(
         { error: "Aucune donnée à mettre à jour" },
         { status: 400 }
       );
     }
 
+    // Créer un objet avec seulement les champs définis
+    const updateData: { firstName?: string; name?: string } = {};
+    if (firstName !== undefined) updateData.firstName = firstName;
+    if (name !== undefined) updateData.name = name;
+
     const updatedUser = await prisma.user.update({
       where: { id: request.user.id },
-      data: { name },
-      select: { id: true, name: true, email: true },
+      data: updateData,
+      select: { id: true, firstName: true, name: true, email: true },
     });
 
     return NextResponse.json({

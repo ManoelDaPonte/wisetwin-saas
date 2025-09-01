@@ -26,6 +26,7 @@ export const authOptions: NextAuthOptions = {
           select: {
             id: true,
             email: true,
+            firstName: true,
             name: true,
             image: true,
             password: true,
@@ -48,6 +49,7 @@ export const authOptions: NextAuthOptions = {
         return {
           id: user.id,
           email: user.email,
+          firstName: user.firstName,
           name: user.name,
           image: user.image,
         };
@@ -64,6 +66,7 @@ export const authOptions: NextAuthOptions = {
           where: { id: token.sub },
           select: {
             id: true,
+            firstName: true,
             name: true,
             email: true,
             image: true,
@@ -72,6 +75,7 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (currentUser) {
+          session.user.firstName = currentUser.firstName;
           session.user.name = currentUser.name;
           session.user.email = currentUser.email;
           session.user.image = currentUser.image;

@@ -12,6 +12,11 @@ export const userSchema = z.object({
 
 // Profile update schema
 export const updateProfileSchema = z.object({
+  firstName: z
+    .string()
+    .min(2, "Le prénom doit contenir au moins 2 caractères")
+    .max(50, "Le prénom ne peut pas dépasser 50 caractères")
+    .optional(),
   name: z
     .string()
     .min(2, "Le nom doit contenir au moins 2 caractères")

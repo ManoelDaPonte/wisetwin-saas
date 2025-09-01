@@ -1,6 +1,5 @@
-import { GalleryVerticalEnd } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+import { ThemeLogo } from "./components/theme-logo";
 
 export default function AuthLayout({
 	children,
@@ -16,7 +15,7 @@ export default function AuthLayout({
 						className="flex items-center gap-2 font-medium"
 					>
 						<div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
-							<GalleryVerticalEnd className="size-4" />
+							<ThemeLogo size="small" variant="normal" />
 						</div>
 						WiseTwin
 					</Link>
@@ -25,14 +24,11 @@ export default function AuthLayout({
 					<div className="w-full max-w-xs">{children}</div>
 				</div>
 			</div>
-			<div className="bg-muted relative hidden lg:block">
-				<Image
-					src="/placeholder.svg"
-					alt="Image"
-					width={1920}
-					height={1080}
-					className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-				/>
+			<div className="bg-muted relative hidden lg:flex flex-col items-center justify-center">
+				<ThemeLogo size="large" className="mb-6" />
+				<p className="text-muted-foreground text-center text-sm font-medium tracking-wide">
+					Sécurité • Formation • Immersion • Excellence
+				</p>
 			</div>
 		</div>
 	);

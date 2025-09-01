@@ -5,6 +5,7 @@ export interface AuthenticatedRequest extends NextRequest {
   user: {
     id: string;
     email: string;
+    firstName: string | null;
     name: string | null;
     azureContainerId?: string;
   };
@@ -25,6 +26,7 @@ export interface SuperAdminRequest extends NextRequest {
   user: {
     id: string;
     email: string;
+    firstName?: string;
     name?: string;
   };
 }

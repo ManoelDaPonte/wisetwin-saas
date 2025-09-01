@@ -26,12 +26,16 @@ import {
 export function CompteSection() {
 	const { data: session, update } = useSession();
 	const { updateUser, changePassword, isLoading } = useUserActions();
+	const [firstName, setFirstName] = useState(session?.user?.firstName || "");
 	const [username, setUsername] = useState(session?.user?.name || "");
 	const [currentPassword, setCurrentPassword] = useState("");
 	const [newPassword, setNewPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
 
 	useEffect(() => {
+		if (session?.user?.firstName) {
+			setFirstName(session.user.firstName);
+		}
 		if (session?.user?.name) {
 			setUsername(session.user.name);
 		}
@@ -46,51 +50,71 @@ export function CompteSection() {
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-6">
-				<div className="space-y-2">
-					<Label htmlFor="username">Nom d&apos;utilisateur</Label>
-					<div className="flex gap-2">
-						<Input
-							id="username"
-							value={username}
-							onChange={(e) => setUsername(e.target.value)}
-							placeholder="Votre nom d'utilisateur"
-						/>
-						<Button
-							onClick={async () => {
-								// Valider les données
-								const validation =
-									updateProfileSchema.safeParse({
-										name: username,
-									});
-								if (!validation.success) {
-									toast.error(
-										validation.error.errors[0].message
-									);
-									return;
-								}
-
-								try {
-									await updateUser({ name: username });
-									// Rafraîchir la session pour obtenir les nouvelles données
-									await update();
-									toast.success(
-										"Nom d'utilisateur mis à jour avec succès"
-									);
-								} catch (error) {
-									toast.error(
-										error instanceof Error
-											? error.message
-											: "Erreur lors de la mise à jour"
-									);
-								}
-							}}
-							disabled={
-								isLoading || username === session?.user?.name
-							}
-						>
-							<Save className="h-4 w-4" />
-						</Button>
+				<div className="space-y-4">
+					<div className="space-y-2">
+						<Label htmlFor="firstName">Prénom</Label>
+						<div className="flex gap-2">
+							<Input
+								id="firstName"
+								value={firstName}
+								onChange={(e) => setFirstName(e.target.value)}
+								placeholder="Votre prénom"
+							/>
+						</div>
 					</div>
+					<div className="space-y-2">
+						<Label htmlFor="username">Nom</Label>
+						<div className="flex gap-2">
+							<Input
+								id="username"
+								value={username}
+								onChange={(e) => setUsername(e.target.value)}
+								placeholder="Votre nom"
+							/>
+						</div>
+					</div>
+					<Button
+						onClick={async () => {
+							// Valider les données
+							const validation =
+								updateProfileSchema.safeParse({
+									firstName: firstName,
+									name: username,
+								});
+							if (!validation.success) {
+								toast.error(
+									validation.error.errors[0].message
+								);
+								return;
+							}
+
+							try {
+								await updateUser({ 
+									firstName: firstName, 
+									name: username 
+								});
+								// Rafraîchir la session pour obtenir les nouvelles données
+								await update();
+								toast.success(
+									"Informations mises à jour avec succès"
+								);
+							} catch (error) {
+								toast.error(
+									error instanceof Error
+										? error.message
+										: "Erreur lors de la mise à jour"
+								);
+							}
+						}}
+						disabled={
+							isLoading || 
+							(firstName === session?.user?.firstName && username === session?.user?.name)
+						}
+						className="w-fit"
+					>
+						<Save className="h-4 w-4 mr-2" />
+						Sauvegarder
+					</Button>
 				</div>
 
 				<Separator />

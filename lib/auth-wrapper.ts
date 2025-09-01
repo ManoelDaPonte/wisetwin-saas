@@ -24,6 +24,7 @@ export function withAuth(handler: RouteHandler) {
       authenticatedRequest.user = {
         id: session.user.id,
         email: session.user.email!,
+        firstName: session.user.firstName,
         name: session.user.name,
         azureContainerId: session.user.azureContainerId
       };

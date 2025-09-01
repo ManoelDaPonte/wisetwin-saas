@@ -1,38 +1,57 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  registerSchema,
+  resetPasswordSchema,
   isPasswordStrong,
   getPasswordRequirements,
 } from "@/validators";
 import { z } from "zod";
 
-export function RegisterForm({
+interface ResetPasswordFormProps extends React.HTMLAttributes<HTMLDivElement> {
+  className?: string;
+}
+
+export function ResetPasswordForm({
   className,
   ...props
-}: React.ComponentProps<"form">) {
+}: ResetPasswordFormProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<z.ZodFormattedError<
-    (typeof registerSchema)["_output"]
+    (typeof resetPasswordSchema)["_output"]
   > | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const tokenParam = searchParams.get("token");
+    if (!tokenParam) {
+      setError("Token manquant. Veuillez utiliser le lien reçu par email.");
+      return;
+    }
+    setToken(tokenParam);
+  }, [searchParams]);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    
+    if (!token) {
+      setError("Token manquant");
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     setFieldErrors(null);
 
     const formData = new FormData(event.currentTarget);
-    const firstName = formData.get("firstName") as string;
-    const name = formData.get("name") as string;
-    const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const confirmPassword = formData.get("confirmPassword") as string;
 
@@ -50,10 +69,8 @@ export function RegisterForm({
     }
 
     // Validation côté client
-    const validationResult = registerSchema.safeParse({
-      firstName,
-      name,
-      email,
+    const validationResult = resetPasswordSchema.safeParse({
+      token,
       password,
     });
 
@@ -64,21 +81,20 @@ export function RegisterForm({
     }
 
     try {
-      const response = await fetch("/api/auth/register", {
+      const response = await fetch("/api/auth/reset-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          firstName,
-          name,
-          email,
+          token,
           password,
         }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const data = await response.json();
         if (data.errors) {
           setFieldErrors(data.errors);
           return;
@@ -86,7 +102,11 @@ export function RegisterForm({
         throw new Error(data.message || "Une erreur est survenue");
       }
 
-      router.push("/login");
+      setIsSuccess(true);
+      // Redirection après 3 secondes
+      setTimeout(() => {
+        router.push("/login");
+      }, 3000);
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
@@ -98,69 +118,56 @@ export function RegisterForm({
     }
   }
 
+  if (isSuccess) {
+    return (
+      <div className={cn("flex flex-col gap-6", className)} {...props}>
+        <div className="flex flex-col items-center gap-2 text-center">
+          <h1 className="text-2xl font-bold">Mot de passe réinitialisé</h1>
+          <p className="text-muted-foreground text-sm text-balance">
+            Votre mot de passe a été réinitialisé avec succès. Vous allez être redirigé vers la page de connexion.
+          </p>
+        </div>
+        <div className="text-center text-sm">
+          <a href="/login" className="underline underline-offset-4">
+            Se connecter maintenant
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  if (!token) {
+    return (
+      <div className={cn("flex flex-col gap-6", className)} {...props}>
+        <div className="flex flex-col items-center gap-2 text-center">
+          <h1 className="text-2xl font-bold">Lien invalide</h1>
+          <p className="text-muted-foreground text-sm text-balance">
+            Le lien de réinitialisation est invalide ou manquant.
+          </p>
+        </div>
+        <div className="text-center text-sm">
+          <a href="/forgot-password" className="underline underline-offset-4">
+            Demander un nouveau lien
+          </a>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <form
       onSubmit={onSubmit}
       className={cn("flex flex-col gap-6", className)}
-      {...props}
     >
       <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-bold">Créer un compte</h1>
+        <h1 className="text-2xl font-bold">Nouveau mot de passe</h1>
         <p className="text-muted-foreground text-sm text-balance">
-          Remplissez les informations ci-dessous pour créer votre compte
+          Saisissez votre nouveau mot de passe
         </p>
       </div>
       <div className="grid gap-6">
         <div className="grid gap-3">
-          <Label htmlFor="firstName">Prénom</Label>
-          <Input
-            id="firstName"
-            name="firstName"
-            type="text"
-            placeholder="Jean"
-            required
-            disabled={isLoading}
-          />
-          {fieldErrors?.firstName && (
-            <p className="text-sm text-destructive">
-              {fieldErrors.firstName._errors[0]}
-            </p>
-          )}
-        </div>
-        <div className="grid gap-3">
-          <Label htmlFor="name">Nom</Label>
-          <Input
-            id="name"
-            name="name"
-            type="text"
-            placeholder="Dupont"
-            required
-            disabled={isLoading}
-          />
-          {fieldErrors?.name && (
-            <p className="text-sm text-destructive">
-              {fieldErrors.name._errors[0]}
-            </p>
-          )}
-        </div>
-        <div className="grid gap-3">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            placeholder="exemple@email.com"
-            required
-            disabled={isLoading}
-          />
-          {fieldErrors?.email && (
-            <p className="text-sm text-destructive">
-              {fieldErrors.email._errors[0]}
-            </p>
-          )}
-        </div>
-        <div className="grid gap-3">
-          <Label htmlFor="password">Mot de passe</Label>
+          <Label htmlFor="password">Nouveau mot de passe</Label>
           <Input
             id="password"
             name="password"
@@ -189,13 +196,12 @@ export function RegisterForm({
         </div>
         {error && <div className="text-destructive text-sm">{error}</div>}
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Création en cours..." : "Créer un compte"}
+          {isLoading ? "Réinitialisation en cours..." : "Réinitialiser le mot de passe"}
         </Button>
       </div>
       <div className="text-center text-sm">
-        Vous avez déjà un compte ?{" "}
         <a href="/login" className="underline underline-offset-4">
-          Se connecter
+          Retour à la connexion
         </a>
       </div>
     </form>

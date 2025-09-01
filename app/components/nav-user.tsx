@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useSession, signOut } from "next-auth/react";
 import { useOrganizationStore } from "@/stores/organization-store";
+import { getDisplayName, getUserInitials } from "@/lib/user-utils";
 
 export function NavUser() {
 	const { data: session } = useSession();
@@ -44,17 +45,15 @@ export function NavUser() {
 							<Avatar className="h-8 w-8 rounded-lg">
 								<AvatarImage
 									src={session.user.image || ""}
-									alt={session.user.name || ""}
+									alt={getDisplayName(session.user)}
 								/>
 								<AvatarFallback className="rounded-lg">
-									{session.user.name
-										?.charAt(0)
-										.toUpperCase() || "U"}
+									{getUserInitials(session.user)}
 								</AvatarFallback>
 							</Avatar>
 							<div className="grid flex-1 text-left text-sm leading-tight">
 								<span className="truncate font-medium">
-									{session.user.name}
+									{getDisplayName(session.user)}
 								</span>
 								<span className="truncate text-xs">
 									{session.user.email}
@@ -74,17 +73,15 @@ export function NavUser() {
 								<Avatar className="h-8 w-8 rounded-lg">
 									<AvatarImage
 										src={session.user.image || ""}
-										alt={session.user.name || ""}
+										alt={getDisplayName(session.user)}
 									/>
 									<AvatarFallback className="rounded-lg">
-										{session.user.name
-											?.charAt(0)
-											.toUpperCase() || "U"}
+										{getUserInitials(session.user)}
 									</AvatarFallback>
 								</Avatar>
 								<div className="grid flex-1 text-left text-sm leading-tight">
 									<span className="truncate font-medium">
-										{session.user.name}
+										{getDisplayName(session.user)}
 									</span>
 									<span className="truncate text-xs">
 										{session.user.email}

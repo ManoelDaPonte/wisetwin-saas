@@ -5,7 +5,10 @@ import { NextRequestWithAuth } from "next-auth/middleware"
 export default async function middleware(request: NextRequestWithAuth) {
   const token = await getToken({ req: request })
   const isAuthPage = request.nextUrl.pathname.startsWith("/login") ||
-                    request.nextUrl.pathname.startsWith("/register")
+                    request.nextUrl.pathname.startsWith("/register") ||
+                    request.nextUrl.pathname.startsWith("/forgot-password") ||
+                    request.nextUrl.pathname.startsWith("/reset-password")
+                    
   
   // 🆕 Exclure les routes Unity de l'authentification
   const isUnityApi = request.nextUrl.pathname.startsWith("/api/unity/")
@@ -58,9 +61,10 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * - public folder
+     * - public folder and common static file extensions
      */
-    "/((?!api|_next/static|_next/image|favicon.ico|public).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|public|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js)$).*)",
     '/api/unity/:path*', // 🆕 Inclure explicitement les routes Unity
+    
   ],
 }

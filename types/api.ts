@@ -77,7 +77,8 @@ export interface MetadataParams {
 
 // Types pour les mutations
 export interface UpdateUserData {
-  name: string;
+  firstName?: string;
+  name?: string;
 }
 
 export interface ChangePasswordData {

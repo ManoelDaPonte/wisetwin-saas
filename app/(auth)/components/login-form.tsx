@@ -101,7 +101,7 @@ export function LoginForm({
 					<div className="flex items-center">
 						<Label htmlFor="password">Mot de passe</Label>
 						<a
-							href="#"
+							href="/forgot-password"
 							className="ml-auto text-sm underline-offset-4 hover:underline"
 						>
 							Mot de passe oublié ?

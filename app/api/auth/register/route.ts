@@ -21,7 +21,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { name, email, password } = validationResult.data;
+    const { firstName, name, email, password } = validationResult.data;
 
     // Additional business logic validation
     if (!isPasswordStrong(password)) {
@@ -52,6 +52,7 @@ export async function POST(req: Request) {
     // Créer l'utilisateur
     const user = await prisma.user.create({
       data: {
+        firstName,
         name,
         email,
         password: hashedPassword,
