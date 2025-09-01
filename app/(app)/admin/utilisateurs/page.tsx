@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Mail, Trash2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+import { getDisplayName, getUserInitials } from "@/lib/user-utils";
 
 export default function AdminUsersPage() {
 	const { data, isLoading, error } = useAdminUsers();
@@ -25,16 +26,15 @@ export default function AdminUsersPage() {
 					<Avatar className="h-8 w-8">
 						<AvatarImage
 							src={user.image}
-							alt={user.name || user.email}
+							alt={getDisplayName(user)}
 						/>
 						<AvatarFallback>
-							{user.name?.charAt(0).toUpperCase() ||
-								user.email.charAt(0).toUpperCase()}
+							{getUserInitials(user)}
 						</AvatarFallback>
 					</Avatar>
 					<div>
 						<div className="font-medium">
-							{user.name || "Sans nom"}
+							{getDisplayName(user)}
 						</div>
 						<div className="text-sm text-muted-foreground">
 							{user.email}

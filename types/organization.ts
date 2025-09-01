@@ -13,6 +13,7 @@ export interface Organization {
 
 export interface Member {
   id: string;
+  firstName: string | null;
   name: string | null;
   email: string;
   role: Role;

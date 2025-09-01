@@ -7,6 +7,7 @@ export async function getAllUsers(): Promise<AdminUser[]> {
   const users = await prisma.user.findMany({
     select: {
       id: true,
+      firstName: true,
       name: true,
       email: true,
       image: true,

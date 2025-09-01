@@ -1,9 +1,17 @@
 import type { User } from "next-auth";
 
+// Type générique pour tout utilisateur (session ou membre)
+interface UserLike {
+  firstName?: string | null;
+  name?: string | null;
+  email?: string;
+}
+
 /**
  * Retourne le nom d'affichage de l'utilisateur (firstName + name ou name seul)
+ * Compatible avec User de NextAuth et Member des API
  */
-export function getDisplayName(user: Partial<User>): string {
+export function getDisplayName(user: Partial<UserLike>): string {
   if (user.firstName && user.name) {
     return `${user.firstName} ${user.name}`;
   }
@@ -12,8 +20,9 @@ export function getDisplayName(user: Partial<User>): string {
 
 /**
  * Retourne les initiales de l'utilisateur pour l'avatar
+ * Compatible avec User de NextAuth et Member des API
  */
-export function getUserInitials(user: Partial<User>): string {
+export function getUserInitials(user: Partial<UserLike>): string {
   if (user.firstName && user.name) {
     return `${user.firstName.charAt(0)}${user.name.charAt(0)}`.toUpperCase();
   }
@@ -29,3 +38,6 @@ export function getUserInitials(user: Partial<User>): string {
   }
   return "U";
 }
+
+// Fonctions spécifiques pour rétrocompatibilité avec les types NextAuth
+export { getDisplayName as getDisplayName, getUserInitials as getUserInitials };

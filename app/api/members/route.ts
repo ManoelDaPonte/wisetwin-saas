@@ -13,6 +13,7 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
         owner: {
           select: {
             id: true,
+            firstName: true,
             name: true,
             email: true,
             image: true,
@@ -30,6 +31,7 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
         user: {
           select: {
             id: true,
+            firstName: true,
             name: true,
             email: true,
             image: true,
@@ -46,6 +48,7 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
     memberships.forEach(m => {
       membersMap.set(m.user.id, {
         id: m.user.id,
+        firstName: m.user.firstName,
         name: m.user.name,
         email: m.user.email,
         avatarUrl: m.user.image,
@@ -59,6 +62,7 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
     if (owner) {
       membersMap.set(owner.id, {
         id: owner.id,
+        firstName: owner.firstName,
         name: owner.name,
         email: owner.email,
         avatarUrl: owner.image,

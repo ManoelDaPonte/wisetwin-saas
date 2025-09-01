@@ -2,6 +2,7 @@
 
 export interface AdminUser {
   id: string;
+  firstName?: string;
   name?: string;
   email: string;
   image?: string;
