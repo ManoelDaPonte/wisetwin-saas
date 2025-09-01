@@ -24,6 +24,7 @@ import {
 	ArrowRight,
 	Plus,
 	LogIn,
+	Box,
 } from "lucide-react";
 
 export default function HomePage() {
@@ -39,8 +40,8 @@ export default function HomePage() {
 					Bonjour {session?.user?.name || "Utilisateur"} 👋
 				</h1>
 				<p className="text-xl text-muted-foreground">
-					Bienvenue sur WiseTwin, votre plateforme de formation et de
-					gestion d’environnements 3D
+					Bienvenue sur WiseTwin, votre plateforme de simulateurs
+					immersifs.
 				</p>
 			</div>
 
@@ -141,12 +142,12 @@ export default function HomePage() {
 							onClick={() => router.push("/wisetrainer")}
 						>
 							<span className="flex items-center gap-2">
-								<BookOpen className="h-4 w-4" />
-								WiseTrainer - Formations
+								<Box className="h-4 w-4" />
+								WiseTrainer
 							</span>
 							<ArrowRight className="h-4 w-4" />
 						</Button>
-						<Button
+						{/* <Button
 							className="w-full justify-between"
 							onClick={() => router.push("/wisetour")}
 						>
@@ -155,7 +156,7 @@ export default function HomePage() {
 								WiseTour - Environnements
 							</span>
 							<ArrowRight className="h-4 w-4" />
-						</Button>
+						</Button> */}
 					</CardContent>
 				</Card>
 

@@ -19,7 +19,7 @@ const routeLabels: Record<string, string> = {
 	"/organisation/parametres": "Paramètres",
 	"/organisation/tableau-de-bord": "Tableau de bord",
 	"/wisetour": "Wisetour",
-	"/wisetrainer": "Wisetrainer",
+	"/wisetrainer": "WiseTrainer",
 	"/organisation/plan-de-formation": "Plan de formation",
 	"/wisetrainer/formations-terminees": "Formations terminées",
 };

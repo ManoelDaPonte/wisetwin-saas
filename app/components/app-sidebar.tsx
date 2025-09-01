@@ -1,17 +1,8 @@
 "use client";
 
 import * as React from "react";
-import {
-	Home,
-	LayoutDashboard,
-	Building2,
-	Box,
-	Book,
-	Crown,
-} from "lucide-react";
-import {
-	useIsPersonalSpace,
-} from "@/stores/organization-store";
+import { Home, LayoutDashboard, Building2, Box, Crown } from "lucide-react";
+import { useIsPersonalSpace } from "@/stores/organization-store";
 import { useSession } from "next-auth/react";
 import { canAccessAdminPanel } from "@/lib/admin/permissions";
 import { LucideIcon } from "lucide-react";
@@ -74,21 +65,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
 	const platformNavItems = React.useMemo(() => {
 		const items: NavigationItem[] = [
+			// {
+			// 	title: "Wisetour",
+			// 	url: "/wisetour",
+			// 	icon: Box,
+			// 	items: [
+			// 		{
+			// 			title: "Visites Virtuelles",
+			// 			url: "/wisetour",
+			// 		},
+			// 	],
+			// },
 			{
-				title: "Wisetour",
-				url: "/wisetour",
-				icon: Box,
-				items: [
-					{
-						title: "Visites Virtuelles",
-						url: "/wisetour",
-					},
-				],
-			},
-			{
-				title: "Wisetrainer",
+				title: "WiseTrainer",
 				url: "/wisetrainer",
-				icon: Book,
+				icon: Box,
 				items: [
 					{
 						title: "Toutes les formations",
@@ -150,7 +141,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				icon: Crown,
 				items: [
 					{
-						title: "Formations Unity",
+						title: "Formations",
 						url: "/admin/formations",
 					},
 					{
@@ -175,7 +166,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			</SidebarHeader>
 			<SidebarContent>
 				<NavMain items={mainNavItems} label="Navigation" />
-				<NavMain items={platformNavItems} label="Plateformes" />
+				<NavMain items={platformNavItems} label="Application" />
 				{organizationNavItems.length > 0 && (
 					<NavMain
 						items={organizationNavItems}

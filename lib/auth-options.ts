@@ -79,6 +79,7 @@ export const authOptions: NextAuthOptions = {
           session.user.name = currentUser.name;
           session.user.email = currentUser.email;
           session.user.image = currentUser.image;
+          session.user.azureContainerId = currentUser.azureContainerId;
         }
       }
       return session;
