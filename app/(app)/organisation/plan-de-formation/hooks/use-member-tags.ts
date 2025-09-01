@@ -300,6 +300,7 @@ export function useMemberTagsManager() {
 
     return {
       id: member.id,
+      firstName: member.firstName,
       name: member.name,
       email: member.email,
       image: member.avatarUrl,

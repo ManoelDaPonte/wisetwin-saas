@@ -324,6 +324,7 @@ export interface AssignmentWithProgress extends TrainingAssignment {
 
 export interface MemberWithTrainings {
   id: string;
+  firstName?: string | null;
   name: string | null;
   email: string;
   image?: string | null;

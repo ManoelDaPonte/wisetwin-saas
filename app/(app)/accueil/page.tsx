@@ -18,7 +18,6 @@ import {
 	Building2,
 	Users,
 	BookOpen,
-	Boxes,
 	Award,
 	BarChart3,
 	ArrowRight,

@@ -1,4 +1,4 @@
-import type { User } from "next-auth";
+// import type { User } from "next-auth";
 
 // Type générique pour tout utilisateur (session ou membre)
 interface UserLike {

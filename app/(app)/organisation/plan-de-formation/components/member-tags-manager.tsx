@@ -42,6 +42,7 @@ import { TagBadge } from "./tag-badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+import { getUserInitials } from "@/lib/user-utils";
 
 interface MemberTagsManagerProps {
 	organizationId: string;
@@ -523,17 +524,7 @@ export function MemberTagsManager({}: MemberTagsManagerProps) {
 															}
 														/>
 														<AvatarFallback>
-															{member.name
-																? member.name
-																		.charAt(
-																			0
-																		)
-																		.toUpperCase()
-																: member.email
-																		.charAt(
-																			0
-																		)
-																		.toUpperCase()}
+															{getUserInitials(member)}
 														</AvatarFallback>
 													</Avatar>
 													<div>

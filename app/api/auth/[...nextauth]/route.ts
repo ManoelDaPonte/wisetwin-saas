@@ -27,6 +27,7 @@ const authOptions: NextAuthOptions = {
           select: {
             id: true,
             email: true,
+            firstName: true,
             name: true,
             password: true,
             azureContainerId: true,
@@ -59,6 +60,7 @@ const authOptions: NextAuthOptions = {
 
       // Handle updates to the session
       if (trigger === "update" && session) {
+        token.firstName = session.firstName;
         token.name = session.name;
         token.email = session.email;
       }
@@ -75,10 +77,11 @@ const authOptions: NextAuthOptions = {
         // Always fetch fresh user data from database
         const currentUser = await prisma.user.findUnique({
           where: { id: token.id as string },
-          select: { name: true, email: true, image: true },
+          select: { firstName: true, name: true, email: true, image: true },
         });
 
         if (currentUser) {
+          session.user.firstName = currentUser.firstName;
           session.user.name = currentUser.name;
           session.user.email = currentUser.email;
           session.user.image = currentUser.image;
