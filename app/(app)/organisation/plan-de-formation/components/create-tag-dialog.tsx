@@ -101,7 +101,7 @@ export function CreateTagDialog({
 					</DialogTitle>
 					<DialogDescription>
 						Les plans de formation permettent de catégoriser vos
-						collaborateurs pour faciliter l&apos;assignment et le
+						membres pour faciliter l&apos;assignment et le
 						suivi des formations.
 					</DialogDescription>
 				</DialogHeader>
@@ -210,7 +210,7 @@ export function CreateTagDialog({
 									</FormLabel>
 									<FormControl>
 										<Textarea
-											placeholder="Description du groupe de collaborateurs..."
+											placeholder="Description du groupe de membres..."
 											className="resize-none"
 											{...field}
 										/>

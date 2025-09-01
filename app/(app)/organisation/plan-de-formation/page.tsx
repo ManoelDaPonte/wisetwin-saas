@@ -59,7 +59,7 @@ export default function GestionFormationsPage() {
 						Gestion des plans de formations
 					</h1>
 					<p className="text-muted-foreground">
-						Gérez les formations de vos collaborateurs
+						Gérez les formations de vos membres
 					</p>
 				</div>
 			</div>
@@ -73,29 +73,40 @@ export default function GestionFormationsPage() {
 				<TabsList className="grid w-full grid-cols-4">
 					<TabsTrigger
 						value="dashboard"
-						className="flex items-center gap-2"
+						className="flex items-center gap-2 cursor-pointer hover:bg-accent/50 transition-colors"
 					>
 						<BarChart3 className="w-4 h-4" />
-						<span className="hidden sm:inline">Dashboard</span>
+						<span className="hidden sm:inline">
+							Tableau de bord
+						</span>
 					</TabsTrigger>
 					<TabsTrigger
 						value="tags"
-						className="flex items-center gap-2"
+						className="flex items-center gap-2 cursor-pointer hover:bg-accent/50 transition-colors relative"
 					>
+						<div className="flex items-center justify-center w-5 h-5 bg-primary text-primary-foreground rounded-full text-xs font-bold mr-1">
+							1
+						</div>
 						<Tags className="w-4 h-4" />
 						<span className="hidden sm:inline">Plans</span>
 					</TabsTrigger>
 					<TabsTrigger
 						value="members"
-						className="flex items-center gap-2"
+						className="flex items-center gap-2 cursor-pointer hover:bg-accent/50 transition-colors relative"
 					>
+						<div className="flex items-center justify-center w-5 h-5 bg-primary text-primary-foreground rounded-full text-xs font-bold mr-1">
+							2
+						</div>
 						<Users className="w-4 h-4" />
 						<span className="hidden sm:inline">Membres</span>
 					</TabsTrigger>
 					<TabsTrigger
 						value="formations"
-						className="flex items-center gap-2"
+						className="flex items-center gap-2 cursor-pointer hover:bg-accent/50 transition-colors relative"
 					>
+						<div className="flex items-center justify-center w-5 h-5 bg-primary text-primary-foreground rounded-full text-xs font-bold mr-1">
+							3
+						</div>
 						<BookOpen className="w-4 h-4" />
 						<span className="hidden sm:inline">Formations</span>
 					</TabsTrigger>

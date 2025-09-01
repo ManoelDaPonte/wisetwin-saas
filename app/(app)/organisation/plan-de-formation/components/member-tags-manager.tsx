@@ -155,18 +155,18 @@ export function MemberTagsManager({}: MemberTagsManagerProps) {
 					<div className="flex items-center justify-between">
 						<div>
 							<CardTitle className="text-base">
-								Gestion des collaborateurs
+								Gestion des membres
 							</CardTitle>
 							<CardDescription>
 								Assignez et gérez les plans de formation de vos
-								collaborateurs
+								membres
 							</CardDescription>
 						</div>
 						<div className="flex gap-2">
 							<div className="relative max-w-sm">
 								<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
 								<Input
-									placeholder="Rechercher un collaborateur..."
+									placeholder="Rechercher un membre..."
 									value={search}
 									onChange={(e) => setSearch(e.target.value)}
 									className="pl-10"
@@ -181,7 +181,7 @@ export function MemberTagsManager({}: MemberTagsManagerProps) {
 								</SelectTrigger>
 								<SelectContent>
 									<SelectItem value="all">
-										Tous les collaborateurs
+										Tous les membres
 									</SelectItem>
 									{tags.map((tag) => (
 										<SelectItem key={tag.id} value={tag.id}>
@@ -225,7 +225,7 @@ export function MemberTagsManager({}: MemberTagsManagerProps) {
 													Sélectionnez les plans à
 													assigner aux{" "}
 													{selectedMembers.length}{" "}
-													collaborateur
+													membre
 													{selectedMembers.length > 1
 														? "s"
 														: ""}{" "}
@@ -328,7 +328,7 @@ export function MemberTagsManager({}: MemberTagsManagerProps) {
 													Sélectionnez les plans à
 													retirer des{" "}
 													{selectedMembers.length}{" "}
-													collaborateur
+													membre
 													{selectedMembers.length > 1
 														? "s"
 														: ""}{" "}
@@ -420,7 +420,7 @@ export function MemberTagsManager({}: MemberTagsManagerProps) {
 										<TableHead className="w-[50px]">
 											<Skeleton className="h-4 w-4" />
 										</TableHead>
-										<TableHead>Collaborateur</TableHead>
+										<TableHead>Membre</TableHead>
 										<TableHead>Plans assignés</TableHead>
 									</TableRow>
 								</TableHeader>
@@ -455,8 +455,8 @@ export function MemberTagsManager({}: MemberTagsManagerProps) {
 						<div className="text-center py-8">
 							<div className="text-muted-foreground mb-4">
 								{search || filterByTag
-									? "Aucun collaborateur trouvé pour cette recherche"
-									: "Aucun collaborateur dans cette organisation"}
+									? "Aucun membre trouvé pour cette recherche"
+									: "Aucun membre dans cette organisation"}
 							</div>
 						</div>
 					) : (
@@ -491,7 +491,7 @@ export function MemberTagsManager({}: MemberTagsManagerProps) {
 												/>
 											</TableHead>
 										)}
-										<TableHead>Collaborateur</TableHead>
+										<TableHead>Membre</TableHead>
 										<TableHead>Plans assignés</TableHead>
 										<TableHead>Membre depuis</TableHead>
 									</TableRow>

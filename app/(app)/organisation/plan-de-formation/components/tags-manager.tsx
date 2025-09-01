@@ -167,7 +167,7 @@ export function TagsManager({}: TagsManagerProps) {
 										<TableHead>Plan de formation</TableHead>
 										<TableHead>Description</TableHead>
 										<TableHead className="text-center">
-											Collaborateurs
+											Membres
 										</TableHead>
 										<TableHead className="text-center">
 											Formations
@@ -240,7 +240,7 @@ export function TagsManager({}: TagsManagerProps) {
 										<TableHead>Plan de formation</TableHead>
 										<TableHead>Description</TableHead>
 										<TableHead className="text-center">
-											Collaborateurs
+											Membres
 										</TableHead>
 										<TableHead className="text-center">
 											Formations
@@ -423,7 +423,7 @@ export function TagsManager({}: TagsManagerProps) {
 								<span className="block mt-2 text-sm">
 									<strong>Note :</strong> Vous ne pouvez
 									supprimer un plan que s&apos;il n&apos;est
-									assigné à aucun collaborateur et n&apos;a
+									assigné à aucun membre et n&apos;a
 									aucune formation associée.
 								</span>
 							)}

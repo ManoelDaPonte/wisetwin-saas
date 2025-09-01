@@ -218,7 +218,7 @@ export function EditTagDialog({
 									</FormLabel>
 									<FormControl>
 										<Textarea
-											placeholder="Description du groupe de collaborateurs..."
+											placeholder="Description du groupe de membres..."
 											className="resize-none"
 											{...field}
 										/>

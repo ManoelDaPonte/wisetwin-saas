@@ -330,7 +330,7 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
 										Détails du plan
 									</CardTitle>
 									<CardDescription>
-										Progression détaillée des collaborateurs
+										Progression détaillée des membres
 									</CardDescription>
 								</div>
 								{selectedTag && (
@@ -422,7 +422,7 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
 																	}
 																</span>
 																<span>
-																	collaborateur
+																	membre
 																	{tag.memberCount >
 																	1
 																		? "s"
@@ -531,7 +531,7 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
 															variant="outline"
 															className="text-xs"
 														>
-															collaborateurs
+															membres
 														</Badge>
 													</div>
 												</div>
@@ -629,11 +629,11 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
 									</Card>
 								</div>
 
-								{/* Liste des collaborateurs */}
+								{/* Liste des membres */}
 								<Card>
 									<CardHeader>
 										<CardTitle className="text-base">
-											Collaborateurs assignés
+											Membres assignés
 										</CardTitle>
 										<CardDescription>
 											Suivi individuel de la progression
@@ -646,7 +646,7 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
 												<TableRow>
 													<TableHead className="w-[40px]"></TableHead>
 													<TableHead>
-														Collaborateur
+														Membre
 													</TableHead>
 													<TableHead>
 														Statut
