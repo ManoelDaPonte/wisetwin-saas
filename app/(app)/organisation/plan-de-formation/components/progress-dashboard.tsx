@@ -317,7 +317,7 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
 					<CardHeader>
 						<div className="flex items-center gap-3">
 							<Button
-								variant="ghost"
+								variant="outline"
 								size="sm"
 								onClick={() => setSelectedTagId("all")}
 								className="px-2"
@@ -326,19 +326,13 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
 							</Button>
 							<div className="flex items-center gap-3">
 								<div>
-									<CardTitle className="text-base">
-										Détails du plan
-									</CardTitle>
-									<CardDescription>
-										Progression détaillée des membres
-									</CardDescription>
+									{selectedTag && (
+										<TagBadge
+											name={selectedTag.name}
+											color={selectedTag.color}
+										/>
+									)}
 								</div>
-								{selectedTag && (
-									<TagBadge
-										name={selectedTag.name}
-										color={selectedTag.color}
-									/>
-								)}
 							</div>
 						</div>
 					</CardHeader>
@@ -876,8 +870,12 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
 																													alt={
 																														build.name
 																													}
-																													width={16}
-																													height={16}
+																													width={
+																														16
+																													}
+																													height={
+																														16
+																													}
 																													className="w-4 h-4 object-cover rounded"
 																												/>
 																											) : (
@@ -1000,8 +998,12 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
 																													alt={
 																														build.name
 																													}
-																													width={16}
-																													height={16}
+																													width={
+																														16
+																													}
+																													height={
+																														16
+																													}
 																													className="w-4 h-4 object-cover rounded"
 																												/>
 																											) : (

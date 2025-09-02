@@ -286,9 +286,9 @@ export const fr = {
     selectOrganization: "Veuillez sélectionner une organisation pour accéder à la gestion des formations.",
     tabs: {
       dashboard: "Tableau de bord",
-      plans: "Plans",
-      members: "Membres",
-      trainings: "Formations"
+      plans: "Gérer mes Plans",
+      members: "Associer les membres",
+      trainings: "Associer les formations"
     }
   },
 

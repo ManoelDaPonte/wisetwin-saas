@@ -87,8 +87,9 @@ export default function GestionFormationsPage() {
 						<div className="flex items-center justify-center w-5 h-5 bg-primary text-primary-foreground rounded-full text-xs font-bold mr-1">
 							1
 						</div>
-						<Tags className="w-4 h-4" />
-						<span className="hidden sm:inline">{t.trainingPlan.tabs.plans}</span>
+						<span className="hidden sm:inline">
+							{t.trainingPlan.tabs.plans}
+						</span>
 					</TabsTrigger>
 					<TabsTrigger
 						value="members"
@@ -97,8 +98,9 @@ export default function GestionFormationsPage() {
 						<div className="flex items-center justify-center w-5 h-5 bg-primary text-primary-foreground rounded-full text-xs font-bold mr-1">
 							2
 						</div>
-						<Users className="w-4 h-4" />
-						<span className="hidden sm:inline">{t.trainingPlan.tabs.members}</span>
+						<span className="hidden sm:inline">
+							{t.trainingPlan.tabs.members}
+						</span>
 					</TabsTrigger>
 					<TabsTrigger
 						value="formations"
@@ -107,8 +109,9 @@ export default function GestionFormationsPage() {
 						<div className="flex items-center justify-center w-5 h-5 bg-primary text-primary-foreground rounded-full text-xs font-bold mr-1">
 							3
 						</div>
-						<BookOpen className="w-4 h-4" />
-						<span className="hidden sm:inline">{t.trainingPlan.tabs.trainings}</span>
+						<span className="hidden sm:inline">
+							{t.trainingPlan.tabs.trainings}
+						</span>
 					</TabsTrigger>
 				</TabsList>
 

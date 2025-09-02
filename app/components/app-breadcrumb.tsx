@@ -30,6 +30,11 @@ export function AppBreadcrumb() {
 		"/wisetrainer/formations-terminees": t.navigation.completedTrainings,
 	});
 
+	// Fonction pour détecter si un segment est un ID d'organisation
+	const isOrganizationId = (segment: string) => {
+		return segment.startsWith("org-");
+	};
+
 	// Générer le breadcrumb complet avec tout le path
 	const getBreadcrumbs = () => {
 		const routeLabels = getRouteLabels();
@@ -44,13 +49,21 @@ export function AppBreadcrumb() {
 		// Toujours commencer par Accueil
 		breadcrumbs.push({ label: t.navigation.home, path: "/accueil", isLast: false });
 
-		// Ajouter chaque segment du path
+		// Filtrer les segments d'ID d'organisation mais garder les indices pour construire les paths
+		const visibleSegments: Array<{ segment: string; originalIndex: number }> = [];
 		segments.forEach((segment, index) => {
-			const path = "/" + segments.slice(0, index + 1).join("/");
+			if (!isOrganizationId(segment)) {
+				visibleSegments.push({ segment, originalIndex: index });
+			}
+		});
+
+		// Ajouter chaque segment visible du path
+		visibleSegments.forEach((item, index) => {
+			const path = "/" + segments.slice(0, item.originalIndex + 1).join("/");
 			const label =
 				(routeLabels as Record<string, string>)[path] ||
-				segment.charAt(0).toUpperCase() + segment.slice(1);
-			const isLast = index === segments.length - 1;
+				item.segment.charAt(0).toUpperCase() + item.segment.slice(1);
+			const isLast = index === visibleSegments.length - 1;
 
 			breadcrumbs.push({ label, path, isLast });
 		});

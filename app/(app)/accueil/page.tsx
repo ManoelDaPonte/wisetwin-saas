@@ -38,7 +38,8 @@ export default function HomePage() {
 		<div className="container mx-auto py-8 space-y-8">
 			<div className="text-center mb-12">
 				<h1 className="text-4xl font-bold mb-4">
-					{t.home.welcome} {session?.user?.name || t.common.user} 👋
+					{t.home.welcome} {session?.user?.firstName || session?.user?.name || session?.user?.email || t.common.user}{" "}
+					👋
 				</h1>
 				<p className="text-xl text-muted-foreground">
 					{t.home.subtitle}
@@ -131,9 +132,7 @@ export default function HomePage() {
 							</div>
 						</div>
 						<CardTitle>{t.training.title}</CardTitle>
-						<CardDescription>
-							{t.training.subtitle}
-						</CardDescription>
+						<CardDescription>{t.training.subtitle}</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-3">
 						<Button
@@ -169,9 +168,7 @@ export default function HomePage() {
 							</div>
 						</div>
 						<CardTitle>{t.progress.title}</CardTitle>
-						<CardDescription>
-							{t.progress.subtitle}
-						</CardDescription>
+						<CardDescription>{t.progress.subtitle}</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-3">
 						<Button

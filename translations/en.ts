@@ -286,9 +286,9 @@ export const en = {
     selectOrganization: "Please select an organization to access training management.",
     tabs: {
       dashboard: "Dashboard",
-      plans: "Plans",
-      members: "Members",
-      trainings: "Trainings"
+      plans: "Manage my trainings plans",
+      members: "Link members",
+      trainings: "Link trainings"
     }
   },
 
