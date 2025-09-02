@@ -7,8 +7,10 @@ import { useMembers } from "./hooks/use-members";
 import { useBuilds } from "@/app/hooks/use-builds";
 import { OrganizationStats } from "./components/organization-stats";
 import { OrganizationActions } from "./components/organization-actions";
+import { useTranslations } from "@/hooks/use-translations";
 
 export default function OrganizationPage() {
+	const t = useTranslations();
 	const { activeOrganization } = useOrganizationStore();
 	const { fetchOrganizations } = useOrganizations();
 
@@ -39,10 +41,10 @@ export default function OrganizationPage() {
 		<div className="space-y-8">
 			<div>
 				<h1 className="text-2xl font-bold tracking-tight">
-					Vue d&apos;ensemble
+					{t.organization.overview.title}
 				</h1>
 				<p className="text-muted-foreground">
-					Tableau de bord de votre organisation{" "}
+					{t.organization.overview.subtitle}{" "}
 					{activeOrganization.name}
 				</p>
 			</div>

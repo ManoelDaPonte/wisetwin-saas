@@ -15,6 +15,7 @@ import {
 import { useCompletedFormations } from "@/app/hooks/use-completed-formations";
 import { useContainer } from "@/app/hooks/use-container";
 import { useIsPersonalSpace } from "@/stores/organization-store";
+import { useTranslations } from "@/hooks/use-translations";
 import { CompletedFormation } from "@/types";
 import {
 	Card,
@@ -59,6 +60,7 @@ export default function CertificationsPage() {
 
 	const { containerId, organizationId, isReady } = useContainer();
 	const isPersonalSpace = useIsPersonalSpace();
+	const t = useTranslations();
 
 	const { completedFormations, isLoading, error } = useCompletedFormations({
 		buildType: "wisetrainer",
@@ -116,7 +118,7 @@ export default function CertificationsPage() {
 
 	const handleDownloadCertificate = async (formation: CompletedFormation) => {
 		if (!isReady || !containerId) {
-			toast.error("Informations d'organisation manquantes");
+			toast.error(t.certifications.errors.organizationMissing);
 			return;
 		}
 
@@ -146,7 +148,7 @@ export default function CertificationsPage() {
 
 			if (!response.ok) {
 				const error = await response.json();
-				throw new Error(error.error || "Erreur lors de la génération");
+				throw new Error(error.error || t.certifications.errors.downloadFailed);
 			}
 
 			// Télécharger le fichier
@@ -164,13 +166,13 @@ export default function CertificationsPage() {
 			window.URL.revokeObjectURL(url);
 			document.body.removeChild(a);
 
-			toast.success("Certificat téléchargé avec succès !");
+			toast.success(t.certifications.success.downloadComplete);
 		} catch (error) {
 			console.error("Erreur téléchargement:", error);
 			toast.error(
 				error instanceof Error
 					? error.message
-					: "Erreur lors du téléchargement"
+					: t.certifications.errors.downloadFailed
 			);
 		} finally {
 			setDownloadingItems((prev) => {
@@ -212,8 +214,7 @@ export default function CertificationsPage() {
 			<div className="container mx-auto py-8">
 				<Alert variant="destructive">
 					<AlertDescription>
-						Erreur lors du chargement des certifications:{" "}
-						{error.message}
+						{t.certifications.errors.downloadFailed}: {error.message}
 					</AlertDescription>
 				</Alert>
 			</div>
@@ -226,18 +227,17 @@ export default function CertificationsPage() {
 				<div className="flex items-center justify-between">
 					<div>
 						<CardTitle className="flex items-center gap-2">
-							Mes Certifications
+							{t.certifications.title}
 						</CardTitle>
 						<CardDescription>
-							Téléchargez les certificats de vos formations
-							terminées
+							{t.certifications.subtitle}
 						</CardDescription>
 					</div>
 					<div className="flex items-center gap-2">
 						<div className="relative">
 							<Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
 							<Input
-								placeholder="Rechercher une formation..."
+								placeholder={t.certifications.searchPlaceholder}
 								value={searchTerm}
 								onChange={(e) => {
 									setSearchTerm(e.target.value);
@@ -250,10 +250,7 @@ export default function CertificationsPage() {
 				</div>
 				{!isLoading && filteredAndSortedFormations.length > 0 && (
 					<div className="text-sm text-muted-foreground">
-						{filteredAndSortedFormations.length} certification
-						{filteredAndSortedFormations.length > 1 ? "s" : ""}{" "}
-						disponible
-						{filteredAndSortedFormations.length > 1 ? "s" : ""}
+						{filteredAndSortedFormations.length} {filteredAndSortedFormations.length === 1 ? t.certifications.stats.availableSingular : t.certifications.stats.availablePlural}
 					</div>
 				)}
 			</CardHeader>
@@ -283,16 +280,16 @@ export default function CertificationsPage() {
 										<TableHead className="w-12"></TableHead>
 										<TableHead>
 											<SortButton field="buildName">
-												Formation
+												{t.certifications.table.formation}
 											</SortButton>
 										</TableHead>
 										<TableHead>
 											<SortButton field="completedAt">
-												Date de completion
+												{t.certifications.table.completionDate}
 											</SortButton>
 										</TableHead>
 										<TableHead className="w-32">
-											Actions
+											{t.certifications.table.actions}
 										</TableHead>
 									</TableRow>
 								</TableHeader>
@@ -355,8 +352,8 @@ export default function CertificationsPage() {
 													{downloadingItems.has(
 														formation.id
 													)
-														? "Génération..."
-														: "Télécharger"}
+														? t.certifications.table.generating
+														: t.certifications.table.downloadButton}
 												</Button>
 											</TableCell>
 										</TableRow>
@@ -369,12 +366,9 @@ export default function CertificationsPage() {
 						{totalPages > 1 && (
 							<div className="flex items-center justify-between space-x-2 py-4 flex-shrink-0 border-t">
 								<div className="text-sm text-muted-foreground">
-									Page {currentPage} sur {totalPages} (
+									{t.certifications.pagination.page} {currentPage} {t.certifications.pagination.of} {totalPages} (
 									{filteredAndSortedFormations.length}{" "}
-									certification
-									{filteredAndSortedFormations.length > 1
-										? "s"
-										: ""}
+									{filteredAndSortedFormations.length === 1 ? t.certifications.stats.availableSingular : t.certifications.stats.availablePlural}
 									)
 								</div>
 								<div className="flex items-center space-x-2">
@@ -388,7 +382,7 @@ export default function CertificationsPage() {
 										}
 										disabled={currentPage === 1}
 									>
-										Précédent
+										{t.certifications.pagination.previous}
 									</Button>
 									<div className="flex items-center space-x-1">
 										{Array.from(
@@ -445,7 +439,7 @@ export default function CertificationsPage() {
 										}
 										disabled={currentPage === totalPages}
 									>
-										Suivant
+										{t.certifications.pagination.next}
 									</Button>
 								</div>
 							</div>
@@ -456,13 +450,12 @@ export default function CertificationsPage() {
 						<FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
 						<p>
 							{searchTerm
-								? `Aucune certification trouvée pour "${searchTerm}"`
-								: "Aucune certification disponible"}
+								? `${t.certifications.empty.noResults} "${searchTerm}"`
+								: t.certifications.empty.noCertifications}
 						</p>
 						{!searchTerm && (
 							<p className="text-sm mt-1">
-								Terminez des formations pour obtenir vos
-								premiers certificats
+								{t.certifications.empty.getStarted}
 							</p>
 						)}
 					</div>

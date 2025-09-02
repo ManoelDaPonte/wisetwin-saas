@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useTranslations } from "@/hooks/use-translations";
 import { forgotPasswordSchema } from "@/validators";
 import { z } from "zod";
 
@@ -15,6 +16,7 @@ export function ForgotPasswordForm({
   className,
   ...props
 }: ForgotPasswordFormProps) {
+  const t = useTranslations();
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<z.ZodFormattedError<
     (typeof forgotPasswordSchema)["_output"]
@@ -79,14 +81,14 @@ export function ForgotPasswordForm({
     return (
       <div className={cn("flex flex-col gap-6", className)} {...props}>
         <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold">Email envoyé</h1>
+          <h1 className="text-2xl font-bold">{t.auth.forgotPassword.success.title}</h1>
           <p className="text-muted-foreground text-sm text-balance">
-            Si votre adresse email est dans notre système, vous recevrez un lien de réinitialisation dans quelques minutes.
+            {t.auth.forgotPassword.success.message}
           </p>
         </div>
         <div className="text-center text-sm">
           <a href="/login" className="underline underline-offset-4">
-            Retour à la connexion
+            {t.auth.forgotPassword.success.backToLogin}
           </a>
         </div>
       </div>
@@ -99,19 +101,19 @@ export function ForgotPasswordForm({
       className={cn("flex flex-col gap-6", className)}
     >
       <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-bold">Mot de passe oublié</h1>
+        <h1 className="text-2xl font-bold">{t.auth.forgotPassword.title}</h1>
         <p className="text-muted-foreground text-sm text-balance">
-          Saisissez votre adresse email pour recevoir un lien de réinitialisation
+          {t.auth.forgotPassword.subtitle}
         </p>
       </div>
       <div className="grid gap-6">
         <div className="grid gap-3">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t.auth.forgotPassword.email}</Label>
           <Input
             id="email"
             name="email"
             type="email"
-            placeholder="exemple@email.com"
+            placeholder={t.auth.forgotPassword.emailPlaceholder}
             required
             disabled={isLoading}
           />
@@ -123,13 +125,13 @@ export function ForgotPasswordForm({
         </div>
         {error && <div className="text-destructive text-sm">{error}</div>}
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Envoi en cours..." : "Envoyer le lien"}
+          {isLoading ? t.auth.forgotPassword.sendingInProgress : t.auth.forgotPassword.sendButton}
         </Button>
       </div>
       <div className="text-center text-sm">
-        Vous vous souvenez de votre mot de passe ?{" "}
+        {t.auth.forgotPassword.rememberPassword}{" "}
         <a href="/login" className="underline underline-offset-4">
-          Se connecter
+          {t.auth.forgotPassword.backToLogin}
         </a>
       </div>
     </form>

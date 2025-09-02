@@ -13,14 +13,16 @@ import { Mail, Trash2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { getDisplayName, getUserInitials } from "@/lib/user-utils";
+import { useTranslations } from "@/hooks/use-translations";
 
 export default function AdminUsersPage() {
+	const t = useTranslations();
 	const { data, isLoading, error } = useAdminUsers();
 
 	const columns: AdminTableColumn<AdminUser>[] = [
 		{
 			key: "user",
-			label: "Utilisateur",
+			label: t.admin.users.table.user,
 			render: (user) => (
 				<div className="flex items-center gap-3">
 					<Avatar className="h-8 w-8">
@@ -45,41 +47,41 @@ export default function AdminUsersPage() {
 		},
 		{
 			key: "emailVerified",
-			label: "Email vérifié",
+			label: t.admin.users.table.emailVerified,
 			render: (user) => (
 				<Badge variant={user.emailVerified ? "default" : "destructive"}>
-					{user.emailVerified ? "Vérifié" : "Non vérifié"}
+					{user.emailVerified ? t.admin.users.table.verified : t.admin.users.table.notVerified}
 				</Badge>
 			),
 		},
 		{
 			key: "organizationsCount",
-			label: "Organisations",
+			label: t.admin.users.table.organizations,
 			render: (user) => (
 				<Badge variant="outline">{user.organizationsCount}</Badge>
 			),
 		},
 		{
 			key: "buildsCount",
-			label: "Formations suivies",
+			label: t.admin.users.table.followedTrainings,
 			render: (user) => (
 				<Badge variant="outline">{user.buildsCount}</Badge>
 			),
 		},
 		{
 			key: "azureContainerId",
-			label: "Container",
+			label: t.admin.users.table.container,
 			render: (user) => (
 				<Badge
 					variant={user.azureContainerId ? "default" : "secondary"}
 				>
-					{user.azureContainerId ? "Créé" : "Aucun"}
+					{user.azureContainerId ? t.admin.users.table.created : t.admin.users.table.none}
 				</Badge>
 			),
 		},
 		{
 			key: "createdAt",
-			label: "Inscrit",
+			label: t.admin.users.table.registered,
 			render: (user) => (
 				<span className="text-sm text-muted-foreground">
 					{formatDistanceToNow(new Date(user.createdAt), {
@@ -93,7 +95,7 @@ export default function AdminUsersPage() {
 
 	const actions: AdminTableAction<AdminUser>[] = [
 		{
-			label: "Contact",
+			label: t.admin.users.actions.contact,
 			icon: <Mail className="h-4 w-4 mr-1" />,
 			onClick: (user) => {
 				window.open(`mailto:${user.email}`, "_blank");
@@ -101,7 +103,7 @@ export default function AdminUsersPage() {
 			variant: "ghost",
 		},
 		{
-			label: "Supprimer",
+			label: t.admin.users.actions.delete,
 			icon: <Trash2 className="h-4 w-4 mr-1" />,
 			onClick: (user) => {
 				console.log("Supprimer utilisateur:", user);
@@ -119,11 +121,11 @@ export default function AdminUsersPage() {
 				actions={actions}
 				isLoading={isLoading}
 				error={error}
-				title="Tous les utilisateurs"
-				description="Gérer et superviser les comptes utilisateurs de la plateforme"
-				searchPlaceholder="Rechercher un utilisateur..."
+				title={t.admin.users.title}
+				description={t.admin.users.subtitle}
+				searchPlaceholder={t.admin.users.searchPlaceholder}
 				itemsPerPage={20}
-				emptyMessage="Aucun utilisateur trouvé"
+				emptyMessage={t.admin.users.emptyMessage}
 			/>
 		</div>
 	);

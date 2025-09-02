@@ -14,8 +14,10 @@ import { Mail, Trash2, Building2, Edit } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { EditOrganizationDialog } from "../components/edit-organization-dialog";
+import { useTranslations } from "@/hooks/use-translations";
 
 export default function AdminOrganizationsPage() {
+	const t = useTranslations();
 	const { data, isLoading, error, refetch } = useAdminOrganizations();
 	const [editingOrganization, setEditingOrganization] = useState<AdminOrganization | null>(null);
 	const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -23,7 +25,7 @@ export default function AdminOrganizationsPage() {
 	const columns: AdminTableColumn<AdminOrganization>[] = [
 		{
 			key: "organization",
-			label: "Organisation",
+			label: t.admin.organizations.table.organization,
 			render: (org) => (
 				<div className="flex items-center gap-3">
 					<Avatar className="h-8 w-8">
@@ -44,11 +46,11 @@ export default function AdminOrganizationsPage() {
 		},
 		{
 			key: "owner",
-			label: "Propriétaire",
+			label: t.admin.organizations.table.owner,
 			render: (org) => (
 				<div>
 					<div className="font-medium">
-						{org.owner.name || "Sans nom"}
+						{org.owner.name || t.admin.organizations.table.noName}
 					</div>
 					<div className="text-sm text-muted-foreground">
 						{org.owner.email}
@@ -58,19 +60,19 @@ export default function AdminOrganizationsPage() {
 		},
 		{
 			key: "membersCount",
-			label: "Membres",
+			label: t.admin.organizations.table.members,
 			render: (org) => (
 				<Badge variant="outline">{org.membersCount} / {org.maxUsers}</Badge>
 			),
 		},
 		{
 			key: "buildsCount",
-			label: "Formations",
+			label: t.admin.organizations.table.trainings,
 			render: (org) => <Badge variant="outline">{org.buildsCount}</Badge>,
 		},
 		{
 			key: "invitationsCount",
-			label: "Invitations",
+			label: t.admin.organizations.table.invitations,
 			render: (org) => (
 				<Badge
 					variant={org.invitationsCount > 0 ? "default" : "secondary"}
@@ -81,7 +83,7 @@ export default function AdminOrganizationsPage() {
 		},
 		{
 			key: "azureContainerId",
-			label: "Container ID",
+			label: t.admin.organizations.table.containerId,
 			render: (org) => (
 				<code className="text-xs bg-muted px-2 py-1 rounded">
 					{org.azureContainerId}
@@ -90,7 +92,7 @@ export default function AdminOrganizationsPage() {
 		},
 		{
 			key: "createdAt",
-			label: "Créée",
+			label: t.admin.organizations.table.created,
 			render: (org) => (
 				<span className="text-sm text-muted-foreground">
 					{formatDistanceToNow(new Date(org.createdAt), {
@@ -104,7 +106,7 @@ export default function AdminOrganizationsPage() {
 
 	const actions: AdminTableAction<AdminOrganization>[] = [
 		{
-			label: "Modifier",
+			label: t.admin.organizations.actions.edit,
 			icon: <Edit className="h-4 w-4 mr-1" />,
 			onClick: (org) => {
 				setEditingOrganization(org);
@@ -113,7 +115,7 @@ export default function AdminOrganizationsPage() {
 			variant: "outline",
 		},
 		{
-			label: "Contact owner",
+			label: t.admin.organizations.actions.contactOwner,
 			icon: <Mail className="h-4 w-4 mr-1" />,
 			onClick: (org) => {
 				window.open(`mailto:${org.owner.email}`, "_blank");
@@ -121,7 +123,7 @@ export default function AdminOrganizationsPage() {
 			variant: "ghost",
 		},
 		{
-			label: "Supprimer",
+			label: t.admin.organizations.actions.delete,
 			icon: <Trash2 className="h-4 w-4 mr-1" />,
 			onClick: (org) => {
 				console.log("Supprimer organisation:", org);
@@ -139,11 +141,11 @@ export default function AdminOrganizationsPage() {
 				actions={actions}
 				isLoading={isLoading}
 				error={error}
-				title="Toutes les organisations"
-				description="Superviser et gérer les organisations et leurs membres"
-				searchPlaceholder="Rechercher une organisation..."
+				title={t.admin.organizations.title}
+				description={t.admin.organizations.subtitle}
+				searchPlaceholder={t.admin.organizations.searchPlaceholder}
 				itemsPerPage={15}
-				emptyMessage="Aucune organisation trouvée"
+				emptyMessage={t.admin.organizations.emptyMessage}
 			/>
 
 			<EditOrganizationDialog

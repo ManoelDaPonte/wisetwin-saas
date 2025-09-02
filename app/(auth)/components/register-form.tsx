@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useTranslations } from "@/hooks/use-translations";
 import {
   registerSchema,
   isPasswordStrong,
@@ -16,6 +17,7 @@ export function RegisterForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
+  const t = useTranslations();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<z.ZodFormattedError<
@@ -37,7 +39,7 @@ export function RegisterForm({
     const confirmPassword = formData.get("confirmPassword") as string;
 
     if (password !== confirmPassword) {
-      setError("Les mots de passe ne correspondent pas");
+      setError(t.auth.register.errors.passwordMismatch);
       setIsLoading(false);
       return;
     }
@@ -83,7 +85,7 @@ export function RegisterForm({
           setFieldErrors(data.errors);
           return;
         }
-        throw new Error(data.message || "Une erreur est survenue");
+        throw new Error(data.message || t.auth.register.errors.generalError);
       }
 
       router.push("/login");
@@ -91,7 +93,7 @@ export function RegisterForm({
       if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError("Une erreur est survenue. Veuillez réessayer.");
+        setError(t.auth.register.errors.generalError);
       }
     } finally {
       setIsLoading(false);
@@ -105,19 +107,19 @@ export function RegisterForm({
       {...props}
     >
       <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-bold">Créer un compte</h1>
+        <h1 className="text-2xl font-bold">{t.auth.register.title}</h1>
         <p className="text-muted-foreground text-sm text-balance">
-          Remplissez les informations ci-dessous pour créer votre compte
+          {t.auth.register.subtitle}
         </p>
       </div>
       <div className="grid gap-6">
         <div className="grid gap-3">
-          <Label htmlFor="firstName">Prénom</Label>
+          <Label htmlFor="firstName">{t.auth.register.firstName}</Label>
           <Input
             id="firstName"
             name="firstName"
             type="text"
-            placeholder="Jean"
+            placeholder={t.auth.register.firstNamePlaceholder}
             required
             disabled={isLoading}
           />
@@ -128,12 +130,12 @@ export function RegisterForm({
           )}
         </div>
         <div className="grid gap-3">
-          <Label htmlFor="name">Nom</Label>
+          <Label htmlFor="name">{t.auth.register.lastName}</Label>
           <Input
             id="name"
             name="name"
             type="text"
-            placeholder="Dupont"
+            placeholder={t.auth.register.lastNamePlaceholder}
             required
             disabled={isLoading}
           />
@@ -144,12 +146,12 @@ export function RegisterForm({
           )}
         </div>
         <div className="grid gap-3">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t.auth.register.email}</Label>
           <Input
             id="email"
             name="email"
             type="email"
-            placeholder="exemple@email.com"
+            placeholder={t.auth.register.emailPlaceholder}
             required
             disabled={isLoading}
           />
@@ -160,7 +162,7 @@ export function RegisterForm({
           )}
         </div>
         <div className="grid gap-3">
-          <Label htmlFor="password">Mot de passe</Label>
+          <Label htmlFor="password">{t.auth.register.password}</Label>
           <Input
             id="password"
             name="password"
@@ -178,7 +180,7 @@ export function RegisterForm({
           </p>
         </div>
         <div className="grid gap-3">
-          <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+          <Label htmlFor="confirmPassword">{t.auth.register.confirmPassword}</Label>
           <Input
             id="confirmPassword"
             name="confirmPassword"
@@ -189,13 +191,13 @@ export function RegisterForm({
         </div>
         {error && <div className="text-destructive text-sm">{error}</div>}
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Création en cours..." : "Créer un compte"}
+          {isLoading ? t.auth.register.creatingInProgress : t.auth.register.createButton}
         </Button>
       </div>
       <div className="text-center text-sm">
-        Vous avez déjà un compte ?{" "}
+        {t.auth.register.hasAccount}{" "}
         <a href="/login" className="underline underline-offset-4">
-          Se connecter
+          {t.auth.register.signIn}
         </a>
       </div>
     </form>

@@ -22,8 +22,10 @@ import {
 	isPasswordStrong,
 	getPasswordRequirements,
 } from "@/validators";
+import { useTranslations } from "@/hooks/use-translations";
 
 export function CompteSection() {
+	const t = useTranslations();
 	const { data: session, update } = useSession();
 	const { updateUser, changePassword, isLoading } = useUserActions();
 	const [firstName, setFirstName] = useState(session?.user?.firstName || "");
@@ -44,32 +46,32 @@ export function CompteSection() {
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle>Compte</CardTitle>
+				<CardTitle>{t.settings.account.title}</CardTitle>
 				<CardDescription>
-					Gérez vos informations de compte
+					{t.settings.account.subtitle}
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-6">
 				<div className="space-y-4">
 					<div className="space-y-2">
-						<Label htmlFor="firstName">Prénom</Label>
+						<Label htmlFor="firstName">{t.settings.account.firstName}</Label>
 						<div className="flex gap-2">
 							<Input
 								id="firstName"
 								value={firstName}
 								onChange={(e) => setFirstName(e.target.value)}
-								placeholder="Votre prénom"
+								placeholder={t.settings.account.firstNamePlaceholder}
 							/>
 						</div>
 					</div>
 					<div className="space-y-2">
-						<Label htmlFor="username">Nom</Label>
+						<Label htmlFor="username">{t.settings.account.name}</Label>
 						<div className="flex gap-2">
 							<Input
 								id="username"
 								value={username}
 								onChange={(e) => setUsername(e.target.value)}
-								placeholder="Votre nom"
+								placeholder={t.settings.account.namePlaceholder}
 							/>
 						</div>
 					</div>
@@ -96,13 +98,13 @@ export function CompteSection() {
 								// Rafraîchir la session pour obtenir les nouvelles données
 								await update();
 								toast.success(
-									"Informations mises à jour avec succès"
+									t.settings.account.updateSuccess
 								);
 							} catch (error) {
 								toast.error(
 									error instanceof Error
 										? error.message
-										: "Erreur lors de la mise à jour"
+										: t.settings.account.updateError
 								);
 							}
 						}}
@@ -113,48 +115,48 @@ export function CompteSection() {
 						className="w-fit"
 					>
 						<Save className="h-4 w-4 mr-2" />
-						Sauvegarder
+						{t.settings.account.save}
 					</Button>
 				</div>
 
 				<Separator />
 
 				<div className="space-y-4">
-					<h3 className="font-medium">Changer le mot de passe</h3>
+					<h3 className="font-medium">{t.settings.account.changePassword.title}</h3>
 					<div className="space-y-2">
 						<Label htmlFor="current-password">
-							Mot de passe actuel
+							{t.settings.account.changePassword.current}
 						</Label>
 						<Input
 							id="current-password"
 							type="password"
 							value={currentPassword}
 							onChange={(e) => setCurrentPassword(e.target.value)}
-							placeholder="Entrez votre mot de passe actuel"
+							placeholder={t.settings.account.changePassword.currentPlaceholder}
 						/>
 					</div>
 					<div className="space-y-2">
 						<Label htmlFor="new-password">
-							Nouveau mot de passe
+							{t.settings.account.changePassword.new}
 						</Label>
 						<Input
 							id="new-password"
 							type="password"
 							value={newPassword}
 							onChange={(e) => setNewPassword(e.target.value)}
-							placeholder="Entrez votre nouveau mot de passe"
+							placeholder={t.settings.account.changePassword.newPlaceholder}
 						/>
 					</div>
 					<div className="space-y-2">
 						<Label htmlFor="confirm-password">
-							Confirmer le nouveau mot de passe
+							{t.settings.account.changePassword.confirm}
 						</Label>
 						<Input
 							id="confirm-password"
 							type="password"
 							value={confirmPassword}
 							onChange={(e) => setConfirmPassword(e.target.value)}
-							placeholder="Confirmez votre nouveau mot de passe"
+							placeholder={t.settings.account.changePassword.confirmPlaceholder}
 						/>
 					</div>
 					<Button
@@ -183,7 +185,7 @@ export function CompteSection() {
 									newPassword,
 								});
 								toast.success(
-									"Mot de passe changé avec succès"
+									t.settings.account.changePassword.success
 								);
 								setCurrentPassword("");
 								setNewPassword("");
@@ -192,7 +194,7 @@ export function CompteSection() {
 								toast.error(
 									error instanceof Error
 										? error.message
-										: "Erreur lors du changement de mot de passe"
+										: t.settings.account.changePassword.error
 								);
 							}
 						}}
@@ -203,7 +205,7 @@ export function CompteSection() {
 							!confirmPassword
 						}
 					>
-						Changer le mot de passe
+						{t.settings.account.changePassword.button}
 					</Button>
 				</div>
 			</CardContent>

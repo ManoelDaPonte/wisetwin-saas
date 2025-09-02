@@ -12,10 +12,12 @@ import {
 import { Check, ChevronDown, Moon, Sun, Monitor } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
+import { useTranslations } from "@/hooks/use-translations"
 
 type Theme = 'light' | 'dark' | 'system'
 
 export function ApparenceSection() {
+  const t = useTranslations()
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
@@ -24,20 +26,20 @@ export function ApparenceSection() {
   }, [])
 
   const themeOptions: { value: Theme; label: string; icon: React.ReactNode }[] = [
-    { value: 'light', label: 'Clair', icon: <Sun className="h-4 w-4" /> },
-    { value: 'dark', label: 'Sombre', icon: <Moon className="h-4 w-4" /> },
-    { value: 'system', label: 'Système', icon: <Monitor className="h-4 w-4" /> },
+    { value: 'light', label: t.settings.appearance.light, icon: <Sun className="h-4 w-4" /> },
+    { value: 'dark', label: t.settings.appearance.dark, icon: <Moon className="h-4 w-4" /> },
+    { value: 'system', label: t.settings.appearance.system, icon: <Monitor className="h-4 w-4" /> },
   ]
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Apparence</CardTitle>
-        <CardDescription>Personnalisez l&apos;apparence de l&apos;application</CardDescription>
+        <CardTitle>{t.settings.appearance.title}</CardTitle>
+        <CardDescription>{t.settings.appearance.subtitle}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
-          <Label>Thème</Label>
+          <Label>{t.settings.appearance.theme}</Label>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="w-full justify-between">

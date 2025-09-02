@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUserStats } from "@/app/hooks/use-user-stats";
 import { useSession } from "next-auth/react";
+import { useTranslations } from "@/hooks/use-translations";
 import {
 	useIsPersonalSpace,
 	useOrganizationStore,
@@ -24,8 +25,9 @@ function RecentActivityItem({
 		timestamp: string;
 	};
 }) {
+	const t = useTranslations();
 	const getIcon = () => CheckCircle2;
-	const getActionText = () => "a terminé";
+	const getActionText = () => t.dashboard.recentActivity.completed;
 
 	const Icon = getIcon();
 
@@ -36,14 +38,14 @@ function RecentActivityItem({
 			</div>
 			<div className="flex-1">
 				<p className="text-sm">
-					Vous {getActionText()}{" "}
+					{t.dashboard.recentActivity.you} {getActionText()}{" "}
 					<span className="font-medium">{activity.buildName}</span>
 				</p>
 				<div className="flex items-center gap-2 mt-1">
 					<Badge variant="outline" className="text-xs">
 						{activity.buildType === "wisetrainer"
-							? "Formation"
-							: "Visite"}
+							? t.dashboard.recentActivity.training
+							: t.dashboard.recentActivity.visit}
 					</Badge>
 					<p className="text-xs text-muted-foreground">
 						{formatDistanceToNow(new Date(activity.timestamp), {
@@ -58,6 +60,7 @@ function RecentActivityItem({
 }
 
 export default function DashboardPage() {
+	const t = useTranslations();
 	const { data: session } = useSession();
 	const {} = useOrganizationStore();
 	const {} = useIsPersonalSpace();
@@ -73,8 +76,7 @@ export default function DashboardPage() {
 				<Card>
 					<CardContent className="pt-6">
 						<p className="text-center text-muted-foreground">
-							Veuillez vous connecter pour accéder à votre tableau
-							de bord.
+							{t.dashboard.noSession}
 						</p>
 					</CardContent>
 				</Card>
@@ -90,7 +92,7 @@ export default function DashboardPage() {
 					<CardHeader>
 						<CardTitle className="flex items-center gap-2">
 							<BookOpen className="h-5 w-5" />
-							WiseTrainer (Formations)
+							{t.dashboard.wisetrainer.title}
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
@@ -102,7 +104,7 @@ export default function DashboardPage() {
 									{stats?.wisetrainerCompletions || 0}
 								</div>
 								<p className="text-sm text-muted-foreground">
-									Formations terminées
+									{t.dashboard.wisetrainer.completedTrainings}
 								</p>
 							</div>
 						)}
@@ -113,7 +115,7 @@ export default function DashboardPage() {
 					<CardHeader>
 						<CardTitle className="flex items-center gap-2">
 							<Eye className="h-5 w-5" />
-							Wisetour (Visites)
+							{t.dashboard.wisetour.title}
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
@@ -125,7 +127,7 @@ export default function DashboardPage() {
 									{stats?.wisetourVisits || 0}
 								</div>
 								<p className="text-sm text-muted-foreground">
-									Environnements visités
+									{t.dashboard.wisetour.environmentsVisited}
 								</p>
 							</div>
 						)}
@@ -138,7 +140,7 @@ export default function DashboardPage() {
 				<CardHeader>
 					<CardTitle className="flex items-center gap-2">
 						<Calendar className="h-5 w-5" />
-						Activité récente
+						{t.dashboard.recentActivity.title}
 					</CardTitle>
 				</CardHeader>
 				<CardContent>
@@ -164,8 +166,7 @@ export default function DashboardPage() {
 						<div className="text-center py-8">
 							<Calendar className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
 							<p className="text-muted-foreground">
-								Aucune activité récente. Commencez une formation
-								!
+								{t.dashboard.recentActivity.noActivity}
 							</p>
 						</div>
 					)}
@@ -177,8 +178,7 @@ export default function DashboardPage() {
 				<Card className="border-destructive">
 					<CardContent className="pt-6">
 						<p className="text-destructive text-sm">
-							Une erreur est survenue lors du chargement des
-							données. Veuillez rafraîchir la page.
+							{t.dashboard.recentActivity.errorLoading}
 						</p>
 					</CardContent>
 				</Card>

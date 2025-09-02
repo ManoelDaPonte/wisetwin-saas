@@ -4,8 +4,10 @@ import { useOrganizationStore } from "@/stores/organization-store";
 import { useMembers } from "@/app/(app)/organisation/hooks/use-members";
 import { MembersTable } from "./components/members-table";
 import { InviteMemberDialog } from "./components/invite-member-dialog";
+import { useTranslations } from "@/hooks/use-translations";
 
 export default function MembersPage() {
+	const t = useTranslations();
 	const { activeOrganization } = useOrganizationStore();
 
 	const {
@@ -30,10 +32,10 @@ export default function MembersPage() {
 			<div className="flex items-center justify-between">
 				<div>
 					<h1 className="text-2xl font-bold tracking-tight">
-						Membres
+						{t.members.title}
 					</h1>
 					<p className="text-muted-foreground">
-						Gérez les membres et leurs permissions dans{" "}
+						{t.members.subtitle}{" "}
 						{activeOrganization?.name}
 					</p>
 				</div>

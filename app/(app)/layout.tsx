@@ -1,6 +1,7 @@
 import { AppSidebar } from "@/app/components/app-sidebar";
 import { AppBreadcrumb } from "@/app/components/app-breadcrumb";
 import { LogoBackground } from "@/app/components/logo-background";
+import { LanguageSelector } from "@/app/components/language-selector";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import {
 	SidebarInset,
@@ -17,15 +18,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 				<LogoBackground />
 				<div className="relative z-10 flex flex-col flex-1 min-h-0">
 					<header className="sticky top-0 z-50 flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 bg-background/80 backdrop-blur-md border-border/40">
-						<div className="flex items-center gap-2 px-4">
-							<SidebarTrigger className="-ml-1" />
-							<Separator
-								orientation="vertical"
-								className="mr-2 !h-4"
-							/>
-							<Breadcrumb>
-								<AppBreadcrumb />
-							</Breadcrumb>
+						<div className="flex items-center justify-between w-full gap-2 px-4">
+							<div className="flex items-center gap-2">
+								<SidebarTrigger className="-ml-1" />
+								<Separator
+									orientation="vertical"
+									className="mr-2 !h-4"
+								/>
+								<Breadcrumb>
+									<AppBreadcrumb />
+								</Breadcrumb>
+							</div>
+							<div className="flex items-center gap-2">
+								<LanguageSelector />
+							</div>
 						</div>
 					</header>
 					<div className="flex-1 pb-4 pr-4 pl-4 pt-0 min-h-0">

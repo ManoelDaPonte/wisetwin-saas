@@ -19,32 +19,34 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { useTranslations } from "@/hooks/use-translations"
 
 export function ZoneDangereuseSection() {
+  const t = useTranslations()
   const { deleteAccount, isLoading } = useUserActions()
   const [deletePassword, setDeletePassword] = useState("")
 
   return (
     <Card className="border-destructive">
       <CardHeader>
-        <CardTitle className="text-destructive">Zone dangereuse</CardTitle>
-        <CardDescription>Actions irréversibles</CardDescription>
+        <CardTitle className="text-destructive">{t.settings.dangerZone.title}</CardTitle>
+        <CardDescription>{t.settings.dangerZone.subtitle}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-4">
           <div>
-            <h3 className="font-medium mb-2">Supprimer le compte</h3>
+            <h3 className="font-medium mb-2">{t.settings.dangerZone.deleteAccount.title}</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              Cette action supprimera définitivement votre compte et toutes vos données. Cette action est irréversible.
+              {t.settings.dangerZone.deleteAccount.description}
             </p>
             <div className="space-y-2">
-              <Label htmlFor="delete-password">Mot de passe pour confirmer</Label>
+              <Label htmlFor="delete-password">{t.settings.dangerZone.deleteAccount.passwordLabel}</Label>
               <Input
                 id="delete-password"
                 type="password"
                 value={deletePassword}
                 onChange={(e) => setDeletePassword(e.target.value)}
-                placeholder="Entrez votre mot de passe pour confirmer"
+                placeholder={t.settings.dangerZone.deleteAccount.passwordPlaceholder}
               />
             </div>
             <div className="pt-4">
@@ -55,35 +57,34 @@ export function ZoneDangereuseSection() {
                     disabled={isLoading || !deletePassword}
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
-                    Supprimer mon compte
+                    {t.settings.dangerZone.deleteAccount.button}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Êtes-vous absolument sûr ?</AlertDialogTitle>
+                    <AlertDialogTitle>{t.settings.dangerZone.deleteAccount.confirmTitle}</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Cette action est irréversible. Cela supprimera définitivement votre compte,
-                      toutes vos données et tous les conteneurs Azure associés.
+                      {t.settings.dangerZone.deleteAccount.confirmDescription}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                    <AlertDialogCancel>{t.settings.dangerZone.deleteAccount.cancel}</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={async () => {
                         if (!deletePassword) {
-                          toast.error("Veuillez entrer votre mot de passe pour confirmer")
+                          toast.error(t.settings.dangerZone.deleteAccount.passwordRequired)
                           return
                         }
                         try {
                           await deleteAccount({ password: deletePassword })
-                          toast.success("Compte supprimé avec succès")
+                          toast.success(t.settings.dangerZone.deleteAccount.success)
                         } catch (error) {
-                          toast.error(error instanceof Error ? error.message : "Erreur lors de la suppression du compte")
+                          toast.error(error instanceof Error ? error.message : t.settings.dangerZone.deleteAccount.error)
                         }
                       }}
                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
-                      Supprimer définitivement
+                      {t.settings.dangerZone.deleteAccount.confirmButton}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>

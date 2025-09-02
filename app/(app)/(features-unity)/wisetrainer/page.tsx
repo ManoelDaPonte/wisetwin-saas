@@ -2,8 +2,10 @@
 
 import { BuildsTable } from "@/app/(app)/(features-unity)/components/builds-table";
 import { useBuilds } from "@/app/hooks/use-builds";
+import { useTranslations } from "@/hooks/use-translations";
 
 export default function WisetrainerPage() {
+	const t = useTranslations();
 	const {
 		data: builds,
 		error,
@@ -16,8 +18,8 @@ export default function WisetrainerPage() {
 				builds={builds}
 				isLoading={isLoading}
 				error={error}
-				title="Formations disponibles"
-				description="Explorez et lancez les modules de formation Unity"
+				title={t.wisetrainer.title}
+				description={t.wisetrainer.subtitle}
 				mode="catalog"
 			/>
 		</div>

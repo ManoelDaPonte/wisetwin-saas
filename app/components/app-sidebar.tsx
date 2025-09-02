@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Home, LayoutDashboard, Building2, Box, Crown } from "lucide-react";
 import { useIsPersonalSpace } from "@/stores/organization-store";
+import { useTranslations } from "@/hooks/use-translations";
 import { useSession } from "next-auth/react";
 import { canAccessAdminPanel } from "@/lib/admin/permissions";
 import { LucideIcon } from "lucide-react";
@@ -31,6 +32,7 @@ type NavigationItem = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	const isPersonalSpace = useIsPersonalSpace();
+	const t = useTranslations();
 	// Récupération du contexte de l'organisation
 	const { data: session } = useSession();
 
@@ -38,22 +40,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	const mainNavItems = React.useMemo(() => {
 		const items: NavigationItem[] = [
 			{
-				title: "Accueil",
+				title: t.navigation.home,
 				url: "/accueil",
 				icon: Home,
 				isActive: true,
 			},
 			{
-				title: "Tableau de bord",
+				title: t.navigation.dashboard,
 				url: "/tableau-de-bord",
 				icon: LayoutDashboard,
 				items: [
 					{
-						title: "Vue d'ensemble",
+						title: t.navigation.overview,
 						url: "/tableau-de-bord",
 					},
 					{
-						title: "Certifications",
+						title: t.navigation.certifications,
 						url: "/tableau-de-bord/certifications",
 					},
 				],
@@ -61,32 +63,32 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 		];
 
 		return items;
-	}, []);
+	}, [t]);
 
 	const platformNavItems = React.useMemo(() => {
 		const items: NavigationItem[] = [
 			// {
-			// 	title: "Wisetour",
+			// 	title: t.navigation.wisetour,
 			// 	url: "/wisetour",
 			// 	icon: Box,
 			// 	items: [
 			// 		{
-			// 			title: "Visites Virtuelles",
+			// 			title: t.navigation.virtualVisits,
 			// 			url: "/wisetour",
 			// 		},
 			// 	],
 			// },
 			{
-				title: "WiseTrainer",
+				title: t.navigation.wisetrainer,
 				url: "/wisetrainer",
 				icon: Box,
 				items: [
 					{
-						title: "Toutes les formations",
+						title: t.navigation.allTrainings,
 						url: "/wisetrainer",
 					},
 					{
-						title: "Formations terminées",
+						title: t.navigation.completedTrainings,
 						url: "/wisetrainer/formations-terminees",
 					},
 				],
@@ -94,31 +96,31 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 		];
 
 		return items;
-	}, []);
+	}, [t]);
 
 	const organizationNavItems = React.useMemo(() => {
 		if (isPersonalSpace) return [];
 
 		const items: NavigationItem[] = [
 			{
-				title: "Organisation",
+				title: t.navigation.organization,
 				url: "/organisation",
 				icon: Building2,
 				items: [
 					{
-						title: "Vue d'ensemble",
+						title: t.navigation.overview,
 						url: "/organisation",
 					},
 					{
-						title: "Membres",
+						title: t.navigation.members,
 						url: "/organisation/membres",
 					},
 					{
-						title: "Plan de formation",
+						title: t.navigation.trainingPlan,
 						url: "/organisation/plan-de-formation",
 					},
 					{
-						title: "Paramètres",
+						title: t.navigation.settings,
 						url: "/organisation/parametres",
 					},
 				],
@@ -126,7 +128,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 		];
 
 		return items;
-	}, [isPersonalSpace]);
+	}, [isPersonalSpace, t]);
 
 	// Navigation Super-admin (seulement pour @wisetwin.eu)
 	const superAdminNavItems = React.useMemo(() => {
@@ -136,20 +138,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
 		const items: NavigationItem[] = [
 			{
-				title: "Super-admin",
+				title: t.navigation.superAdmin,
 				url: "/admin",
 				icon: Crown,
 				items: [
 					{
-						title: "Formations",
+						title: t.navigation.formations,
 						url: "/admin/formations",
 					},
 					{
-						title: "Utilisateurs",
+						title: t.navigation.users,
 						url: "/admin/utilisateurs",
 					},
 					{
-						title: "Organisations",
+						title: t.navigation.organizations,
 						url: "/admin/organisations",
 					},
 				],
@@ -157,7 +159,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 		];
 
 		return items;
-	}, [session?.user?.email]);
+	}, [session?.user?.email, t]);
 
 	return (
 		<Sidebar collapsible="icon" {...props}>
@@ -165,16 +167,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				<OrganizationSwitcher />
 			</SidebarHeader>
 			<SidebarContent>
-				<NavMain items={mainNavItems} label="Navigation" />
-				<NavMain items={platformNavItems} label="Application" />
+				<NavMain items={mainNavItems} label={t.navigation.mainNavigation} />
+				<NavMain items={platformNavItems} label={t.navigation.application} />
 				{organizationNavItems.length > 0 && (
 					<NavMain
 						items={organizationNavItems}
-						label="Administration"
+						label={t.navigation.administration}
 					/>
 				)}
 				{superAdminNavItems.length > 0 && (
-					<NavMain items={superAdminNavItems} label="Super-admin" />
+					<NavMain items={superAdminNavItems} label={t.navigation.superAdmin} />
 				)}
 			</SidebarContent>
 			<SidebarFooter>

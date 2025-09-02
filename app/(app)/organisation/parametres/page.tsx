@@ -6,8 +6,10 @@ import { DangerZone } from "./components/danger-zone";
 import { LeaveOrganization } from "./components/leave-organization";
 import { useOrganizationSettings } from "../hooks/use-organization-settings";
 import { useLeaveOrganization } from "../hooks/use-leave-organization";
+import { useTranslations } from "@/hooks/use-translations";
 
 export default function SettingsPage() {
+	const t = useTranslations();
 	const { activeOrganization } = useOrganizationStore();
 	const {
 		updateOrganization,
@@ -33,10 +35,10 @@ export default function SettingsPage() {
 		<div className="container mx-auto py-8 space-y-8 max-w-4xl">
 			<div>
 				<h1 className="text-3xl font-bold">
-					Paramètres de l&apos;organisation
+					{t.organizationSettings.title}
 				</h1>
 				<p className="text-muted-foreground">
-					Gérez les paramètres et la configuration de{" "}
+					{t.organizationSettings.subtitle}{" "}
 					{activeOrganization.name}
 				</p>
 			</div>

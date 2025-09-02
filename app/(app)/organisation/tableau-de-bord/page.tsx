@@ -12,6 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useOrganizationStore } from "@/stores/organization-store";
+import { useTranslations } from "@/hooks/use-translations";
 import {
 	Users,
 	BookOpen,
@@ -51,6 +52,7 @@ const mockTrainingData = {
 };
 
 export default function OrganizationDashboardPage() {
+	const t = useTranslations();
 	const { activeOrganization } = useOrganizationStore();
 
 	if (!activeOrganization) {
@@ -61,10 +63,10 @@ export default function OrganizationDashboardPage() {
 		<div className="py-8 space-y-8">
 			<div>
 				<h1 className="text-3xl font-bold">
-					Tableau de bord des formations
+					{t.trainingDashboard.title}
 				</h1>
 				<p className="text-muted-foreground">
-					Suivez l&apos;avancement des formations de vos équipes
+					{t.trainingDashboard.subtitle}
 				</p>
 			</div>
 
@@ -73,7 +75,7 @@ export default function OrganizationDashboardPage() {
 				<Card>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 						<CardTitle className="text-sm font-medium">
-							Utilisateurs actifs
+							{t.trainingDashboard.stats.activeUsers}
 						</CardTitle>
 						<Users className="h-4 w-4 text-muted-foreground" />
 					</CardHeader>
@@ -82,7 +84,7 @@ export default function OrganizationDashboardPage() {
 							{mockTrainingData.stats.totalUsers}
 						</div>
 						<p className="text-xs text-muted-foreground">
-							Aucune donnée disponible
+							{t.trainingDashboard.stats.noData}
 						</p>
 					</CardContent>
 				</Card>
@@ -90,7 +92,7 @@ export default function OrganizationDashboardPage() {
 				<Card>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 						<CardTitle className="text-sm font-medium">
-							Formations actives
+							{t.trainingDashboard.stats.activeTrainings}
 						</CardTitle>
 						<BookOpen className="h-4 w-4 text-muted-foreground" />
 					</CardHeader>
@@ -99,7 +101,7 @@ export default function OrganizationDashboardPage() {
 							{mockTrainingData.stats.activeTrainings}
 						</div>
 						<p className="text-xs text-muted-foreground">
-							Aucune formation active
+							{t.trainingDashboard.stats.noActiveTraining}
 						</p>
 					</CardContent>
 				</Card>
@@ -107,7 +109,7 @@ export default function OrganizationDashboardPage() {
 				<Card>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 						<CardTitle className="text-sm font-medium">
-							Taux de complétion
+							{t.trainingDashboard.stats.completionRate}
 						</CardTitle>
 						<TrendingUp className="h-4 w-4 text-muted-foreground" />
 					</CardHeader>
@@ -125,7 +127,7 @@ export default function OrganizationDashboardPage() {
 				<Card>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 						<CardTitle className="text-sm font-medium">
-							Temps moyen
+							{t.trainingDashboard.stats.averageTime}
 						</CardTitle>
 						<Clock className="h-4 w-4 text-muted-foreground" />
 					</CardHeader>
@@ -134,7 +136,7 @@ export default function OrganizationDashboardPage() {
 							{mockTrainingData.stats.averageTime}
 						</div>
 						<p className="text-xs text-muted-foreground">
-							Par formation
+							{t.trainingDashboard.stats.perTraining}
 						</p>
 					</CardContent>
 				</Card>
@@ -143,9 +145,9 @@ export default function OrganizationDashboardPage() {
 			{/* Vue d'ensemble des formations */}
 			<Card>
 				<CardHeader>
-					<CardTitle>Formations en cours</CardTitle>
+					<CardTitle>{t.trainingDashboard.ongoingTrainings.title}</CardTitle>
 					<CardDescription>
-						Progression globale par formation
+						{t.trainingDashboard.ongoingTrainings.subtitle}
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
@@ -163,18 +165,18 @@ export default function OrganizationDashboardPage() {
 												className="text-green-600"
 											>
 												<CheckCircle2 className="h-3 w-3 mr-1" />
-												Terminée
+												{t.trainingDashboard.ongoingTrainings.completed}
 											</Badge>
 										) : (
 											<Badge variant="outline">
 												<Circle className="h-3 w-3 mr-1" />
-												En cours
+												{t.trainingDashboard.ongoingTrainings.ongoing}
 											</Badge>
 										)}
 									</div>
 									<div className="text-sm text-muted-foreground">
 										{training.completedUsers}/
-										{training.totalUsers} utilisateurs
+										{training.totalUsers} {t.trainingDashboard.ongoingTrainings.users}
 									</div>
 								</div>
 								<Progress
@@ -182,7 +184,7 @@ export default function OrganizationDashboardPage() {
 									className="h-2"
 								/>
 								<p className="text-xs text-muted-foreground">
-									Progression moyenne:{" "}
+									{t.trainingDashboard.ongoingTrainings.averageProgress}:{" "}
 									{training.averageProgress}%
 								</p>
 							</div>
@@ -196,14 +198,14 @@ export default function OrganizationDashboardPage() {
 				<CardHeader>
 					<div className="flex items-center justify-between">
 						<div>
-							<CardTitle>Activité récente</CardTitle>
+							<CardTitle>{t.trainingDashboard.recentActivity.title}</CardTitle>
 							<CardDescription>
-								Dernières progressions des utilisateurs
+								{t.trainingDashboard.recentActivity.subtitle}
 							</CardDescription>
 						</div>
 						<Button variant="outline" size="sm">
 							<Award className="h-4 w-4 mr-2" />
-							Assigner des formations
+							{t.trainingDashboard.recentActivity.assignButton}
 						</Button>
 					</div>
 				</CardHeader>

@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useTranslations } from "@/hooks/use-translations";
 import {
   resetPasswordSchema,
   isPasswordStrong,
@@ -20,6 +21,7 @@ export function ResetPasswordForm({
   className,
   ...props
 }: ResetPasswordFormProps) {
+  const t = useTranslations();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
@@ -33,17 +35,17 @@ export function ResetPasswordForm({
   useEffect(() => {
     const tokenParam = searchParams.get("token");
     if (!tokenParam) {
-      setError("Token manquant. Veuillez utiliser le lien reçu par email.");
+      setError(t.auth.resetPassword.errors.missingToken);
       return;
     }
     setToken(tokenParam);
-  }, [searchParams]);
+  }, [searchParams, t.auth.resetPassword.errors.missingToken]);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     
     if (!token) {
-      setError("Token manquant");
+      setError(t.auth.resetPassword.errors.missingToken);
       return;
     }
 
@@ -56,7 +58,7 @@ export function ResetPasswordForm({
     const confirmPassword = formData.get("confirmPassword") as string;
 
     if (password !== confirmPassword) {
-      setError("Les mots de passe ne correspondent pas");
+      setError(t.auth.resetPassword.errors.passwordMismatch);
       setIsLoading(false);
       return;
     }
@@ -122,14 +124,14 @@ export function ResetPasswordForm({
     return (
       <div className={cn("flex flex-col gap-6", className)} {...props}>
         <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold">Mot de passe réinitialisé</h1>
+          <h1 className="text-2xl font-bold">{t.auth.resetPassword.success.title}</h1>
           <p className="text-muted-foreground text-sm text-balance">
-            Votre mot de passe a été réinitialisé avec succès. Vous allez être redirigé vers la page de connexion.
+            {t.auth.resetPassword.success.message}
           </p>
         </div>
         <div className="text-center text-sm">
           <a href="/login" className="underline underline-offset-4">
-            Se connecter maintenant
+            {t.auth.resetPassword.success.loginNow}
           </a>
         </div>
       </div>
@@ -140,14 +142,14 @@ export function ResetPasswordForm({
     return (
       <div className={cn("flex flex-col gap-6", className)} {...props}>
         <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold">Lien invalide</h1>
+          <h1 className="text-2xl font-bold">{t.auth.resetPassword.errors.invalidLink.title}</h1>
           <p className="text-muted-foreground text-sm text-balance">
-            Le lien de réinitialisation est invalide ou manquant.
+            {t.auth.resetPassword.errors.invalidLink.message}
           </p>
         </div>
         <div className="text-center text-sm">
           <a href="/forgot-password" className="underline underline-offset-4">
-            Demander un nouveau lien
+            {t.auth.resetPassword.errors.invalidLink.requestNew}
           </a>
         </div>
       </div>
@@ -160,14 +162,14 @@ export function ResetPasswordForm({
       className={cn("flex flex-col gap-6", className)}
     >
       <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-bold">Nouveau mot de passe</h1>
+        <h1 className="text-2xl font-bold">{t.auth.resetPassword.title}</h1>
         <p className="text-muted-foreground text-sm text-balance">
-          Saisissez votre nouveau mot de passe
+          {t.auth.resetPassword.subtitle}
         </p>
       </div>
       <div className="grid gap-6">
         <div className="grid gap-3">
-          <Label htmlFor="password">Nouveau mot de passe</Label>
+          <Label htmlFor="password">{t.auth.resetPassword.newPassword}</Label>
           <Input
             id="password"
             name="password"
@@ -185,7 +187,7 @@ export function ResetPasswordForm({
           </p>
         </div>
         <div className="grid gap-3">
-          <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+          <Label htmlFor="confirmPassword">{t.auth.resetPassword.confirmPassword}</Label>
           <Input
             id="confirmPassword"
             name="confirmPassword"
@@ -196,12 +198,12 @@ export function ResetPasswordForm({
         </div>
         {error && <div className="text-destructive text-sm">{error}</div>}
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Réinitialisation en cours..." : "Réinitialiser le mot de passe"}
+          {isLoading ? t.auth.resetPassword.resettingInProgress : t.auth.resetPassword.resetButton}
         </Button>
       </div>
       <div className="text-center text-sm">
         <a href="/login" className="underline underline-offset-4">
-          Retour à la connexion
+          {t.auth.resetPassword.backToLogin}
         </a>
       </div>
     </form>

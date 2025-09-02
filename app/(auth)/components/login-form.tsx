@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "@/hooks/use-translations";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,7 @@ export function LoginForm({
 }: React.ComponentProps<"form">) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
+	const t = useTranslations();
 	const [error, setError] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -45,7 +47,7 @@ export function LoginForm({
 			});
 
 			if (result?.error) {
-				setError("Email ou mot de passe incorrect");
+				setError(t.auth.login.errors.invalidCredentials);
 				return;
 			}
 
@@ -57,7 +59,7 @@ export function LoginForm({
 			}
 			router.refresh();
 		} catch {
-			setError("Une erreur est survenue. Veuillez réessayer.");
+			setError(t.auth.login.errors.generalError);
 		} finally {
 			setIsLoading(false);
 		}
@@ -70,41 +72,40 @@ export function LoginForm({
 			{...props}
 		>
 			<div className="flex flex-col items-center gap-2 text-center">
-				<h1 className="text-2xl font-bold">Connexion à votre compte</h1>
+				<h1 className="text-2xl font-bold">{t.auth.login.title}</h1>
 				<p className="text-muted-foreground text-sm text-balance">
-					Entrez votre email pour vous connecter à votre compte
+					{t.auth.login.subtitle}
 				</p>
 			</div>
 
 			{invitationToken && (
 				<Alert>
 					<AlertDescription>
-						Connectez-vous pour accepter votre invitation à
-						rejoindre une organisation.
+						{t.auth.login.invitationMessage}
 					</AlertDescription>
 				</Alert>
 			)}
 
 			<div className="grid gap-6">
 				<div className="grid gap-3">
-					<Label htmlFor="email">Email</Label>
+					<Label htmlFor="email">{t.auth.login.email}</Label>
 					<Input
 						id="email"
 						name="email"
 						type="email"
-						placeholder="exemple@email.com"
+						placeholder={t.auth.login.emailPlaceholder}
 						required
 						disabled={isLoading}
 					/>
 				</div>
 				<div className="grid gap-3">
 					<div className="flex items-center">
-						<Label htmlFor="password">Mot de passe</Label>
+						<Label htmlFor="password">{t.auth.login.password}</Label>
 						<a
 							href="/forgot-password"
 							className="ml-auto text-sm underline-offset-4 hover:underline"
 						>
-							Mot de passe oublié ?
+							{t.auth.login.forgotPassword}
 						</a>
 					</div>
 					<Input
@@ -119,13 +120,13 @@ export function LoginForm({
 					<div className="text-destructive text-sm">{error}</div>
 				)}
 				<Button type="submit" className="w-full" disabled={isLoading}>
-					{isLoading ? "Connexion en cours..." : "Se connecter"}
+					{isLoading ? t.auth.login.loginInProgress : t.auth.login.loginButton}
 				</Button>
 			</div>
 			<div className="text-center text-sm">
-				Vous n&apos;avez pas de compte ?{" "}
+				{t.auth.login.noAccount}{" "}
 				<a href="/register" className="underline underline-offset-4">
-					S&apos;inscrire
+					{t.auth.login.signUp}
 				</a>
 			</div>
 		</form>

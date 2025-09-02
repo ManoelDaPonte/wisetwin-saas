@@ -13,8 +13,10 @@ import { Badge } from "@/components/ui/badge";
 import { Edit } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+import { useTranslations } from "@/hooks/use-translations";
 
 export default function AdminFormationsPage() {
+	const t = useTranslations();
 	const { data, isLoading, error } = useAdminFormations();
 	const [selectedFormation, setSelectedFormation] =
 		useState<AdminFormation | null>(null);
@@ -23,7 +25,7 @@ export default function AdminFormationsPage() {
 	const columns: AdminTableColumn<AdminFormation>[] = [
 		{
 			key: "name",
-			label: "Formation",
+			label: t.admin.trainings.table.formation,
 			render: (formation) => (
 				<div>
 					<div className="font-medium">
@@ -39,7 +41,7 @@ export default function AdminFormationsPage() {
 		},
 		{
 			key: "buildType",
-			label: "Type",
+			label: t.admin.trainings.table.type,
 			render: (formation) => (
 				<Badge
 					variant={
@@ -54,7 +56,7 @@ export default function AdminFormationsPage() {
 		},
 		{
 			key: "containerInfo",
-			label: "Container",
+			label: t.admin.trainings.table.container,
 			render: (formation) => (
 				<code className="text-xs bg-muted px-2 py-1 rounded">
 					{formation.containerId}
@@ -63,7 +65,7 @@ export default function AdminFormationsPage() {
 		},
 		{
 			key: "owner",
-			label: "Organisation",
+			label: t.admin.trainings.table.organization,
 			render: (formation) => (
 				<div className="text-sm">
 					{formation.containerType === "organization"
@@ -74,7 +76,7 @@ export default function AdminFormationsPage() {
 		},
 		{
 			key: "lastModified",
-			label: "Dernière modification",
+			label: t.admin.trainings.table.lastModified,
 			render: (formation) => (
 				<span className="text-sm text-muted-foreground">
 					{formation.lastModified
@@ -82,18 +84,18 @@ export default function AdminFormationsPage() {
 								addSuffix: true,
 								locale: fr,
 						  })
-						: "Inconnue"}
+						: t.admin.trainings.table.unknown}
 				</span>
 			),
 		},
 		{
 			key: "hasMetadata",
-			label: "Métadonnées",
+			label: t.admin.trainings.table.metadata,
 			render: (formation) => (
 				<Badge
 					variant={formation.hasMetadata ? "default" : "destructive"}
 				>
-					{formation.hasMetadata ? "Présentes" : "Manquantes"}
+					{formation.hasMetadata ? t.admin.trainings.table.present : t.admin.trainings.table.missing}
 				</Badge>
 			),
 		},
@@ -101,7 +103,7 @@ export default function AdminFormationsPage() {
 
 	const actions: AdminTableAction<AdminFormation>[] = [
 		{
-			label: "Éditer",
+			label: t.admin.trainings.actions.edit,
 			icon: <Edit className="h-4 w-4 mr-1" />,
 			onClick: (formation) => {
 				setSelectedFormation(formation);
@@ -119,14 +121,14 @@ export default function AdminFormationsPage() {
 				actions={actions}
 				isLoading={isLoading}
 				error={error}
-				title="Toutes les formations"
-				description="Gérer les métadonnées et configurations des formations Unity"
-				searchPlaceholder="Rechercher une formation..."
+				title={t.admin.trainings.title}
+				description={t.admin.trainings.subtitle}
+				searchPlaceholder={t.admin.trainings.searchPlaceholder}
 				itemsPerPage={15}
-				emptyMessage="Aucune formation trouvée"
+				emptyMessage={t.admin.trainings.emptyMessage}
 			/>
 
-			{/* Éditeur de métadonnées */}
+			{/* Metadata Editor */}
 			{selectedFormation && (
 				<MetadataEditorDialog
 					formation={selectedFormation}

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useOrganizationStore } from "@/stores/organization-store";
+import { useTranslations } from "@/hooks/use-translations";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Users, Tags, BookOpen, BarChart3 } from "lucide-react";
@@ -11,6 +12,7 @@ import { BuildsManager } from "./components/builds-manager";
 import { ProgressDashboard } from "./components/progress-dashboard";
 
 export default function GestionFormationsPage() {
+	const t = useTranslations();
 	const { activeOrganization } = useOrganizationStore();
 	const [activeTab, setActiveTab] = useState("dashboard");
 
@@ -21,8 +23,7 @@ export default function GestionFormationsPage() {
 				<Card>
 					<CardContent className="p-6">
 						<p className="text-center text-muted-foreground">
-							Veuillez sélectionner une organisation pour accéder
-							à la gestion des formations.
+							{t.trainingPlan.selectOrganization}
 						</p>
 					</CardContent>
 				</Card>
@@ -37,11 +38,10 @@ export default function GestionFormationsPage() {
 					<CardContent className="p-6">
 						<div className="text-center">
 							<h3 className="text-lg font-medium mb-2">
-								Accès restreint
+								{t.trainingPlan.restrictedAccess.title}
 							</h3>
 							<p className="text-muted-foreground">
-								Seuls les administrateurs et propriétaires
-								peuvent gérer les formations.
+								{t.trainingPlan.restrictedAccess.message}
 							</p>
 						</div>
 					</CardContent>
@@ -56,10 +56,10 @@ export default function GestionFormationsPage() {
 			<div className="flex items-center justify-between">
 				<div>
 					<h1 className="text-2xl font-bold tracking-tight">
-						Gestion des plans de formations
+						{t.trainingPlan.title}
 					</h1>
 					<p className="text-muted-foreground">
-						Gérez les formations de vos membres
+						{t.trainingPlan.subtitle}
 					</p>
 				</div>
 			</div>
@@ -77,7 +77,7 @@ export default function GestionFormationsPage() {
 					>
 						<BarChart3 className="w-4 h-4" />
 						<span className="hidden sm:inline">
-							Tableau de bord
+							{t.trainingPlan.tabs.dashboard}
 						</span>
 					</TabsTrigger>
 					<TabsTrigger
@@ -88,7 +88,7 @@ export default function GestionFormationsPage() {
 							1
 						</div>
 						<Tags className="w-4 h-4" />
-						<span className="hidden sm:inline">Plans</span>
+						<span className="hidden sm:inline">{t.trainingPlan.tabs.plans}</span>
 					</TabsTrigger>
 					<TabsTrigger
 						value="members"
@@ -98,7 +98,7 @@ export default function GestionFormationsPage() {
 							2
 						</div>
 						<Users className="w-4 h-4" />
-						<span className="hidden sm:inline">Membres</span>
+						<span className="hidden sm:inline">{t.trainingPlan.tabs.members}</span>
 					</TabsTrigger>
 					<TabsTrigger
 						value="formations"
@@ -108,7 +108,7 @@ export default function GestionFormationsPage() {
 							3
 						</div>
 						<BookOpen className="w-4 h-4" />
-						<span className="hidden sm:inline">Formations</span>
+						<span className="hidden sm:inline">{t.trainingPlan.tabs.trainings}</span>
 					</TabsTrigger>
 				</TabsList>
 

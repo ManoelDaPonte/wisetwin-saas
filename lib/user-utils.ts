@@ -39,5 +39,3 @@ export function getUserInitials(user: Partial<UserLike>): string {
   return "U";
 }
 
-// Fonctions spécifiques pour rétrocompatibilité avec les types NextAuth
-export { getDisplayName as getDisplayName, getUserInitials as getUserInitials };

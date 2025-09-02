@@ -2,8 +2,10 @@
 
 import { BuildsTable } from "@/app/(app)/(features-unity)/components/builds-table";
 import { useCompletedFormationsWithDetails } from "@/app/hooks/use-completed-formations";
+import { useTranslations } from "@/hooks/use-translations";
 
 export default function FormationsTermineesPage() {
+	const t = useTranslations();
 	const {
 		data: builds,
 		error,
@@ -17,10 +19,10 @@ export default function FormationsTermineesPage() {
 				builds={builds}
 				isLoading={isLoading}
 				error={error}
-				title="Formations Terminées"
-				description={`Consultez l'historique de vos formations terminées (${totalCompleted} formation${
-					totalCompleted > 1 ? "s" : ""
-				}) et relancez-les si nécessaire`}
+				title={t.completedTrainings.title}
+				description={t.completedTrainings.subtitle
+					.replace("{count}", totalCompleted.toString())
+					.replace("{s}", totalCompleted > 1 ? "s" : "")}
 				mode="completed"
 			/>
 		</div>

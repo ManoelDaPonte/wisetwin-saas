@@ -62,7 +62,7 @@ export function OrganizationStats({
 						</div>
 					)}
 					<p className="text-xs text-muted-foreground">
-						Formations actives
+						Formations disponibles
 					</p>
 				</CardContent>
 			</Card>
@@ -83,7 +83,7 @@ export function OrganizationStats({
 						</div>
 					)}
 					<p className="text-xs text-muted-foreground">
-						Environnements actifs
+						Environnements disponibles
 					</p>
 				</CardContent>
 			</Card>

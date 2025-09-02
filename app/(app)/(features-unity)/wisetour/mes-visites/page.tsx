@@ -2,8 +2,10 @@
 
 import { BuildsTable } from "../../components/builds-table";
 import { useBuilds } from "@/app/hooks/use-builds";
+import { useTranslations } from "@/hooks/use-translations";
 
 export default function MesVisitesPage() {
+  const t = useTranslations();
   const {
     data: builds,
     error,
@@ -16,8 +18,8 @@ export default function MesVisitesPage() {
         builds={builds}
         isLoading={isLoading}
         error={error}
-        title="Mes Visites"
-        description="Gérez et suivez vos visites industrielles en cours"
+        title={t.myVisits.title}
+        description={t.myVisits.subtitle}
         mode="my-trainings"
       />
     </div>

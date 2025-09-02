@@ -12,6 +12,7 @@ import {
 	useOrganizationStore,
 	useIsPersonalSpace,
 } from "@/stores/organization-store";
+import { useTranslations } from "@/hooks/use-translations";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
@@ -31,16 +32,16 @@ export default function HomePage() {
 	const { data: session } = useSession();
 	const { activeOrganization } = useOrganizationStore();
 	const isPersonalSpace = useIsPersonalSpace();
+	const t = useTranslations();
 
 	return (
 		<div className="container mx-auto py-8 space-y-8">
 			<div className="text-center mb-12">
 				<h1 className="text-4xl font-bold mb-4">
-					Bonjour {session?.user?.name || "Utilisateur"} 👋
+					{t.home.welcome} {session?.user?.name || t.common.user} 👋
 				</h1>
 				<p className="text-xl text-muted-foreground">
-					Bienvenue sur WiseTwin, votre plateforme de simulateurs
-					immersifs.
+					{t.home.subtitle}
 				</p>
 			</div>
 
@@ -54,11 +55,11 @@ export default function HomePage() {
 								<Building2 className="h-8 w-8 text-primary" />
 							</div>
 						</div>
-						<CardTitle>Organisation</CardTitle>
+						<CardTitle>{t.organization.title}</CardTitle>
 						<CardDescription>
 							{isPersonalSpace
-								? "Rejoignez une organisation ou créez la vôtre"
-								: `Gérez ${
+								? t.organization.joinOrCreate
+								: `${t.organization.manage} ${
 										activeOrganization?.name ||
 										"votre organisation"
 								  }`}
@@ -74,7 +75,7 @@ export default function HomePage() {
 								>
 									<span className="flex items-center gap-2">
 										<LogIn className="h-4 w-4" />
-										Rejoindre avec un code
+										{t.organization.joinWithCode}
 									</span>
 									<ArrowRight className="h-4 w-4" />
 								</Button>
@@ -84,7 +85,7 @@ export default function HomePage() {
 								>
 									<span className="flex items-center gap-2">
 										<Plus className="h-4 w-4" />
-										Créer une organisation
+										{t.organization.createOrganization}
 									</span>
 									<ArrowRight className="h-4 w-4" />
 								</Button>
@@ -98,7 +99,7 @@ export default function HomePage() {
 								>
 									<span className="flex items-center gap-2">
 										<Users className="h-4 w-4" />
-										Gérer les membres
+										{t.organization.manageMembers}
 									</span>
 									<ArrowRight className="h-4 w-4" />
 								</Button>
@@ -112,7 +113,7 @@ export default function HomePage() {
 								>
 									<span className="flex items-center gap-2">
 										<BarChart3 className="h-4 w-4" />
-										Tableau de bord
+										{t.organization.dashboard}
 									</span>
 									<ArrowRight className="h-4 w-4" />
 								</Button>
@@ -129,9 +130,9 @@ export default function HomePage() {
 								<BookOpen className="h-8 w-8 text-primary" />
 							</div>
 						</div>
-						<CardTitle>Formations & Environnements</CardTitle>
+						<CardTitle>{t.training.title}</CardTitle>
 						<CardDescription>
-							Accédez à vos formations et environnements 3D
+							{t.training.subtitle}
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-3">
@@ -142,7 +143,7 @@ export default function HomePage() {
 						>
 							<span className="flex items-center gap-2">
 								<Box className="h-4 w-4" />
-								WiseTrainer
+								{t.training.wisetrainer}
 							</span>
 							<ArrowRight className="h-4 w-4" />
 						</Button>
@@ -167,9 +168,9 @@ export default function HomePage() {
 								<Award className="h-8 w-8 text-primary" />
 							</div>
 						</div>
-						<CardTitle>Progression & Certifications</CardTitle>
+						<CardTitle>{t.progress.title}</CardTitle>
 						<CardDescription>
-							Suivez vos avancements et obtenez vos certifications
+							{t.progress.subtitle}
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-3">
@@ -180,7 +181,7 @@ export default function HomePage() {
 						>
 							<span className="flex items-center gap-2">
 								<BarChart3 className="h-4 w-4" />
-								Mon tableau de bord
+								{t.progress.myDashboard}
 							</span>
 							<ArrowRight className="h-4 w-4" />
 						</Button>
@@ -192,7 +193,7 @@ export default function HomePage() {
 						>
 							<span className="flex items-center gap-2">
 								<Award className="h-4 w-4" />
-								Mes certifications
+								{t.progress.myCertifications}
 							</span>
 							<ArrowRight className="h-4 w-4" />
 						</Button>
@@ -203,7 +204,7 @@ export default function HomePage() {
 			{/* Signature */}
 			<div className="mt-12 text-center">
 				<p className="text-lg font-medium text-muted-foreground">
-					Sécurité • Formation • Immersion • Excellence
+					{t.home.signature}
 				</p>
 			</div>
 		</div>

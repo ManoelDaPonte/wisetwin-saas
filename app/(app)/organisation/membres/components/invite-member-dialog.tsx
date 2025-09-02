@@ -33,23 +33,28 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { UserPlus } from "lucide-react"
 import { useMembers } from "@/app/(app)/organisation/hooks/use-members"
+import { useTranslations } from "@/hooks/use-translations"
 
-const inviteSchema = z.object({
-  email: z.string().email("Email invalide"),
+// Schema will use translations at runtime
+const createInviteSchema = (t: ReturnType<typeof useTranslations>) => z.object({
+  email: z.string().email(t.members.invite.errors.invalidEmail),
   role: z.enum(["ADMIN", "MEMBER"], {
-    required_error: "Veuillez sélectionner un rôle",
+    required_error: t.members.invite.errors.roleRequired,
   }),
 })
 
-type InviteFormValues = z.infer<typeof inviteSchema>
+type InviteFormValues = z.infer<ReturnType<typeof createInviteSchema>>
 
 interface InviteMemberDialogProps {
   children?: React.ReactNode
 }
 
 export function InviteMemberDialog({ children }: InviteMemberDialogProps) {
+  const t = useTranslations();
   const [open, setOpen] = useState(false)
   const { inviteMember, isInviting } = useMembers()
+  
+  const inviteSchema = createInviteSchema(t)
 
   const form = useForm<InviteFormValues>({
     resolver: zodResolver(inviteSchema),
@@ -75,16 +80,15 @@ export function InviteMemberDialog({ children }: InviteMemberDialogProps) {
         {children || (
           <Button>
             <UserPlus className="mr-2 h-4 w-4" />
-            Inviter un membre
+            {t.members.invite.button}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Inviter un membre</DialogTitle>
+          <DialogTitle>{t.members.invite.title}</DialogTitle>
           <DialogDescription>
-            Envoyez une invitation par email pour rejoindre votre organisation.
-            L&apos;invitation expirera dans 7 jours.
+            {t.members.invite.description}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -94,16 +98,16 @@ export function InviteMemberDialog({ children }: InviteMemberDialogProps) {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t.members.invite.email}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="membre@example.com"
+                      placeholder={t.members.invite.emailPlaceholder}
                       type="email"
                       {...field}
                     />
                   </FormControl>
                   <FormDescription>
-                    L&apos;adresse email de la personne à inviter
+                    {t.members.invite.emailDescription}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -114,23 +118,23 @@ export function InviteMemberDialog({ children }: InviteMemberDialogProps) {
               name="role"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Rôle</FormLabel>
+                  <FormLabel>{t.members.invite.role}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Sélectionner un rôle" />
+                        <SelectValue placeholder={t.members.invite.rolePlaceholder} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="MEMBER">Membre</SelectItem>
-                      <SelectItem value="ADMIN">Administrateur</SelectItem>
+                      <SelectItem value="MEMBER">{t.members.invite.roles.member}</SelectItem>
+                      <SelectItem value="ADMIN">{t.members.invite.roles.admin}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormDescription>
-                    Les administrateurs peuvent inviter et gérer les membres
+                    {t.members.invite.roleDescription}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -142,10 +146,10 @@ export function InviteMemberDialog({ children }: InviteMemberDialogProps) {
                 variant="outline"
                 onClick={() => setOpen(false)}
               >
-                Annuler
+                {t.members.invite.cancel}
               </Button>
               <Button type="submit" disabled={isInviting}>
-                {isInviting ? "Envoi..." : "Envoyer l'invitation"}
+                {isInviting ? t.members.invite.sending : t.members.invite.send}
               </Button>
             </DialogFooter>
           </form>
