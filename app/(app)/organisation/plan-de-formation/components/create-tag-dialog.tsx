@@ -32,12 +32,11 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Plus, Loader2, Calendar, AlertCircle } from "lucide-react";
-import { CreateTrainingTagSchema } from "@/validators/training";
-import { CreateTrainingTagData } from "@/types/training";
+import { CreateTrainingTagInputSchema, CreateTrainingTagInputData } from "@/validators/training";
 import { TagBadge } from "./tag-badge";
 
 interface CreateTagDialogProps {
-	onCreateTag: (data: CreateTrainingTagData) => void;
+	onCreateTag: (data: CreateTrainingTagInputData) => void;
 	isCreating: boolean;
 	createError: Error | null;
 }
@@ -63,8 +62,8 @@ export function CreateTagDialog({
 }: CreateTagDialogProps) {
 	const [open, setOpen] = useState(false);
 
-	const form = useForm<CreateTrainingTagData>({
-		resolver: zodResolver(CreateTrainingTagSchema),
+	const form = useForm({
+		resolver: zodResolver(CreateTrainingTagInputSchema),
 		defaultValues: {
 			name: "",
 			color: "#3B82F6",
@@ -76,7 +75,7 @@ export function CreateTagDialog({
 
 	const watchedValues = form.watch();
 
-	const onSubmit = async (data: CreateTrainingTagData) => {
+	const onSubmit = async (data: CreateTrainingTagInputData) => {
 		try {
 			onCreateTag(data);
 			form.reset();

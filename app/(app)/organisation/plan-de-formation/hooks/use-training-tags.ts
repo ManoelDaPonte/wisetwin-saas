@@ -2,10 +2,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useOrganizationStore } from "@/stores/organization-store";
 import { 
   TrainingTag, 
-  TrainingTagsResponse,
-  CreateTrainingTagData,
-  UpdateTrainingTagData 
+  TrainingTagsResponse
 } from "@/types/training";
+import { CreateTrainingTagInputData, UpdateTrainingTagInputData } from "@/validators/training";
 
 // ===== FONCTIONS API =====
 
@@ -49,7 +48,7 @@ async function fetchTrainingTag(tagId: string, organizationId: string): Promise<
 
 async function createTrainingTag(
   organizationId: string, 
-  data: CreateTrainingTagData
+  data: CreateTrainingTagInputData
 ): Promise<TrainingTag> {
   const response = await fetch(`/api/training-management/tags?organizationId=${organizationId}`, {
     method: "POST",
@@ -70,7 +69,7 @@ async function createTrainingTag(
 async function updateTrainingTag(
   tagId: string,
   organizationId: string,
-  data: UpdateTrainingTagData
+  data: UpdateTrainingTagInputData
 ): Promise<TrainingTag> {
   const response = await fetch(
     `/api/training-management/tags/${tagId}?organizationId=${organizationId}`,
@@ -150,7 +149,7 @@ export function useCreateTrainingTag() {
   const { activeOrganization } = useOrganizationStore();
 
   return useMutation({
-    mutationFn: (data: CreateTrainingTagData) => {
+    mutationFn: (data: CreateTrainingTagInputData) => {
       if (!activeOrganization?.id) {
         throw new Error("Aucune organisation sélectionnée");
       }
@@ -170,7 +169,7 @@ export function useUpdateTrainingTag() {
   const { activeOrganization } = useOrganizationStore();
 
   return useMutation({
-    mutationFn: ({ tagId, data }: { tagId: string; data: UpdateTrainingTagData }) => {
+    mutationFn: ({ tagId, data }: { tagId: string; data: UpdateTrainingTagInputData }) => {
       if (!activeOrganization?.id) {
         throw new Error("Aucune organisation sélectionnée");
       }

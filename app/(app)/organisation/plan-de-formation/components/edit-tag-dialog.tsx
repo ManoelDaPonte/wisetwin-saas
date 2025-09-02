@@ -31,14 +31,14 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Loader2, Calendar, AlertCircle } from "lucide-react";
-import { UpdateTrainingTagSchema } from "@/validators/training";
-import { TrainingTag, UpdateTrainingTagData } from "@/types/training";
+import { UpdateTrainingTagInputSchema, UpdateTrainingTagInputData } from "@/validators/training";
+import { TrainingTag } from "@/types/training";
 import { TagBadge } from "./tag-badge";
 import { format } from "date-fns";
 
 interface EditTagDialogProps {
 	tag: TrainingTag | null;
-	onEditTag: (data: UpdateTrainingTagData) => void;
+	onEditTag: (data: UpdateTrainingTagInputData) => void;
 	onClose: () => void;
 	isUpdating: boolean;
 	updateError: Error | null;
@@ -65,8 +65,8 @@ export function EditTagDialog({
 	isUpdating,
 	updateError,
 }: EditTagDialogProps) {
-	const form = useForm<UpdateTrainingTagData>({
-		resolver: zodResolver(UpdateTrainingTagSchema),
+	const form = useForm({
+		resolver: zodResolver(UpdateTrainingTagInputSchema),
 		defaultValues: {
 			name: "",
 			color: "#3B82F6",
@@ -93,7 +93,7 @@ export function EditTagDialog({
 
 	const watchedValues = form.watch();
 
-	const onSubmit = async (data: UpdateTrainingTagData) => {
+	const onSubmit = async (data: UpdateTrainingTagInputData) => {
 		try {
 			onEditTag(data);
 			onClose();

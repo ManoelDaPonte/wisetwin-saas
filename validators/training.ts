@@ -60,25 +60,33 @@ export const TrainingCompletionSchema = z.object({
 
 // === VALIDATORS POUR LES FORMULAIRES DE CRÉATION ===
 
-export const CreateTrainingTagSchema = z.object({
+// Schema pour l'input du formulaire (dueDate en string)
+export const CreateTrainingTagInputSchema = z.object({
   name: z.string()
     .min(1, "Le nom du tag est requis")
     .max(50, "Le nom ne peut pas dépasser 50 caractères")
     .regex(/^[a-zA-Z0-9\s\-_À-ÿ]+$/, "Le nom ne peut contenir que des lettres, chiffres, espaces et tirets"),
   color: z.string()
     .regex(colorRegex, "Format de couleur invalide (ex: #FF5733)")
-    .optional()
     .default("#3B82F6"), // Couleur bleue par défaut
   description: z.string()
     .max(500, "La description ne peut pas dépasser 500 caractères")
     .optional(),
+  dueDate: z.string().nullable().optional(),
+  priority: PrioritySchema.default("MEDIUM").optional(),
+});
+
+// Schema pour l'API (dueDate transformé en Date)
+export const CreateTrainingTagSchema = CreateTrainingTagInputSchema.extend({
   dueDate: z.string().nullable().optional().transform((val) => {
     if (!val || val === "") return null;
     const date = new Date(val);
     return isNaN(date.getTime()) ? null : date;
   }),
-  priority: PrioritySchema.default("MEDIUM").optional(),
 });
+
+// Schema pour l'update du formulaire (dueDate en string)  
+export const UpdateTrainingTagInputSchema = CreateTrainingTagInputSchema.partial();
 
 export const UpdateTrainingTagSchema = CreateTrainingTagSchema.partial();
 
@@ -207,7 +215,9 @@ export const updateTrainingAssignmentSchema = UpdateTrainingAssignmentSchema;
 
 // === TYPES INFÉRÉS ===
 
+export type CreateTrainingTagInputData = z.infer<typeof CreateTrainingTagInputSchema>;
 export type CreateTrainingTagInput = z.infer<typeof CreateTrainingTagSchema>;
+export type UpdateTrainingTagInputData = z.infer<typeof UpdateTrainingTagInputSchema>;
 export type UpdateTrainingTagInput = z.infer<typeof UpdateTrainingTagSchema>;
 export type AssignTagToMemberInput = z.infer<typeof AssignTagToMemberSchema>;
 export type GetTrainingTagsQuery = z.infer<typeof GetTrainingTagsQuerySchema>;
