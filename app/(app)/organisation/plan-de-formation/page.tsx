@@ -5,7 +5,7 @@ import { useOrganizationStore } from "@/stores/organization-store";
 import { useTranslations } from "@/hooks/use-translations";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Tags, BookOpen, BarChart3 } from "lucide-react";
+import { BarChart3 } from "lucide-react";
 import { TagsManager } from "./components/tags-manager";
 import { MemberTagsManager } from "./components/member-tags-manager";
 import { BuildsManager } from "./components/builds-manager";
