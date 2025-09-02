@@ -6,7 +6,6 @@ export interface Organization {
   id: string;
   name: string;
   description: string | null;
-  maxUsers: number;
   role: Role;
   azureContainerId?: string;
 }

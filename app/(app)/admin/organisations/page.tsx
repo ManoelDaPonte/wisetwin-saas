@@ -62,7 +62,7 @@ export default function AdminOrganizationsPage() {
 			key: "membersCount",
 			label: t.admin.organizations.table.members,
 			render: (org) => (
-				<Badge variant="outline">{org.membersCount} / {org.maxUsers}</Badge>
+				<Badge variant="outline">{org.membersCount}</Badge>
 			),
 		},
 		{

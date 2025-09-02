@@ -72,7 +72,6 @@ export async function PATCH(
         id: true,
         name: true,
         description: true,
-        maxUsers: true,
         azureContainerId: true,
         createdAt: true,
         updatedAt: true,
@@ -99,7 +98,6 @@ export async function PATCH(
         name: updatedOrganization.name,
         description: updatedOrganization.description || undefined,
         azureContainerId: updatedOrganization.azureContainerId,
-        maxUsers: updatedOrganization.maxUsers,
         createdAt: updatedOrganization.createdAt,
         updatedAt: updatedOrganization.updatedAt,
         owner: {

@@ -30,7 +30,6 @@ export default function OrganizationPage() {
 	}
 
 	const memberCount = members?.length || 0;
-	const maxUsers = activeOrganization.maxUsers || 1;
 	const wisetourCount = wisetourBuilds?.builds?.length || 0;
 	const wisetrainerCount = wisetrainerBuilds?.builds?.length || 0;
 
@@ -52,7 +51,6 @@ export default function OrganizationPage() {
 			{/* Statistiques rapides */}
 			<OrganizationStats
 				memberCount={memberCount}
-				maxUsers={maxUsers}
 				wisetourCount={wisetourCount}
 				wisetrainerCount={wisetrainerCount}
 				isMembersLoading={isMembersLoading}

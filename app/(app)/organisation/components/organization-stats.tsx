@@ -6,7 +6,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 interface OrganizationStatsProps {
 	memberCount: number;
-	maxUsers: number;
 	wisetourCount: number;
 	wisetrainerCount: number;
 	isMembersLoading: boolean;
@@ -16,7 +15,6 @@ interface OrganizationStatsProps {
 
 export function OrganizationStats({
 	memberCount,
-	maxUsers,
 	wisetourCount,
 	wisetrainerCount,
 	isMembersLoading,
@@ -37,11 +35,11 @@ export function OrganizationStats({
 						<Skeleton className="h-8 w-16" />
 					) : (
 						<div className="text-2xl font-bold">
-							{memberCount} / {maxUsers}
+							{memberCount}
 						</div>
 					)}
 					<p className="text-xs text-muted-foreground">
-						Utilisateurs (limite)
+						Utilisateurs
 					</p>
 				</CardContent>
 			</Card>

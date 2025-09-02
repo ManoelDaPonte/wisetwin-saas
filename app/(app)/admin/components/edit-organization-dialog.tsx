@@ -31,14 +31,12 @@ export function EditOrganizationDialog({
 }: EditOrganizationDialogProps) {
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
-  const [maxUsers, setMaxUsers] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     if (organization) {
       setName(organization.name)
       setDescription(organization.description || "")
-      setMaxUsers(organization.maxUsers)
     }
   }, [organization])
 
@@ -63,22 +61,6 @@ export function EditOrganizationDialog({
         throw new Error(error.error || "Erreur lors de la mise à jour")
       }
 
-      // Mise à jour de maxUsers si changé
-      if (maxUsers !== organization.maxUsers) {
-        const maxUsersResponse = await fetch(
-          `/api/admin/organizations/${organization.id}/max-users`,
-          {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ maxUsers }),
-          }
-        )
-
-        if (!maxUsersResponse.ok) {
-          const error = await maxUsersResponse.json()
-          throw new Error(error.error || "Erreur lors de la mise à jour de la limite")
-        }
-      }
 
       toast.success("Organisation mise à jour avec succès")
       onUpdate()
@@ -136,25 +118,9 @@ export function EditOrganizationDialog({
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="maxUsers">Limite d&apos;utilisateurs *</Label>
-              <Input
-                id="maxUsers"
-                type="number"
-                value={maxUsers}
-                onChange={(e) => setMaxUsers(Math.max(1, parseInt(e.target.value) || 1))}
-                min="1"
-                max="1000"
-                required
-                disabled={isLoading}
-              />
-              <p className="text-sm text-muted-foreground">
-                Nombre maximum d&apos;utilisateurs autorisés (entre 1 et 1000)
-              </p>
-            </div>
 
             <div className="text-sm text-muted-foreground bg-muted p-3 rounded">
-              <strong>Membres actuels :</strong> {organization.membersCount} / {organization.maxUsers}
+              <strong>Membres actuels :</strong> {organization.membersCount}
               <br />
               <strong>Container ID :</strong> {organization.azureContainerId}
             </div>
