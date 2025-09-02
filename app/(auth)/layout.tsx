@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ThemeLogo } from "./components/theme-logo";
+import { LanguageSelector } from "@/app/components/language-selector";
 
 export default function AuthLayout({
 	children,
@@ -25,6 +26,9 @@ export default function AuthLayout({
 				</div>
 			</div>
 			<div className="bg-muted relative hidden lg:flex flex-col items-center justify-center">
+				<div className="absolute top-6 right-6">
+					<LanguageSelector />
+				</div>
 				<ThemeLogo size="large" className="mb-6" />
 				<p className="text-muted-foreground text-center text-sm font-medium tracking-wide">
 					Sécurité • Formation • Immersion • Excellence
