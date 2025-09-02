@@ -146,7 +146,7 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
           assignments.push({
             tagId,
             buildName,
-            buildType: buildType as "WISETOUR" | "WISETRAINER",
+            buildType: buildType.toUpperCase() as "WISETOUR" | "WISETRAINER",
             containerId,
             assignedById: request.user.id,
           });
@@ -296,7 +296,7 @@ export const DELETE = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
         deleteConditions.push({
           tagId,
           buildName,
-          buildType: buildType as "WISETOUR" | "WISETRAINER",
+          buildType: buildType.toUpperCase() as "WISETOUR" | "WISETRAINER",
           containerId,
           tag: {
             organizationId: request.organization.id,

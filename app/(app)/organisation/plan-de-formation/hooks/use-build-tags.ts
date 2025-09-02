@@ -211,6 +211,9 @@ export function useCreateBuildTag() {
       queryClient.invalidateQueries({
         queryKey: ["training-tags", activeOrganization?.id],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["builds-with-tags", activeOrganization?.id],
+      });
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -238,6 +241,9 @@ export function useBulkAssignBuildTags() {
       queryClient.invalidateQueries({
         queryKey: ["training-tags", activeOrganization?.id],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["builds-with-tags", activeOrganization?.id],
+      });
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -261,6 +267,9 @@ export function useBulkRemoveBuildTags() {
       
       queryClient.invalidateQueries({
         queryKey: ["build-tags", activeOrganization?.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["builds-with-tags", activeOrganization?.id],
       });
     },
     onError: (error: Error) => {
@@ -286,6 +295,9 @@ export function useDeleteBuildTag() {
       
       queryClient.invalidateQueries({
         queryKey: ["build-tags", activeOrganization?.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["builds-with-tags", activeOrganization?.id],
       });
       queryClient.removeQueries({
         queryKey: ["build-tag", buildTagId, activeOrganization?.id],
