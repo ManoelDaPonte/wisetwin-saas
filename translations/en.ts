@@ -17,11 +17,12 @@ export const en = {
     
     // Labels des sections
     mainNavigation: "Navigation",
-    application: "Application",
-    administration: "Administration", 
+    application: "Applications",
+    administration: "Organization", 
     
     // Sous-menus
     overview: "Overview",
+    organizationOverview: "Overview",
     certifications: "Certifications",
     members: "Members",
     settings: "Settings",

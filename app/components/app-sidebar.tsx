@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Home, LayoutDashboard, Building2, Box, Crown } from "lucide-react";
+import { Home, LayoutDashboard, Building2, Users, BookOpen, Settings, List, Award, Box } from "lucide-react";
 import { useIsPersonalSpace } from "@/stores/organization-store";
 import { useTranslations } from "@/hooks/use-translations";
 import { useSession } from "next-auth/react";
@@ -49,16 +49,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				title: t.navigation.dashboard,
 				url: "/tableau-de-bord",
 				icon: LayoutDashboard,
-				items: [
-					{
-						title: t.navigation.overview,
-						url: "/tableau-de-bord",
-					},
-					{
-						title: t.navigation.certifications,
-						url: "/tableau-de-bord/certifications",
-					},
-				],
+			},
+			{
+				title: t.navigation.certifications,
+				url: "/tableau-de-bord/certifications",
+				icon: Award,
 			},
 		];
 
@@ -67,17 +62,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
 	const platformNavItems = React.useMemo(() => {
 		const items: NavigationItem[] = [
-			// {
-			// 	title: t.navigation.wisetour,
-			// 	url: "/wisetour",
-			// 	icon: Box,
-			// 	items: [
-			// 		{
-			// 			title: t.navigation.virtualVisits,
-			// 			url: "/wisetour",
-			// 		},
-			// 	],
-			// },
 			{
 				title: t.navigation.wisetrainer,
 				url: "/wisetrainer",
@@ -103,27 +87,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
 		const items: NavigationItem[] = [
 			{
-				title: t.navigation.organization,
+				title: t.navigation.overview,
 				url: "/organisation",
 				icon: Building2,
-				items: [
-					{
-						title: t.navigation.overview,
-						url: "/organisation",
-					},
-					{
-						title: t.navigation.members,
-						url: "/organisation/membres",
-					},
-					{
-						title: t.navigation.trainingPlan,
-						url: "/organisation/plan-de-formation",
-					},
-					{
-						title: t.navigation.settings,
-						url: "/organisation/parametres",
-					},
-				],
+			},
+			{
+				title: t.navigation.members,
+				url: "/organisation/membres",
+				icon: Users,
+			},
+			{
+				title: t.navigation.trainingPlan,
+				url: "/organisation/plan-de-formation",
+				icon: BookOpen,
+			},
+			{
+				title: t.navigation.settings,
+				url: "/organisation/parametres",
+				icon: Settings,
 			},
 		];
 
@@ -138,23 +119,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
 		const items: NavigationItem[] = [
 			{
-				title: t.navigation.superAdmin,
-				url: "/admin",
-				icon: Crown,
-				items: [
-					{
-						title: t.navigation.formations,
-						url: "/admin/formations",
-					},
-					{
-						title: t.navigation.users,
-						url: "/admin/utilisateurs",
-					},
-					{
-						title: t.navigation.organizations,
-						url: "/admin/organisations",
-					},
-				],
+				title: t.navigation.formations,
+				url: "/admin/formations",
+				icon: List,
+			},
+			{
+				title: t.navigation.users,
+				url: "/admin/utilisateurs",
+				icon: Users,
+			},
+			{
+				title: t.navigation.organizations,
+				url: "/admin/organisations",
+				icon: Building2,
 			},
 		];
 
