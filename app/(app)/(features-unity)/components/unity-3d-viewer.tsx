@@ -34,7 +34,6 @@ export function Unity3DViewer({
 		codeUrl: buildUrls["wasm"],
 	});
 
-
 	// Fonction pour appeler l'API formations/completed
 	const handleFormationCompleted = useCallback(async () => {
 		if (!buildName || !buildType || !containerId) {
@@ -104,8 +103,7 @@ export function Unity3DViewer({
 					</div>
 				</div>
 			)}
-			
-			
+
 			<Unity
 				unityProvider={unityProvider}
 				style={{ width: "100%", height: "100%" }}
