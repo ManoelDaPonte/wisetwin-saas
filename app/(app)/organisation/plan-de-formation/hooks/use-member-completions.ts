@@ -54,7 +54,9 @@ export function useMemberCompletions(buildType: string = "WISETRAINER") {
       return fetchMemberCompletions(activeOrganization.id, buildType);
     },
     enabled: !!activeOrganization?.id,
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    staleTime: 0, // Toujours considérer les données comme stales pour forcer le refetch
     gcTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnMount: true, // Refetch à chaque fois que le composant est monté
+    refetchOnWindowFocus: true, // Refetch quand la fenêtre reprend le focus
   });
 }

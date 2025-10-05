@@ -352,3 +352,167 @@ export interface MemberWithTrainings {
 
 // ExportTrainingData supprimé car non utilisé
 // ExportOptions supprimé car non utilisé
+
+// === TYPES POUR LES ANALYTICS ===
+
+export type CompletionStatus = "COMPLETED" | "IN_PROGRESS" | "ABANDONED" | "FAILED";
+
+// Types détaillés pour les données d'interaction
+export interface QuestionInteractionData {
+  questionText: string;
+  options?: string[];
+  correctAnswers?: number[];
+  userAnswers?: number[][];
+  finalScore: number;
+  firstAttemptCorrect: boolean;
+}
+
+export interface ProcedureInteractionData {
+  instruction: string;
+  stepNumber: number;
+  totalSteps: number;
+  hintsUsed: number;
+  wrongClicks: number;
+}
+
+export interface TextInteractionData {
+  textContent: string;
+  timeDisplayed: number;
+  readComplete: boolean;
+  scrollPercentage: number;
+}
+
+export interface InteractionData {
+  interactionId: string;
+  type: "question" | "procedure" | "text" | string;
+  startTime: Date;
+  endTime: Date;
+  duration: number;
+  success: boolean;
+  attempts: number;
+  objectId?: string;
+  data?: QuestionInteractionData | ProcedureInteractionData | TextInteractionData | Record<string, unknown>;
+}
+
+export interface TrainingAnalytics {
+  id: string;
+  sessionId: string;
+  trainingId: string;
+  buildName: string;
+  buildType: string;
+  user: {
+    id: string;
+    email: string;
+    name?: string | null;
+    firstName?: string | null;
+    image?: string | null;
+  };
+  startTime: Date;
+  endTime: Date;
+  totalDuration: number;
+  completionStatus: CompletionStatus;
+  successRate: number;
+  totalInteractions: number;
+  successfulInteractions: number;
+  failedInteractions: number;
+  interactions: InteractionData[];
+}
+
+export interface AnalyticsAggregates {
+  totalSessions: number;
+  averageDuration: number;
+  averageSuccessRate: number;
+  averageTimePerInteraction: number;
+  totalInteractions: number;
+  totalSuccessful: number;
+  totalFailed: number;
+  statusBreakdown: Record<string, number>;
+  mostFailedQuestions: Array<{
+    questionText: string;
+    failureRate: number;
+    attemptCount: number;
+  }>;
+}
+
+export interface AnalyticsPagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface AnalyticsResponse {
+  analytics: TrainingAnalytics[];
+  pagination: AnalyticsPagination;
+  aggregates: AnalyticsAggregates;
+}
+
+export interface TagWithStats extends TrainingTag {
+  memberCount: number;
+  assignments: MemberTag[];
+  isAssigned: boolean;
+  isOverdue: boolean;
+}
+
+// Types pour les composants analytics
+export interface AnalyticsSession {
+  session: TrainingAnalytics | null;
+  visible: boolean;
+}
+
+export interface UserAnalyticsStats {
+  totalSessions: number;
+  completedSessions: number;
+  avgSuccessRate: number;
+  totalTime: number;
+}
+
+export interface BuildAnalyticsStats {
+  buildName: string;
+  totalSessions: number;
+  avgSuccessRate: number;
+  avgDuration: number;
+  completedSessions: number;
+  participants: Set<string>;
+}
+
+// Types pour l'analyse détaillée des formations (training-metrics)
+export interface QuestionUserResponse {
+  userId: string;
+  userName: string;
+  success: boolean;
+  attempts: number;
+  userAnswers?: number[][];
+  firstAttemptCorrect: boolean;
+}
+
+export interface QuestionStats {
+  text: string;
+  totalAttempts: number;
+  successCount: number;
+  failCount: number;
+  options: string[];
+  correctAnswers: number[];
+  userResponses: QuestionUserResponse[];
+}
+
+export interface TrainingStatsWithQuestions {
+  buildName: string;
+  uniqueUsers: Set<string>;
+  sessions: TrainingAnalytics[];
+  totalDuration: number;
+  averageSuccessRate: number;
+  completedCount: number;
+  allQuestions: Map<string, QuestionStats>;
+  // Calculated fields
+  averageDuration?: number;
+  completionRate?: number;
+  uniqueUsersCount?: number;
+  questionsArray?: QuestionStats[];
+}
+
+export interface TrainingDetails {
+  trainingName: string;
+  visible: boolean;
+  data: TrainingStatsWithQuestions | null;
+}

@@ -31,6 +31,7 @@ model User {
   assignedTags  MemberTag[] @relation("TagAssignedBy")
   buildTags     BuildTag[]
   trainingCompletions TrainingCompletion[]
+  trainingAnalytics   TrainingAnalytics[]
   passwordResets      PasswordReset[]
 }
 
@@ -48,6 +49,7 @@ model Organization {
   
   // Relations pour le système de formations
   trainingTags    TrainingTag[]
+  trainingAnalytics TrainingAnalytics[]
 }
 
 model OrganizationMember {
@@ -248,7 +250,59 @@ model PasswordReset {
   expiresAt DateTime
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
-  
+
   @@index([token])
   @@index([email])
+}
+
+// === SYSTÈME D'ANALYTICS DE FORMATION ===
+
+model TrainingAnalytics {
+  id                String   @id @default(cuid())
+  sessionId         String   @unique
+  trainingId        String
+  userId            String
+  organizationId    String?
+  buildName         String
+  buildType         BuildType
+  containerId       String
+
+  // Données temporelles
+  startTime         DateTime
+  endTime           DateTime
+  totalDuration     Float    // en secondes
+  completionStatus  CompletionStatus
+
+  // Métriques globales
+  totalInteractions      Int
+  successfulInteractions Int
+  failedInteractions    Int
+  averageTimePerInteraction Float
+  totalAttempts         Int
+  totalFailedAttempts   Int
+  successRate       Float    // pourcentage
+
+  // JSON pour stocker les interactions détaillées
+  interactions      Json     // Array<InteractionRecord>
+
+  // Relations
+  user             User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization     Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([userId])
+  @@index([organizationId])
+  @@index([buildName])
+  @@index([sessionId])
+  @@index([completionStatus])
+  @@index([startTime])
+}
+
+enum CompletionStatus {
+  COMPLETED
+  ABANDONED
+  IN_PROGRESS
+  FAILED
 }

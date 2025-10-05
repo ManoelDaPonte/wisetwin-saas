@@ -76,6 +76,26 @@ export async function GET(request: NextRequest) {
     const totalFormationsCompleted = completedBuilds.length;
     // Supprimer totalFormationsStarted car on ne track plus les formations démarrées
 
+    // Récupérer les analytics pour calculer temps total et moyenne des scores
+    const trainingAnalytics = await prisma.trainingAnalytics.findMany({
+      where: {
+        userId: targetUserId,
+        containerId,
+        completionStatus: 'COMPLETED',
+      },
+    });
+
+    // Calculer le temps total passé (en heures)
+    const totalTimeSpentSeconds = trainingAnalytics.reduce(
+      (sum, analytics) => sum + analytics.totalDuration,
+      0
+    );
+    const totalTimeSpent = totalTimeSpentSeconds / 3600; // Convertir en heures
+
+    // Calculer la moyenne des scores
+    const averageScore = trainingAnalytics.length > 0
+      ? trainingAnalytics.reduce((sum, analytics) => sum + analytics.successRate, 0) / trainingAnalytics.length
+      : 0;
 
     // Activité récente (dernières formations terminées)
     const recentActivity = completedBuilds.slice(0, 10).map(build => ({
@@ -90,6 +110,8 @@ export async function GET(request: NextRequest) {
       totalFormationsCompleted,
       wisetrainerCompletions,
       wisetourVisits,
+      totalTimeSpent, // en heures
+      averageScore, // pourcentage
       recentActivity,
     };
 

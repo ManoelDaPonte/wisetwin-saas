@@ -6,6 +6,8 @@ export interface UserStats {
   totalFormationsCompleted: number;
   wisetrainerCompletions: number;
   wisetourVisits: number;
+  totalTimeSpent: number; // en heures
+  averageScore: number; // pourcentage
   recentActivity: RecentActivity[];
 }
 

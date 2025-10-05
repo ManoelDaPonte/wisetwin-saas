@@ -12,11 +12,11 @@ import {
 	Download,
 	FileText,
 } from "lucide-react";
-import { useCompletedFormations } from "@/app/hooks/use-completed-formations";
+import { useCompletedFormationsWithDetails } from "@/app/hooks/use-completed-formations";
 import { useContainer } from "@/app/hooks/use-container";
 import { useIsPersonalSpace } from "@/stores/organization-store";
 import { useTranslations } from "@/hooks/use-translations";
-import { CompletedFormation } from "@/types";
+import { Build } from "@/types/azure";
 import {
 	Card,
 	CardContent,
@@ -38,12 +38,20 @@ import {
 } from "@/components/ui/table";
 import { toast } from "sonner";
 
-type SortField = "buildName" | "completedAt";
+type SortField = "name" | "completedAt";
 type SortDirection = "asc" | "desc";
 
 interface SortState {
 	field: SortField;
 	direction: SortDirection;
+}
+
+interface BuildWithCompletion extends Build {
+	completion?: {
+		completedAt: string;
+		progress: number;
+		startedAt: string;
+	} | null;
 }
 
 export default function CertificationsPage() {
@@ -62,28 +70,37 @@ export default function CertificationsPage() {
 	const isPersonalSpace = useIsPersonalSpace();
 	const t = useTranslations();
 
-	const { completedFormations, isLoading, error } = useCompletedFormations({
-		buildType: "wisetrainer",
-	}); // Seulement WiseTrainer
+	const { data, isLoading, error } = useCompletedFormationsWithDetails("wisetrainer");
+
+	const completedBuilds = data?.builds || [];
 
 	const filteredAndSortedFormations = useMemo(() => {
-		if (!completedFormations) return [];
+		if (!completedBuilds) return [];
 
-		const filtered = completedFormations.filter((formation) =>
-			formation.buildName.toLowerCase().includes(searchTerm.toLowerCase())
-		);
+		const filtered = completedBuilds.filter((build: BuildWithCompletion) => {
+			const displayName = build.metadata?.title && typeof build.metadata.title === "string"
+				? build.metadata.title
+				: build.name;
+			return displayName.toLowerCase().includes(searchTerm.toLowerCase());
+		});
 
 		// Tri
-		filtered.sort((a, b) => {
+		filtered.sort((a: BuildWithCompletion, b: BuildWithCompletion) => {
 			let comparison = 0;
 
 			switch (sortState.field) {
-				case "buildName":
-					comparison = a.buildName.localeCompare(b.buildName);
+				case "name":
+					const nameA = a.metadata?.title && typeof a.metadata.title === "string"
+						? a.metadata.title
+						: a.name;
+					const nameB = b.metadata?.title && typeof b.metadata.title === "string"
+						? b.metadata.title
+						: b.name;
+					comparison = nameA.localeCompare(nameB);
 					break;
 				case "completedAt":
-					const dateA = new Date(a.completedAt).getTime();
-					const dateB = new Date(b.completedAt).getTime();
+					const dateA = a.completion?.completedAt ? new Date(a.completion.completedAt).getTime() : 0;
+					const dateB = b.completion?.completedAt ? new Date(b.completion.completedAt).getTime() : 0;
 					comparison = dateA - dateB;
 					break;
 			}
@@ -92,7 +109,7 @@ export default function CertificationsPage() {
 		});
 
 		return filtered;
-	}, [completedFormations, searchTerm, sortState]);
+	}, [completedBuilds, searchTerm, sortState]);
 
 	const paginatedFormations = useMemo(() => {
 		const startIndex = (currentPage - 1) * itemsPerPage;
@@ -116,19 +133,20 @@ export default function CertificationsPage() {
 		}));
 	};
 
-	const handleDownloadCertificate = async (formation: CompletedFormation) => {
+	const handleDownloadCertificate = async (build: BuildWithCompletion) => {
 		if (!isReady || !containerId) {
 			toast.error(t.certifications.errors.organizationMissing);
 			return;
 		}
 
-		setDownloadingItems((prev) => new Set(prev).add(formation.id));
+		const buildId = build.id || build.name;
+		setDownloadingItems((prev) => new Set(prev).add(buildId));
 
 		try {
 			// Utiliser l'API appropriée selon le contexte
 			let apiUrl: string;
 			const params = new URLSearchParams({
-				buildName: formation.buildName,
+				buildName: build.name,
 				buildType: "wisetrainer",
 			});
 
@@ -157,7 +175,10 @@ export default function CertificationsPage() {
 			const a = document.createElement("a");
 			a.style.display = "none";
 			a.href = url;
-			a.download = `Certificat-${formation.buildName.replace(
+			const displayName = build.metadata?.title && typeof build.metadata.title === "string"
+				? build.metadata.title
+				: build.name;
+			a.download = `Certificat-${displayName.replace(
 				/[^a-zA-Z0-9]/g,
 				"-"
 			)}.pdf`;
@@ -177,7 +198,7 @@ export default function CertificationsPage() {
 		} finally {
 			setDownloadingItems((prev) => {
 				const newSet = new Set(prev);
-				newSet.delete(formation.id);
+				newSet.delete(buildId);
 				return newSet;
 			});
 		}
@@ -279,7 +300,7 @@ export default function CertificationsPage() {
 									<TableRow>
 										<TableHead className="w-12"></TableHead>
 										<TableHead>
-											<SortButton field="buildName">
+											<SortButton field="name">
 												{t.certifications.table.formation}
 											</SortButton>
 										</TableHead>
@@ -294,70 +315,66 @@ export default function CertificationsPage() {
 									</TableRow>
 								</TableHeader>
 								<TableBody>
-									{paginatedFormations.map((formation) => (
-										<TableRow key={formation.id}>
-											<TableCell>
-												<div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center">
-													<Award className="h-5 w-5 text-muted-foreground" />
-												</div>
-											</TableCell>
-											<TableCell>
-												<div className="space-y-1">
-													<div className="font-medium">
-														{formation.buildName}
+									{paginatedFormations.map((build: BuildWithCompletion) => {
+										const buildId = build.id || build.name;
+										const displayName = build.metadata?.title && typeof build.metadata.title === "string"
+											? build.metadata.title
+											: build.name;
+										return (
+											<TableRow key={buildId}>
+												<TableCell>
+													<div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center">
+														<Award className="h-5 w-5 text-muted-foreground" />
 													</div>
-												</div>
-											</TableCell>
-											<TableCell>
-												<div className="space-y-1">
-													<div className="text-sm">
-														{format(
-															new Date(
-																formation.completedAt
-															),
-															"d MMMM yyyy",
-															{
-																locale: fr,
-															}
+												</TableCell>
+												<TableCell>
+													<div className="space-y-1">
+														<div className="font-medium">
+															{displayName}
+														</div>
+													</div>
+												</TableCell>
+												<TableCell>
+													<div className="space-y-1">
+														{build.completion?.completedAt && (
+															<>
+																<div className="text-sm">
+																	{format(
+																		new Date(build.completion.completedAt),
+																		"d MMMM yyyy",
+																		{ locale: fr }
+																	)}
+																</div>
+																<div className="text-xs text-muted-foreground">
+																	{formatDistanceToNow(
+																		new Date(build.completion.completedAt),
+																		{
+																			addSuffix: true,
+																			locale: fr,
+																		}
+																	)}
+																</div>
+															</>
 														)}
 													</div>
-													<div className="text-xs text-muted-foreground">
-														{formatDistanceToNow(
-															new Date(
-																formation.completedAt
-															),
-															{
-																addSuffix: true,
-																locale: fr,
-															}
-														)}
-													</div>
-												</div>
-											</TableCell>
-											<TableCell>
-												<Button
-													variant="outline"
-													size="sm"
-													onClick={() =>
-														handleDownloadCertificate(
-															formation
-														)
-													}
-													disabled={downloadingItems.has(
-														formation.id
-													)}
-													className="flex items-center gap-2"
-												>
-													<Download className="h-4 w-4" />
-													{downloadingItems.has(
-														formation.id
-													)
-														? t.certifications.table.generating
-														: t.certifications.table.downloadButton}
-												</Button>
-											</TableCell>
-										</TableRow>
-									))}
+												</TableCell>
+												<TableCell>
+													<Button
+														variant="outline"
+														size="sm"
+														onClick={() => handleDownloadCertificate(build)}
+														disabled={downloadingItems.has(buildId)}
+														className="flex items-center gap-2"
+													>
+														<Download className="h-4 w-4" />
+														{downloadingItems.has(buildId)
+															? t.certifications.table.generating
+															: t.certifications.table.downloadButton}
+													</Button>
+												</TableCell>
+											</TableRow>
+										);
+									})}
 								</TableBody>
 							</Table>
 						</div>

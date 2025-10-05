@@ -138,8 +138,9 @@ export function useMemberTags(options: {
       return fetchMemberTags(activeOrganization.id, options);
     },
     enabled: !!activeOrganization?.id,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 1 * 60 * 1000, // 1 minute (réduit pour plus de réactivité)
     gcTime: 10 * 60 * 1000,
+    refetchOnMount: true, // Refetch quand le composant est monté
   });
 }
 
