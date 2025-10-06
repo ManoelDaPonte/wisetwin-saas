@@ -1,28 +1,30 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building2, Users } from "lucide-react";
+import { Building2, Users, CheckCircle, Clock } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface OrganizationStatsProps {
 	memberCount: number;
-	wisetourCount: number;
 	wisetrainerCount: number;
+	totalFormationsCompleted: number;
+	totalTimeSpent: number;
 	isMembersLoading: boolean;
-	isWisetourLoading: boolean;
 	isWisetrainerLoading: boolean;
+	isStatsLoading: boolean;
 }
 
 export function OrganizationStats({
 	memberCount,
-	wisetourCount,
 	wisetrainerCount,
+	totalFormationsCompleted,
+	totalTimeSpent,
 	isMembersLoading,
-	isWisetourLoading,
 	isWisetrainerLoading,
+	isStatsLoading,
 }: OrganizationStatsProps) {
 	return (
-		<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+		<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 					<CardTitle className="text-sm font-medium">
@@ -47,7 +49,7 @@ export function OrganizationStats({
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 					<CardTitle className="text-sm font-medium">
-						WiseTrainer
+						Formations
 					</CardTitle>
 					<Building2 className="h-4 w-4 text-muted-foreground" />
 				</CardHeader>
@@ -60,7 +62,7 @@ export function OrganizationStats({
 						</div>
 					)}
 					<p className="text-xs text-muted-foreground">
-						Formations disponibles
+						Disponibles
 					</p>
 				</CardContent>
 			</Card>
@@ -68,20 +70,41 @@ export function OrganizationStats({
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 					<CardTitle className="text-sm font-medium">
-						Wisetour
+						Complétées
 					</CardTitle>
-					<Building2 className="h-4 w-4 text-muted-foreground" />
+					<CheckCircle className="h-4 w-4 text-muted-foreground" />
 				</CardHeader>
 				<CardContent>
-					{isWisetourLoading ? (
+					{isStatsLoading ? (
 						<Skeleton className="h-8 w-16" />
 					) : (
 						<div className="text-2xl font-bold">
-							{wisetourCount}
+							{totalFormationsCompleted}
 						</div>
 					)}
 					<p className="text-xs text-muted-foreground">
-						Environnements disponibles
+						Total terminées
+					</p>
+				</CardContent>
+			</Card>
+
+			<Card>
+				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+					<CardTitle className="text-sm font-medium">
+						Temps total
+					</CardTitle>
+					<Clock className="h-4 w-4 text-muted-foreground" />
+				</CardHeader>
+				<CardContent>
+					{isStatsLoading ? (
+						<Skeleton className="h-8 w-16" />
+					) : (
+						<div className="text-2xl font-bold">
+							{totalTimeSpent.toFixed(0)}h
+						</div>
+					)}
+					<p className="text-xs text-muted-foreground">
+						De formation
 					</p>
 				</CardContent>
 			</Card>

@@ -74,3 +74,33 @@ export {
   type BulkCreateAssignmentsInput,
   type UpdateTrainingAssignmentInput,
 } from './training'
+
+// Analytics validators and types
+export {
+  CompletionStatusSchema,
+  InteractionTypeSchema,
+  InteractionSubtypeSchema,
+  QuestionAnalyticsDataSchema,
+  ProcedureAnalyticsDataSchema,
+  TextAnalyticsDataSchema,
+  InteractionRecordSchema,
+  AnalyticsSummarySchema,
+  TrainingAnalyticsDataSchema,
+  CreateTrainingAnalyticsSchema,
+  GetTrainingAnalyticsQuerySchema,
+  ExportAnalyticsQuerySchema,
+  AggregatedAnalyticsSchema,
+  type CompletionStatus,
+  type InteractionType,
+  type InteractionSubtype,
+  type QuestionAnalyticsData,
+  type ProcedureAnalyticsData,
+  type TextAnalyticsData,
+  type InteractionRecord,
+  type AnalyticsSummary,
+  type TrainingAnalyticsData,
+  type CreateTrainingAnalyticsInput,
+  type GetTrainingAnalyticsQuery,
+  type ExportAnalyticsQuery,
+  type AggregatedAnalytics,
+} from './analytics'

@@ -122,8 +122,9 @@ export function useTrainingTags(options: {
       return fetchTrainingTags(activeOrganization.id, options);
     },
     enabled: !!activeOrganization?.id,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 1 * 60 * 1000, // 1 minute (réduit pour plus de réactivité)
     gcTime: 10 * 60 * 1000, // 10 minutes
+    refetchOnMount: true, // Refetch quand le composant est monté
   });
 }
 

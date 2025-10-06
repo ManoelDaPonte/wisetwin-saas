@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Home, LayoutDashboard, Building2, Users, BookOpen, Settings, List, Award, Box } from "lucide-react";
+import { Home, LayoutDashboard, Building2, Crown, Box } from "lucide-react";
 import { useIsPersonalSpace } from "@/stores/organization-store";
 import { useTranslations } from "@/hooks/use-translations";
 import { useSession } from "next-auth/react";
@@ -49,11 +49,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				title: t.navigation.dashboard,
 				url: "/tableau-de-bord",
 				icon: LayoutDashboard,
-			},
-			{
-				title: t.navigation.certifications,
-				url: "/tableau-de-bord/certifications",
-				icon: Award,
+				items: [
+					{
+						title: t.navigation.overview,
+						url: "/tableau-de-bord",
+					},
+					{
+						title: "Activité récente",
+						url: "/tableau-de-bord/activite-recente",
+					},
+					{
+						title: t.navigation.certifications,
+						url: "/tableau-de-bord/certifications",
+					},
+				],
 			},
 		];
 
@@ -66,16 +75,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				title: t.navigation.wisetrainer,
 				url: "/wisetrainer",
 				icon: Box,
-				items: [
-					{
-						title: t.navigation.allTrainings,
-						url: "/wisetrainer",
-					},
-					{
-						title: t.navigation.completedTrainings,
-						url: "/wisetrainer/formations-terminees",
-					},
-				],
 			},
 		];
 
@@ -87,24 +86,31 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
 		const items: NavigationItem[] = [
 			{
-				title: t.navigation.overview,
+				title: t.navigation.organization,
 				url: "/organisation",
 				icon: Building2,
-			},
-			{
-				title: t.navigation.members,
-				url: "/organisation/membres",
-				icon: Users,
-			},
-			{
-				title: t.navigation.trainingPlan,
-				url: "/organisation/plan-de-formation",
-				icon: BookOpen,
-			},
-			{
-				title: t.navigation.settings,
-				url: "/organisation/parametres",
-				icon: Settings,
+				items: [
+					{
+						title: t.navigation.overview,
+						url: "/organisation",
+					},
+					{
+						title: t.navigation.members,
+						url: "/organisation/membres",
+					},
+					{
+						title: t.navigation.trainingPlan,
+						url: "/organisation/plan-de-formation",
+					},
+					{
+						title: "Statistiques",
+						url: "/statistiques",
+					},
+					{
+						title: t.navigation.settings,
+						url: "/organisation/parametres",
+					},
+				],
 			},
 		];
 
@@ -119,19 +125,23 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
 		const items: NavigationItem[] = [
 			{
-				title: t.navigation.formations,
-				url: "/admin/formations",
-				icon: List,
-			},
-			{
-				title: t.navigation.users,
-				url: "/admin/utilisateurs",
-				icon: Users,
-			},
-			{
-				title: t.navigation.organizations,
-				url: "/admin/organisations",
-				icon: Building2,
+				title: t.navigation.superAdmin,
+				url: "/admin",
+				icon: Crown,
+				items: [
+					{
+						title: t.navigation.formations,
+						url: "/admin/formations",
+					},
+					{
+						title: t.navigation.users,
+						url: "/admin/utilisateurs",
+					},
+					{
+						title: t.navigation.organizations,
+						url: "/admin/organisations",
+					},
+				],
 			},
 		];
 
@@ -144,8 +154,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				<OrganizationSwitcher />
 			</SidebarHeader>
 			<SidebarContent>
-				<NavMain items={mainNavItems} label={t.navigation.mainNavigation} />
-				<NavMain items={platformNavItems} label={t.navigation.application} />
+				<NavMain
+					items={mainNavItems}
+					label={t.navigation.mainNavigation}
+				/>
+				<NavMain
+					items={platformNavItems}
+					label={t.navigation.application}
+				/>
 				{organizationNavItems.length > 0 && (
 					<NavMain
 						items={organizationNavItems}
@@ -153,7 +169,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 					/>
 				)}
 				{superAdminNavItems.length > 0 && (
-					<NavMain items={superAdminNavItems} label={t.navigation.superAdmin} />
+					<NavMain
+						items={superAdminNavItems}
+						label={t.navigation.superAdmin}
+					/>
 				)}
 			</SidebarContent>
 			<SidebarFooter>

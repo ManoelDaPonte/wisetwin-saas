@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useOrganizationStore } from "@/stores/organization-store";
 import { useOrganizations } from "@/app/hooks/use-organizations";
 import { useMembers } from "./hooks/use-members";
 import { useBuilds } from "@/app/hooks/use-builds";
+import { useTrainingAnalytics } from "./plan-de-formation/hooks/use-training-analytics";
 import { OrganizationStats } from "./components/organization-stats";
 import { OrganizationActions } from "./components/organization-actions";
 import { useTranslations } from "@/hooks/use-translations";
@@ -15,23 +16,38 @@ export default function OrganizationPage() {
 	const { fetchOrganizations } = useOrganizations();
 
 	const { members, isLoading: isMembersLoading } = useMembers();
-	const { data: wisetourBuilds, isLoading: isWisetourLoading } =
-		useBuilds("wisetour");
 	const { data: wisetrainerBuilds, isLoading: isWisetrainerLoading } =
 		useBuilds("wisetrainer");
+
+	// Récupérer les analytics pour toute l'organisation
+	const { data: analyticsData, isLoading: isAnalyticsLoading } = useTrainingAnalytics({
+		buildType: "WISETRAINER",
+	});
 
 	// Rafraîchir les données des organisations au montage du composant
 	useEffect(() => {
 		fetchOrganizations();
 	}, [fetchOrganizations]);
 
+	const memberCount = members?.length || 0;
+	const wisetrainerCount = wisetrainerBuilds?.builds?.length || 0;
+
+	// Calculer les stats globales depuis les analytics
+	const totalFormationsCompleted = analyticsData?.analytics?.filter(
+		(a) => a.completionStatus === "COMPLETED"
+	).length || 0;
+
+	const totalTimeSpent = useMemo(() => {
+		if (!analyticsData?.analytics) return 0;
+		const totalSeconds = analyticsData.analytics
+			.filter((a) => a.completionStatus === "COMPLETED")
+			.reduce((sum, a) => sum + a.totalDuration, 0);
+		return totalSeconds / 3600; // Convertir en heures
+	}, [analyticsData]);
+
 	if (!activeOrganization) {
 		return null;
 	}
-
-	const memberCount = members?.length || 0;
-	const wisetourCount = wisetourBuilds?.builds?.length || 0;
-	const wisetrainerCount = wisetrainerBuilds?.builds?.length || 0;
 
 	// Vérifier si l'utilisateur est un membre (pas admin/owner)
 	const isMember = activeOrganization.role === "MEMBER";
@@ -51,11 +67,12 @@ export default function OrganizationPage() {
 			{/* Statistiques rapides */}
 			<OrganizationStats
 				memberCount={memberCount}
-				wisetourCount={wisetourCount}
 				wisetrainerCount={wisetrainerCount}
+				totalFormationsCompleted={totalFormationsCompleted}
+				totalTimeSpent={totalTimeSpent}
 				isMembersLoading={isMembersLoading}
-				isWisetourLoading={isWisetourLoading}
 				isWisetrainerLoading={isWisetrainerLoading}
+				isStatsLoading={isAnalyticsLoading}
 			/>
 
 			{/* Actions rapides - cachées pour les membres */}
