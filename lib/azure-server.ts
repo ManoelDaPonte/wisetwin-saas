@@ -190,7 +190,11 @@ export async function listBuilds(
           
           // Enrichir le build avec les métadonnées
           build.metadata = metadataJson;
-          build.description = metadataJson.description || build.description;
+
+          // Ne copier que les propriétés de type string (pas les objets multilingues)
+          if (typeof metadataJson.description === 'string') {
+            build.description = metadataJson.description || build.description;
+          }
           build.category = metadataJson.category || build.category;
           build.version = metadataJson.version || build.version;
           build.imageUrl = metadataJson.imageUrl || build.imageUrl;
