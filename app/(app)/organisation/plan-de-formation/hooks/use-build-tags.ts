@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useOrganizationStore } from "@/stores/organization-store";
 import { useBuilds } from "@/app/hooks/use-builds";
@@ -168,8 +169,9 @@ export function useBuildTags(options: {
       return fetchBuildTags(activeOrganization.id, options);
     },
     enabled: !!activeOrganization?.id,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 1 * 60 * 1000, // 1 minute (réduit pour plus de réactivité)
     gcTime: 10 * 60 * 1000,   // 10 minutes
+    refetchOnMount: true,      // Refetch quand le composant est monté
   });
 }
 
@@ -311,77 +313,88 @@ export function useDeleteBuildTag() {
 
 // ===== HOOK COMPOSITE INTELLIGENT =====
 
-export function useBuildsWithTags(buildType?: BuildType) {
-  const { activeOrganization } = useOrganizationStore();
+export function useBuildsWithTags() {
   const { containerId } = useContainer();
-  
+
   // Pour les plans de formation, on ne s'intéresse qu'aux WiseTrainer
   const wisetrainerBuilds = useBuilds("wisetrainer");
-  
+
   // Récupérer tous les build-tags
-  const { data: buildTagsResponse } = useBuildTags();
-  const { data: tagsResponse } = useTrainingTags();
+  const buildTagsQuery = useBuildTags();
+  const tagsQuery = useTrainingTags();
 
-  return useQuery({
-    queryKey: ["builds-with-tags", activeOrganization?.id, containerId, buildType],
-    queryFn: (): BuildWithTags[] => {
-      
-      // Seules les formations WiseTrainer sont concernées par les plans de formation
-      const allBuilds: Build[] = wisetrainerBuilds.data?.builds || [];
+  // Utiliser useMemo au lieu de useQuery car c'est un calcul dérivé
+  // Cela se mettra à jour automatiquement quand les dépendances changent
+  const data = useMemo((): BuildWithTags[] => {
+    // Si les données ne sont pas encore chargées, retourner tableau vide
+    if (!wisetrainerBuilds.data || !buildTagsQuery.data || !tagsQuery.data) {
+      return [];
+    }
 
-      const buildTags = buildTagsResponse?.buildTags || [];
-      const tags = tagsResponse?.tags || [];
+    // Seules les formations WiseTrainer sont concernées par les plans de formation
+    const allBuilds: Build[] = wisetrainerBuilds.data.builds || [];
+    const buildTags = buildTagsQuery.data.buildTags || [];
+    const tags = tagsQuery.data.tags || [];
 
-      // Créer le mapping des builds avec leurs tags
-      return allBuilds.map(build => {
-        // Convertir buildType pour la comparaison avec buildTags 
-        const buildTypeForComparison = (build.buildType || "WISETRAINER").toUpperCase() as "WISETOUR" | "WISETRAINER";
-        
-        // Trouver tous les build-tags pour ce build
-        const relatedBuildTags = buildTags.filter(bt => 
-          bt.buildName === build.name &&
-          bt.buildType === buildTypeForComparison &&
-          bt.containerId === containerId
-        );
+    // Créer le mapping des builds avec leurs tags
+    return allBuilds.map(build => {
+      // Convertir buildType pour la comparaison avec buildTags
+      const buildTypeForComparison = (build.buildType || "WISETRAINER").toUpperCase() as "WISETOUR" | "WISETRAINER";
 
-        // Récupérer les tags associés
-        const buildTagsData = relatedBuildTags.map(bt => {
-          const tag = tags.find(t => t.id === bt.tagId);
-          return tag;
-        }).filter((tag): tag is TrainingTag => Boolean(tag));
+      // Trouver tous les build-tags pour ce build
+      const relatedBuildTags = buildTags.filter(bt =>
+        bt.buildName === build.name &&
+        bt.buildType === buildTypeForComparison &&
+        bt.containerId === containerId
+      );
 
-        // Calculer les statistiques de progression
-        const totalMembers = buildTagsData.reduce((sum, tag) => 
-          sum + (tag._count?.memberTags || 0), 0
-        );
-        const completedCount = relatedBuildTags.reduce((sum, bt) => 
-          sum + (bt._count?.completions || 0), 0
-        );
-        const completionRate = totalMembers > 0 ? (completedCount / totalMembers) * 100 : 0;
+      // Récupérer les tags associés
+      const buildTagsData = relatedBuildTags.map(bt => {
+        const tag = tags.find(t => t.id === bt.tagId);
+        return tag;
+      }).filter((tag): tag is TrainingTag => Boolean(tag));
 
-        return {
-          ...build, // Inclure toutes les propriétés du build original (metadata, imageUrl, etc.)
-          name: build.name,
-          type: buildTypeForComparison,
-          containerId: containerId!,
-          updatedAt: build.lastModified ? new Date(build.lastModified) : undefined,
-          size: build.totalSize,
-          tags: buildTagsData,
-          stats: {
-            totalMembers,
-            completedCount,
-            pendingCount: totalMembers - completedCount,
-            completionRate: Math.round(completionRate * 100) / 100,
-          },
-        };
-      });
+      // Calculer le nombre total de membres assignés
+      const totalMembers = buildTagsData.reduce((sum, tag) =>
+        sum + (tag._count?.memberTags || 0), 0
+      );
+
+      return {
+        ...build, // Inclure toutes les propriétés du build original (metadata, imageUrl, etc.)
+        name: build.name,
+        type: buildTypeForComparison,
+        containerId: containerId!,
+        updatedAt: build.lastModified ? new Date(build.lastModified) : undefined,
+        size: build.totalSize,
+        tags: buildTagsData,
+        stats: {
+          totalMembers,
+          completedCount: 0, // Stats de complétion calculées via TrainingAnalytics ailleurs
+          pendingCount: totalMembers,
+          completionRate: 0,
+        },
+      };
+    });
+  }, [
+    wisetrainerBuilds.data,
+    buildTagsQuery.data,
+    tagsQuery.data,
+    containerId,
+  ]);
+
+  // Retourner un objet compatible avec useQuery pour ne pas casser le code existant
+  return {
+    data,
+    isLoading: wisetrainerBuilds.isLoading || buildTagsQuery.isLoading || tagsQuery.isLoading,
+    isSuccess: wisetrainerBuilds.isSuccess && buildTagsQuery.isSuccess && tagsQuery.isSuccess,
+    isError: wisetrainerBuilds.isError || buildTagsQuery.isError || tagsQuery.isError,
+    error: wisetrainerBuilds.error || buildTagsQuery.error || tagsQuery.error,
+    refetch: () => {
+      wisetrainerBuilds.refetch();
+      buildTagsQuery.refetch();
+      tagsQuery.refetch();
     },
-    enabled: !!activeOrganization?.id &&
-      !!containerId &&
-      wisetrainerBuilds.isSuccess,
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    gcTime: 5 * 60 * 1000,
-  });
+  };
 }
 
 // Utilitaire pour créer l'ID composite d'un build

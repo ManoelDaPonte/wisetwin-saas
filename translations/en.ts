@@ -8,24 +8,37 @@ export const en = {
   
   // Navigation sidebar
   navigation: {
-    home: "Home",
-    dashboard: "Dashboard",
+    // Labels des sections
+    personal: "Personal",
+    application: "Applications",
     organization: "Organization",
+    superAdmin: "Super Admin",
+
+    // Section Personal
+    home: "Home",
+    myDashboard: "My Dashboard",
+    myActivity: "My Activity",
+    myCertifications: "My Certifications",
+
+    // Section Application
     wisetrainer: "WiseTrainer",
     wisetour: "Wisetour",
-    superAdmin: "Super-admin",
-    
-    // Labels des sections
-    mainNavigation: "Navigation",
-    application: "Applications",
-    administration: "Organization", 
-    
-    // Sous-menus
-    overview: "Overview",
-    organizationOverview: "Overview",
-    certifications: "Certifications",
+
+    // Section Organization
+    organizationOverview: "Organization",
     members: "Members",
+    trainingPlans: "Training Plans",
+    analytics: "Analytics",
     settings: "Settings",
+
+    // Section Super Admin
+    trainingCatalog: "Training Catalog",
+    allUsers: "All Users",
+    allOrganizations: "All Organizations",
+
+    // Anciens (pour compatibilité - non utilisés dans sidebar)
+    overview: "Overview",
+    certifications: "Certifications",
     trainingPlan: "Training Plan",
     allTrainings: "All Trainings",
     completedTrainings: "Completed Trainings",

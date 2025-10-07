@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Home, LayoutDashboard, Building2, Crown, Box } from "lucide-react";
+import { Home, BarChart3, Activity, Award, Box, Building2, Users, GraduationCap, Settings, Library, UserCog, Building } from "lucide-react";
 import { useIsPersonalSpace } from "@/stores/organization-store";
 import { useTranslations } from "@/hooks/use-translations";
 import { useSession } from "next-auth/react";
@@ -24,10 +24,6 @@ type NavigationItem = {
 	url: string;
 	icon?: LucideIcon;
 	isActive?: boolean;
-	items?: {
-		title: string;
-		url: string;
-	}[];
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -36,40 +32,36 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	// Récupération du contexte de l'organisation
 	const { data: session } = useSession();
 
-	// Groupes de navigation
-	const mainNavItems = React.useMemo(() => {
+	// Section Personnel
+	const personalNavItems = React.useMemo(() => {
 		const items: NavigationItem[] = [
 			{
 				title: t.navigation.home,
 				url: "/accueil",
 				icon: Home,
-				isActive: true,
 			},
 			{
-				title: t.navigation.dashboard,
+				title: t.navigation.myDashboard,
 				url: "/tableau-de-bord",
-				icon: LayoutDashboard,
-				items: [
-					{
-						title: t.navigation.overview,
-						url: "/tableau-de-bord",
-					},
-					{
-						title: "Activité récente",
-						url: "/tableau-de-bord/activite-recente",
-					},
-					{
-						title: t.navigation.certifications,
-						url: "/tableau-de-bord/certifications",
-					},
-				],
+				icon: BarChart3,
+			},
+			{
+				title: t.navigation.myActivity,
+				url: "/tableau-de-bord/activite-recente",
+				icon: Activity,
+			},
+			{
+				title: t.navigation.myCertifications,
+				url: "/tableau-de-bord/certifications",
+				icon: Award,
 			},
 		];
 
 		return items;
 	}, [t]);
 
-	const platformNavItems = React.useMemo(() => {
+	// Section Application
+	const applicationNavItems = React.useMemo(() => {
 		const items: NavigationItem[] = [
 			{
 				title: t.navigation.wisetrainer,
@@ -81,43 +73,42 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 		return items;
 	}, [t]);
 
+	// Section Organisation
 	const organizationNavItems = React.useMemo(() => {
 		if (isPersonalSpace) return [];
 
 		const items: NavigationItem[] = [
 			{
-				title: t.navigation.organization,
+				title: t.navigation.organizationOverview,
 				url: "/organisation",
 				icon: Building2,
-				items: [
-					{
-						title: t.navigation.overview,
-						url: "/organisation",
-					},
-					{
-						title: t.navigation.members,
-						url: "/organisation/membres",
-					},
-					{
-						title: t.navigation.trainingPlan,
-						url: "/organisation/plan-de-formation",
-					},
-					{
-						title: "Statistiques",
-						url: "/statistiques",
-					},
-					{
-						title: t.navigation.settings,
-						url: "/organisation/parametres",
-					},
-				],
+			},
+			{
+				title: t.navigation.members,
+				url: "/organisation/membres",
+				icon: Users,
+			},
+			{
+				title: t.navigation.trainingPlans,
+				url: "/organisation/plan-de-formation",
+				icon: GraduationCap,
+			},
+			{
+				title: t.navigation.analytics,
+				url: "/statistiques",
+				icon: BarChart3,
+			},
+			{
+				title: t.navigation.settings,
+				url: "/organisation/parametres",
+				icon: Settings,
 			},
 		];
 
 		return items;
 	}, [isPersonalSpace, t]);
 
-	// Navigation Super-admin (seulement pour @wisetwin.eu)
+	// Section Super Admin
 	const superAdminNavItems = React.useMemo(() => {
 		if (!session?.user?.email || !canAccessAdminPanel(session.user.email)) {
 			return [];
@@ -125,23 +116,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
 		const items: NavigationItem[] = [
 			{
-				title: t.navigation.superAdmin,
-				url: "/admin",
-				icon: Crown,
-				items: [
-					{
-						title: t.navigation.formations,
-						url: "/admin/formations",
-					},
-					{
-						title: t.navigation.users,
-						url: "/admin/utilisateurs",
-					},
-					{
-						title: t.navigation.organizations,
-						url: "/admin/organisations",
-					},
-				],
+				title: t.navigation.trainingCatalog,
+				url: "/admin/formations",
+				icon: Library,
+			},
+			{
+				title: t.navigation.allUsers,
+				url: "/admin/utilisateurs",
+				icon: UserCog,
+			},
+			{
+				title: t.navigation.allOrganizations,
+				url: "/admin/organisations",
+				icon: Building,
 			},
 		];
 
@@ -155,17 +142,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			</SidebarHeader>
 			<SidebarContent>
 				<NavMain
-					items={mainNavItems}
-					label={t.navigation.mainNavigation}
+					items={personalNavItems}
+					label={t.navigation.personal}
 				/>
 				<NavMain
-					items={platformNavItems}
+					items={applicationNavItems}
 					label={t.navigation.application}
 				/>
 				{organizationNavItems.length > 0 && (
 					<NavMain
 						items={organizationNavItems}
-						label={t.navigation.administration}
+						label={t.navigation.organization}
 					/>
 				)}
 				{superAdminNavItems.length > 0 && (

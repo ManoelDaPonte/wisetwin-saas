@@ -8,24 +8,37 @@ export const fr = {
   
   // Navigation sidebar
   navigation: {
-    home: "Accueil",
-    dashboard: "Tableau de bord",
+    // Labels des sections
+    personal: "Personnel",
+    application: "Applications",
     organization: "Organisation",
+    superAdmin: "Super Admin",
+
+    // Section Personnel
+    home: "Accueil",
+    myDashboard: "Mon tableau de bord",
+    myActivity: "Mon activité",
+    myCertifications: "Mes certifications",
+
+    // Section Application
     wisetrainer: "WiseTrainer",
     wisetour: "Wisetour",
-    superAdmin: "Super-admin",
-    
-    // Labels des sections
-    mainNavigation: "Navigation",
-    application: "Applications",
-    administration: "Organisation",
-    
-    // Sous-menus
-    overview: "Vue d'ensemble",
-    organizationOverview: "Vue d'ensemble",
-    certifications: "Certifications",
+
+    // Section Organisation
+    organizationOverview: "Organisation",
     members: "Membres",
+    trainingPlans: "Plans de formation",
+    analytics: "Analytiques",
     settings: "Paramètres",
+
+    // Section Super Admin
+    trainingCatalog: "Catalogue formations",
+    allUsers: "Tous les utilisateurs",
+    allOrganizations: "Toutes les organisations",
+
+    // Anciens (pour compatibilité - non utilisés dans sidebar)
+    overview: "Vue d'ensemble",
+    certifications: "Certifications",
     trainingPlan: "Plan de formation",
     allTrainings: "Toutes les formations",
     completedTrainings: "Formations terminées",

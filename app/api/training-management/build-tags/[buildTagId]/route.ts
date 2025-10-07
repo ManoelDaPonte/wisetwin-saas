@@ -36,26 +36,6 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest, context?
             email: true,
           },
         },
-        completions: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                image: true,
-              },
-            },
-          },
-          orderBy: {
-            completedAt: "desc",
-          },
-        },
-        _count: {
-          select: {
-            completions: true,
-          },
-        },
       },
     });
 
@@ -66,22 +46,7 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest, context?
       );
     }
 
-    // Calculer les statistiques de progression
-    const totalMembers = buildTag.tag._count?.memberTags || 0;
-    const completedCount = buildTag._count.completions;
-    const completionRate = totalMembers > 0 ? (completedCount / totalMembers) * 100 : 0;
-
-    const buildTagWithStats = {
-      ...buildTag,
-      stats: {
-        totalMembers,
-        completedCount,
-        pendingCount: totalMembers - completedCount,
-        completionRate: Math.round(completionRate * 100) / 100,
-      },
-    };
-
-    return NextResponse.json(buildTagWithStats);
+    return NextResponse.json(buildTag);
   } catch (error) {
     console.error("Erreur lors de la récupération du build-tag:", error);
     return NextResponse.json(
@@ -133,7 +98,7 @@ export const PUT = withOrgAuth(async (request: OrgAuthenticatedRequest, context?
       where: { id: buildTagId },
       data: {
         // Note: BuildTag doesn't have dueDate, priority, status fields
-        // These belong to TrainingTag or TrainingCompletion models
+        // These belong to TrainingTag model
       },
       include: {
         tag: {
@@ -154,11 +119,6 @@ export const PUT = withOrgAuth(async (request: OrgAuthenticatedRequest, context?
             id: true,
             name: true,
             email: true,
-          },
-        },
-        _count: {
-          select: {
-            completions: true,
           },
         },
       },
@@ -208,11 +168,6 @@ export const DELETE = withOrgAuth(async (request: OrgAuthenticatedRequest, conte
             name: true,
           },
         },
-        _count: {
-          select: {
-            completions: true,
-          },
-        },
       },
     });
 
@@ -223,7 +178,7 @@ export const DELETE = withOrgAuth(async (request: OrgAuthenticatedRequest, conte
       );
     }
 
-    // Suppression du build-tag (les completions seront supprimées en cascade)
+    // Suppression du build-tag
     await prisma.buildTag.delete({
       where: { id: buildTagId },
     });
@@ -235,7 +190,6 @@ export const DELETE = withOrgAuth(async (request: OrgAuthenticatedRequest, conte
         type: existingBuildTag.buildType,
       },
       tag: existingBuildTag.tag,
-      completionsDeleted: existingBuildTag._count.completions,
     });
   } catch (error) {
     console.error("Erreur lors de la suppression du build-tag:", error);

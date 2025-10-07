@@ -18,15 +18,17 @@ export function AppBreadcrumb() {
 	// Configuration des routes avec leurs labels traduits
 	const getRouteLabels = () => ({
 		"/accueil": t.navigation.home,
-		"/tableau-de-bord": t.navigation.dashboard,
-		"/tableau-de-bord/certifications": t.navigation.certifications,
-		"/organisation": t.navigation.organization,
+		"/tableau-de-bord": t.navigation.myDashboard,
+		"/tableau-de-bord/certifications": t.navigation.myCertifications,
+		"/tableau-de-bord/activite-recente": t.navigation.myActivity,
+		"/organisation": t.navigation.organizationOverview,
 		"/organisation/membres": t.navigation.members,
 		"/organisation/parametres": t.navigation.settings,
-		"/organisation/tableau-de-bord": t.navigation.dashboard,
+		"/organisation/tableau-de-bord": t.navigation.myDashboard,
 		"/wisetour": t.navigation.wisetour,
 		"/wisetrainer": t.navigation.wisetrainer,
-		"/organisation/plan-de-formation": t.navigation.trainingPlan,
+		"/organisation/plan-de-formation": t.navigation.trainingPlans,
+		"/statistiques": t.navigation.analytics,
 		"/wisetrainer/formations-terminees": t.navigation.completedTrainings,
 	});
 

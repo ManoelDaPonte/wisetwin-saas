@@ -92,15 +92,29 @@ export function TagsManager({}: TagsManagerProps) {
 
 	const handleDeleteTag = () => {
 		if (tagToDelete) {
-			deleteTag(tagToDelete);
-			setTagToDelete(null);
+			deleteTag(tagToDelete, {
+				onSuccess: () => {
+					// Fermer la modale seulement après succès de la suppression
+					setTagToDelete(null);
+				},
+				onError: () => {
+					// La modale reste ouverte pour afficher l'erreur
+				}
+			});
 		}
 	};
 
 	const handleEditTag = (updatedData: UpdateTrainingTagData) => {
 		if (tagToEdit) {
-			updateTag({ tagId: tagToEdit.id, data: updatedData });
-			setTagToEdit(null);
+			updateTag({ tagId: tagToEdit.id, data: updatedData }, {
+				onSuccess: () => {
+					// Fermer la modale seulement après succès de la mise à jour
+					setTagToEdit(null);
+				},
+				onError: () => {
+					// La modale reste ouverte pour afficher l'erreur
+				}
+			});
 		}
 	};
 
@@ -418,16 +432,13 @@ export function TagsManager({}: TagsManagerProps) {
 						</AlertDialogTitle>
 						<AlertDialogDescription>
 							Cette action est irréversible. Le plan de formation
-							sera supprimé définitivement.
-							{tagToDelete && (
-								<span className="block mt-2 text-sm">
-									<strong>Note :</strong> Vous ne pouvez
-									supprimer un plan que s&apos;il n&apos;est
-									assigné à aucun membre et n&apos;a
-									aucune formation associée.
-								</span>
-							)}
+							sera supprimé définitivement, ainsi que :
 						</AlertDialogDescription>
+						<ul className="list-disc list-inside mt-2 space-y-1 text-sm text-muted-foreground">
+							<li>Toutes les assignations aux membres</li>
+							<li>Toutes les assignations aux formations</li>
+							<li>Toutes les données de progression associées</li>
+						</ul>
 					</AlertDialogHeader>
 					{deleteError && (
 						<div className="text-sm text-destructive">

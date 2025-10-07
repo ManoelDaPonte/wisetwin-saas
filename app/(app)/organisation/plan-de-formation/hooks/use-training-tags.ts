@@ -227,7 +227,7 @@ export function useTrainingTagsManager() {
   const deleteMutation = useDeleteTrainingTag();
 
   const canManage = activeOrganization?.role === "OWNER" || activeOrganization?.role === "ADMIN";
-  const canDelete = activeOrganization?.role === "OWNER";
+  const canDelete = activeOrganization?.role === "OWNER" || activeOrganization?.role === "ADMIN";
 
   return {
     // Données

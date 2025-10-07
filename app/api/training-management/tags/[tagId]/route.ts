@@ -34,9 +34,11 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest, context?
         },
         buildTags: {
           include: {
-            _count: {
+            assignedBy: {
               select: {
-                completions: true,
+                id: true,
+                name: true,
+                email: true,
               },
             },
           },
@@ -146,10 +148,10 @@ export const PUT = withOrgAuth(async (request: OrgAuthenticatedRequest, context?
 // DELETE /api/training-management/tags/[tagId] - Supprimer un tag
 export const DELETE = withOrgAuth(async (request: OrgAuthenticatedRequest, context?: unknown) => {
   try {
-    // Vérification des permissions (OWNER seulement pour la suppression)
-    if (request.organization.role !== "OWNER") {
+    // Vérification des permissions (OWNER ou ADMIN pour la suppression)
+    if (request.organization.role !== "OWNER" && request.organization.role !== "ADMIN") {
       return NextResponse.json(
-        { error: "Seuls les propriétaires peuvent supprimer des tags" },
+        { error: "Seuls les propriétaires et administrateurs peuvent supprimer des tags" },
         { status: 403 }
       );
     }
@@ -179,22 +181,22 @@ export const DELETE = withOrgAuth(async (request: OrgAuthenticatedRequest, conte
       );
     }
 
-    // Vérification des dépendances
-    const hasDependencies = existingTag._count.memberTags > 0 || existingTag._count.buildTags > 0;
-    if (hasDependencies) {
-      return NextResponse.json(
-        { 
-          error: "Impossible de supprimer ce tag car il est utilisé",
-          details: {
-            memberTags: existingTag._count.memberTags,
-            buildTags: existingTag._count.buildTags,
-          },
-        },
-        { status: 409 }
-      );
+    // Suppression en cascade
+    // 1. Supprimer toutes les relations MemberTag
+    if (existingTag._count.memberTags > 0) {
+      await prisma.memberTag.deleteMany({
+        where: { tagId },
+      });
     }
 
-    // Suppression du tag (cascade delete des relations)
+    // 2. Supprimer toutes les relations BuildTag (et leurs completions via cascade Prisma)
+    if (existingTag._count.buildTags > 0) {
+      await prisma.buildTag.deleteMany({
+        where: { tagId },
+      });
+    }
+
+    // 3. Suppression du tag
     await prisma.trainingTag.delete({
       where: { id: tagId },
     });

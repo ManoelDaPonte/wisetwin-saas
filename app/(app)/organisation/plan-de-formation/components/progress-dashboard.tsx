@@ -19,6 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   BookOpen,
   Calendar,
@@ -40,6 +41,7 @@ import { fr } from "date-fns/locale";
 import Image from "next/image";
 import type { TagWithStats } from "@/types/training";
 import { useCurrentLanguage } from "@/stores/language-store";
+import { getUserInitials, getDisplayName } from "@/lib/user-utils";
 
 interface ProgressDashboardProps {
   organizationId: string;
@@ -166,18 +168,17 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
     return (
       <div className="space-y-6">
         {/* Stats générales skeleton */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {[...Array(3)].map((_, i) => (
             <Card key={i}>
-              <CardContent className="p-6">
-                <div className="flex items-center">
-                  <Skeleton className="h-8 w-8 rounded" />
-                  <div className="ml-4 space-y-2">
-                    <Skeleton className="h-4 w-24" />
-                    <div className="flex items-center gap-2">
-                      <Skeleton className="h-8 w-12" />
-                      <Skeleton className="h-5 w-16 rounded-full" />
-                    </div>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="rounded-lg bg-muted p-2">
+                    <Skeleton className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1 min-w-0 space-y-2">
+                    <Skeleton className="h-3 w-20" />
+                    <Skeleton className="h-8 w-12" />
                   </div>
                 </div>
               </CardContent>
@@ -282,65 +283,56 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
   return (
     <div className="space-y-6">
       {/* Stats générales */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center">
-              <BookOpen className="h-8 w-8 text-muted-foreground" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-muted-foreground">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg bg-muted p-2">
+                <BookOpen className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-muted-foreground mb-0.5">
                   Plans actifs
                 </p>
-                <div className="flex items-center gap-2">
-                  <p className="text-2xl font-bold">
-                    {dashboardMetrics?.totalTags || 0}
-                  </p>
-                  <Badge variant="outline" className="text-xs">
-                    {dashboardMetrics?.tagsWithMembers || 0} en cours
-                  </Badge>
-                </div>
+                <p className="text-2xl font-bold">
+                  {dashboardMetrics?.activePlans || 0}
+                </p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center">
-              <CheckCircle className="h-8 w-8 text-muted-foreground" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-muted-foreground">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg bg-muted p-2">
+                <CheckCircle className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-muted-foreground mb-0.5">
                   Plans terminés
                 </p>
-                <div className="flex items-center gap-2">
-                  <p className="text-2xl font-bold">
-                    {dashboardMetrics?.completedPlans || 0}
-                  </p>
-                  <Badge variant="outline" className="text-xs">
-                    100% terminé
-                  </Badge>
-                </div>
+                <p className="text-2xl font-bold">
+                  {dashboardMetrics?.completedPlans || 0}
+                </p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center">
-              <AlertTriangle className="h-8 w-8 text-muted-foreground" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-muted-foreground">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg bg-muted p-2">
+                <AlertTriangle className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-muted-foreground mb-0.5">
                   Plans en retard
                 </p>
-                <div className="flex items-center gap-2">
-                  <p className="text-2xl font-bold">
-                    {dashboardMetrics?.overduePlans || 0}
-                  </p>
-                  <Badge variant="outline" className="text-xs">
-                    échéance dépassée
-                  </Badge>
-                </div>
+                <p className="text-2xl font-bold">
+                  {dashboardMetrics?.overduePlans || 0}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -421,7 +413,7 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                   </p>
                 </div>
               ) : (
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {tagsWithStats.map((tag) => {
                     return (
                       <Card
@@ -548,7 +540,7 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                           </p>
                           <div className="flex items-center gap-2">
                             <p className="text-2xl font-bold">
-                              {selectedTagStats?.memberCount || 0}
+                              {(selectedTagStats?.memberCount || 0) - getTagCompletionCount(selectedTag)}
                             </p>
                           </div>
                         </div>
@@ -660,12 +652,17 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                                 </TableCell>
                                 <TableCell>
                                   <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                                      {member.name?.[0] || member.email[0]}
-                                    </div>
+                                    <Avatar className="h-10 w-10">
+                                      <AvatarImage
+                                        src={member.avatarUrl || undefined}
+                                      />
+                                      <AvatarFallback>
+                                        {getUserInitials(member)}
+                                      </AvatarFallback>
+                                    </Avatar>
                                     <div>
                                       <p className="font-medium">
-                                        {member.name || "Sans nom"}
+                                        {getDisplayName(member)}
                                       </p>
                                       <p className="text-sm text-muted-foreground">
                                         {member.email}
@@ -674,9 +671,22 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                                   </div>
                                 </TableCell>
                                 <TableCell>
-                                  <Badge variant="outline" className="text-xs">
-                                    En cours
-                                  </Badge>
+                                  {(() => {
+                                    const progress = getMemberTagProgress(
+                                      member.id,
+                                      selectedTagId
+                                    );
+                                    const isCompleted = progress.percentage === 100;
+
+                                    return (
+                                      <Badge
+                                        variant={isCompleted ? "default" : "outline"}
+                                        className="text-xs"
+                                      >
+                                        {isCompleted ? "Terminé" : "En cours"}
+                                      </Badge>
+                                    );
+                                  })()}
                                 </TableCell>
                                 <TableCell>
                                   <div className="text-sm">

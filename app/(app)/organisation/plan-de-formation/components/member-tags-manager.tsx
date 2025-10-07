@@ -42,7 +42,7 @@ import { TagBadge } from "./tag-badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
-import { getUserInitials } from "@/lib/user-utils";
+import { getUserInitials, getDisplayName } from "@/lib/user-utils";
 
 interface MemberTagsManagerProps {
 	organizationId: string;
@@ -73,8 +73,9 @@ export function MemberTagsManager({}: MemberTagsManagerProps) {
 
 	// Filtrage des membres
 	const filteredMembers = membersWithTags.filter((member) => {
+		const displayName = getDisplayName(member);
 		const matchesSearch =
-			member.name?.toLowerCase().includes(search.toLowerCase()) ||
+			displayName.toLowerCase().includes(search.toLowerCase()) ||
 			member.email.toLowerCase().includes(search.toLowerCase());
 
 		const matchesTagFilter =
@@ -516,7 +517,7 @@ export function MemberTagsManager({}: MemberTagsManagerProps) {
 											)}
 											<TableCell>
 												<div className="flex items-center gap-3">
-													<Avatar className="h-8 w-8">
+													<Avatar className="h-10 w-10">
 														<AvatarImage
 															src={
 																member.image ||
@@ -529,10 +530,9 @@ export function MemberTagsManager({}: MemberTagsManagerProps) {
 													</Avatar>
 													<div>
 														<div className="font-medium">
-															{member.name ||
-																"Pas de nom"}
+															{getDisplayName(member)}
 														</div>
-														<div className="text-xs text-muted-foreground">
+														<div className="text-sm text-muted-foreground">
 															{member.email}
 														</div>
 													</div>

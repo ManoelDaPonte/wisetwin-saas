@@ -205,28 +205,6 @@ export async function POST(request: NextRequest) {
             lastAccessedAt: new Date(),
           }
         });
-
-        // Mettre à jour TrainingCompletion si applicable
-        const buildTag = await prisma.buildTag.findFirst({
-          where: {
-            buildName: data.buildName,
-            buildType: data.buildType as "WISETOUR" | "WISETRAINER",
-            containerId: data.containerId,
-          }
-        });
-
-        if (buildTag) {
-          await prisma.trainingCompletion.updateMany({
-            where: {
-              buildTagId: buildTag.id,
-              userId,
-            },
-            data: {
-              status: "COMPLETED",
-              completedAt: new Date(data.endTime),
-            }
-          });
-        }
       }
 
       console.log(`[Unity Analytics] Nouvelle session créée: ${newAnalytics.sessionId}`);

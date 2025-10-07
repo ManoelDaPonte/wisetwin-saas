@@ -43,7 +43,6 @@ export {
 
 // Training management validators and types
 export {
-  TrainingStatusSchema,
   BuildTypeSchema,
   CreateTrainingTagSchema,
   UpdateTrainingTagSchema,
@@ -53,26 +52,18 @@ export {
   GetTrainingTagsQuerySchema,
   GetMemberTagsQuerySchema,
   GetBuildTagsQuerySchema,
-  GetTrainingProgressQuerySchema,
   BulkAssignTagsSchema,
   BulkRemoveTagsSchema,
   BulkAssignBuildTagsSchema,
   BulkRemoveBuildTagsSchema,
-  CreateTrainingAssignmentSchema,
-  BulkCreateAssignmentsSchema,
-  UpdateTrainingAssignmentSchema,
   type CreateTrainingTagInput,
   type UpdateTrainingTagInput,
   type AssignTagToMemberInput,
   type GetTrainingTagsQuery,
   type GetMemberTagsQuery,
   type GetBuildTagsQuery,
-  type GetTrainingProgressQuery,
   type BulkAssignTagsInput,
   type BulkRemoveTagsInput,
-  type CreateTrainingAssignmentInput,
-  type BulkCreateAssignmentsInput,
-  type UpdateTrainingAssignmentInput,
 } from './training'
 
 // Analytics validators and types

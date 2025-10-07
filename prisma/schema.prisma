@@ -30,7 +30,6 @@ model User {
   memberTags    MemberTag[]
   assignedTags  MemberTag[] @relation("TagAssignedBy")
   buildTags     BuildTag[]
-  trainingCompletions TrainingCompletion[]
   trainingAnalytics   TrainingAnalytics[]
   passwordResets      PasswordReset[]
 }
@@ -196,8 +195,7 @@ model BuildTag {
   // Relations
   tag         TrainingTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
   assignedBy  User @relation(fields: [assignedById], references: [id])
-  completions TrainingCompletion[]
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
@@ -208,38 +206,6 @@ model BuildTag {
 }
 
 // Suivi des formations avec notifications
-model TrainingCompletion {
-  id          String @id @default(cuid())
-  buildTagId  String
-  userId      String
-  
-  // Statuts de formation
-  status      TrainingStatus @default(NOT_STARTED)
-  startedAt   DateTime?
-  completedAt DateTime?
-  
-  // Notifications
-  lastReminderSent DateTime?
-  reminderCount    Int @default(0)
-  
-  // Relations
-  buildTag    BuildTag @relation(fields: [buildTagId], references: [id], onDelete: Cascade)
-  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  @@unique([buildTagId, userId])
-  @@index([userId, status])
-  @@index([buildTagId])
-}
-
-enum TrainingStatus {
-  NOT_STARTED
-  IN_PROGRESS
-  COMPLETED
-  OVERDUE
-}
 
 model PasswordReset {
   id        String   @id @default(cuid())

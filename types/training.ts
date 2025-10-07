@@ -1,7 +1,5 @@
 // Types pour le système de gestion de formations
 
-export type TrainingStatus = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED" | "OVERDUE";
-
 export interface TrainingTag {
   id: string;
   name: string;
@@ -64,62 +62,6 @@ export interface BuildTag {
     name: string | null;
     email: string;
   };
-  completions?: TrainingCompletion[];
-  _count?: {
-    completions: number;
-  };
-}
-
-export interface TrainingCompletion {
-  id: string;
-  buildTagId: string;
-  userId: string;
-  status: TrainingStatus;
-  startedAt?: Date | null;
-  completedAt?: Date | null;
-  lastReminderSent?: Date | null;
-  reminderCount: number;
-  createdAt: Date;
-  updatedAt: Date;
-  
-  // Relations optionnelles
-  buildTag?: BuildTag;
-  user?: {
-    id: string;
-    name: string | null;
-    email: string;
-    image?: string | null;
-  };
-}
-
-export interface TrainingAssignment {
-  id: string;
-  userId: string;
-  tagId: string;
-  buildName: string;
-  buildType: "WISETOUR" | "WISETRAINER";
-  containerId: string;
-  dueDate?: Date | null;
-  isRequired: boolean;
-  priority: "LOW" | "MEDIUM" | "HIGH";
-  status: TrainingStatus;
-  assignedById: string;
-  createdAt: Date;
-  updatedAt: Date;
-  
-  // Relations optionnelles
-  user?: {
-    id: string;
-    name: string | null;
-    email: string;
-    image?: string | null;
-  };
-  tag?: TrainingTag;
-  assignedBy?: {
-    id: string;
-    name: string | null;
-    email: string;
-  };
 }
 
 // === TYPES POUR LES FORMULAIRES ===
@@ -143,25 +85,6 @@ export interface UpdateTrainingTagData {
 export interface AssignTagToMemberData {
   userId: string;
   tagId: string;
-}
-
-export interface CreateTrainingAssignmentData {
-  tagId: string;
-  unityBuildId?: string;
-  title: string;
-  description?: string;
-  dueDate?: string;
-  priority: "LOW" | "MEDIUM" | "HIGH";
-  status: string;
-}
-
-export interface UpdateTrainingAssignmentData {
-  title?: string;
-  description?: string;
-  dueDate?: string | null;
-  priority?: "LOW" | "MEDIUM" | "HIGH";
-  status?: string;
-  unityBuildId?: string;
 }
 
 export interface CreateBuildTagData {
@@ -248,32 +171,6 @@ export interface TrainingTagsResponse {
   total: number;
 }
 
-export interface TrainingAssignmentWithStats extends TrainingAssignment {
-  progress: {
-    total: number;
-    completed: number;
-    inProgress: number;
-    notStarted: number;
-    overdue: number;
-    completionRate: number;
-  };
-  recentCompletions: Array<{
-    userId: string;
-    userName: string | null;
-    userEmail: string;
-    completedAt: Date;
-  }>;
-}
-
-export interface TrainingAssignmentsResponse {
-  assignments: TrainingAssignment[];
-  total: number;
-}
-
-export interface BulkCreateAssignmentsData {
-  assignments: CreateTrainingAssignmentData[];
-}
-
 export interface MemberTagsResponse {
   memberTags: MemberTag[];
   total: number;
@@ -289,38 +186,7 @@ export interface BuildsWithTagsResponse {
   total: number;
 }
 
-export interface TrainingProgressResponse {
-  completions: TrainingCompletion[];
-  total: number;
-  stats: {
-    notStarted: number;
-    inProgress: number;
-    completed: number;
-    overdue: number;
-  };
-}
-
 // === TYPES POUR LES VUES DASHBOARD ===
-
-// TrainingOverviewStats supprimé car non utilisé
-// TagWithStats supprimé car non utilisé
-
-export interface AssignmentWithProgress extends TrainingAssignment {
-  progress: {
-    total: number;
-    completed: number;
-    inProgress: number;
-    notStarted: number;
-    overdue: number;
-    completionRate: number;
-  };
-  recentCompletions: Array<{
-    userId: string;
-    userName: string | null;
-    userEmail: string;
-    completedAt: Date;
-  }>;
-}
 
 export interface MemberWithTrainings {
   id: string;
@@ -329,23 +195,6 @@ export interface MemberWithTrainings {
   email: string;
   image?: string | null;
   tags: TrainingTag[];
-  assignments: Array<{
-    id: string;
-    buildName: string;
-    buildType: "WISETOUR" | "WISETRAINER";
-    status: TrainingStatus;
-    dueDate?: Date | null;
-    isRequired: boolean;
-    assignedAt: Date;
-    completedAt?: Date | null;
-  }>;
-  stats: {
-    totalAssignments: number;
-    completed: number;
-    inProgress: number;
-    overdue: number;
-    completionRate: number;
-  };
 }
 
 // === TYPES POUR L'EXPORT ===

@@ -53,11 +53,6 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
               email: true,
             },
           },
-          _count: {
-            select: {
-              completions: true,
-            },
-          },
         },
         orderBy: { createdAt: "desc" },
         skip: offset,

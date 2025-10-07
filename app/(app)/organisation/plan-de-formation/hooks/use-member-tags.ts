@@ -306,14 +306,6 @@ export function useMemberTagsManager() {
       email: member.email,
       image: member.avatarUrl,
       tags: memberTags,
-      assignments: [], // À implémenter plus tard avec les training assignments
-      stats: {
-        totalAssignments: memberTags.length,
-        completed: 0,
-        inProgress: 0,
-        overdue: 0,
-        completionRate: 0,
-      },
     };
   });
 
