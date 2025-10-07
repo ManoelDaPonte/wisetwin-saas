@@ -14,30 +14,42 @@ import { Edit } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useTranslations } from "@/hooks/use-translations";
+import { useCurrentLanguage } from "@/stores/language-store";
 
 export default function AdminFormationsPage() {
 	const t = useTranslations();
+	const currentLanguage = useCurrentLanguage();
 	const { data, isLoading, error } = useAdminFormations();
 	const [selectedFormation, setSelectedFormation] =
 		useState<AdminFormation | null>(null);
 	const [isEditorOpen, setIsEditorOpen] = useState(false);
 
+	// Helper pour extraire le texte localisé des métadonnées
+	const getLocalizedText = (text: string | { en: string; fr: string } | undefined): string | undefined => {
+		if (!text) return undefined;
+		if (typeof text === "string") return text;
+		return text[currentLanguage] || text.fr || text.en;
+	};
+
 	const columns: AdminTableColumn<AdminFormation>[] = [
 		{
 			key: "name",
 			label: t.admin.trainings.table.formation,
-			render: (formation) => (
-				<div>
-					<div className="font-medium">
-						{formation.title || formation.name}
-					</div>
-					{formation.title && formation.title !== formation.name && (
-						<div className="text-xs text-muted-foreground">
-							ID: {formation.name}
+			render: (formation) => {
+				const displayTitle = getLocalizedText(formation.title) || formation.name;
+				return (
+					<div>
+						<div className="font-medium">
+							{displayTitle}
 						</div>
-					)}
-				</div>
-			),
+						{formation.title && displayTitle !== formation.name && (
+							<div className="text-xs text-muted-foreground">
+								ID: {formation.name}
+							</div>
+						)}
+					</div>
+				);
+			},
 		},
 		{
 			key: "buildType",

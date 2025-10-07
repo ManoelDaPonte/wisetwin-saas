@@ -187,35 +187,113 @@ export function MetadataEditor({
 								<FormField
 									control={form.control}
 									name="title"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>
-												Titre de la formation
-											</FormLabel>
-											<FormControl>
-												<Input {...field} />
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
+									render={({ field }) => {
+										// Détecter si c'est un objet multilingue
+										const isMultilingual = typeof field.value === 'object' && field.value !== null && 'en' in field.value && 'fr' in field.value;
+
+										if (isMultilingual) {
+											const multiValue = field.value as { en: string; fr: string };
+											return (
+												<FormItem>
+													<FormLabel>Titre de la formation (Multilingue)</FormLabel>
+													<div className="space-y-2">
+														<div>
+															<label className="text-xs text-muted-foreground">🇬🇧 Anglais</label>
+															<FormControl>
+																<Input
+																	value={multiValue.en || ''}
+																	onChange={(e) => field.onChange({ ...multiValue, en: e.target.value })}
+																	placeholder="English title"
+																/>
+															</FormControl>
+														</div>
+														<div>
+															<label className="text-xs text-muted-foreground">🇫🇷 Français</label>
+															<FormControl>
+																<Input
+																	value={multiValue.fr || ''}
+																	onChange={(e) => field.onChange({ ...multiValue, fr: e.target.value })}
+																	placeholder="Titre français"
+																/>
+															</FormControl>
+														</div>
+													</div>
+													<FormMessage />
+												</FormItem>
+											);
+										}
+
+										// Format string simple
+										return (
+											<FormItem>
+												<FormLabel>Titre de la formation</FormLabel>
+												<FormControl>
+													<Input {...field} value={field.value as string || ''} />
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										);
+									}}
 								/>
 
 								<FormField
 									control={form.control}
 									name="description"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Description</FormLabel>
-											<FormControl>
-												<Textarea {...field} rows={3} />
-											</FormControl>
-											<FormDescription>
-												Description détaillée de la
-												formation (min. 10 caractères)
-											</FormDescription>
-											<FormMessage />
-										</FormItem>
-									)}
+									render={({ field }) => {
+										// Détecter si c'est un objet multilingue
+										const isMultilingual = typeof field.value === 'object' && field.value !== null && 'en' in field.value && 'fr' in field.value;
+
+										if (isMultilingual) {
+											const multiValue = field.value as { en: string; fr: string };
+											return (
+												<FormItem>
+													<FormLabel>Description (Multilingue)</FormLabel>
+													<FormDescription>
+														Description détaillée de la formation en anglais et français
+													</FormDescription>
+													<div className="space-y-2">
+														<div>
+															<label className="text-xs text-muted-foreground">🇬🇧 Anglais</label>
+															<FormControl>
+																<Textarea
+																	value={multiValue.en || ''}
+																	onChange={(e) => field.onChange({ ...multiValue, en: e.target.value })}
+																	placeholder="English description"
+																	rows={3}
+																/>
+															</FormControl>
+														</div>
+														<div>
+															<label className="text-xs text-muted-foreground">🇫🇷 Français</label>
+															<FormControl>
+																<Textarea
+																	value={multiValue.fr || ''}
+																	onChange={(e) => field.onChange({ ...multiValue, fr: e.target.value })}
+																	placeholder="Description française"
+																	rows={3}
+																/>
+															</FormControl>
+														</div>
+													</div>
+													<FormMessage />
+												</FormItem>
+											);
+										}
+
+										// Format string simple
+										return (
+											<FormItem>
+												<FormLabel>Description</FormLabel>
+												<FormControl>
+													<Textarea {...field} value={field.value as string || ''} rows={3} />
+												</FormControl>
+												<FormDescription>
+													Description détaillée de la formation (min. 10 caractères)
+												</FormDescription>
+												<FormMessage />
+											</FormItem>
+										);
+									}}
 								/>
 
 								<div className="grid grid-cols-3 gap-4">

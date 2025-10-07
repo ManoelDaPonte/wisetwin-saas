@@ -206,8 +206,8 @@ export interface BuildWithTags {
   };
   totalSize: number;
   metadata?: {
-    title?: string;
-    description?: string;
+    title?: string | { en: string; fr: string };
+    description?: string | { en: string; fr: string };
     category?: string;
     version?: string;
     difficulty?: string;
