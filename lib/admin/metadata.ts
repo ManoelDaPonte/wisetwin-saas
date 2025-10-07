@@ -10,13 +10,22 @@ export const ModuleSchema = z.object({
   order: z.number().optional(),
 });
 
+// Schéma pour texte multilingue (string simple OU objet {en, fr})
+const LocalizedStringSchema = z.union([
+  z.string(),
+  z.object({
+    en: z.string(),
+    fr: z.string(),
+  })
+]);
+
 // Schéma principal pour les métadonnées de formation - VERSION PERMISSIVE
 export const FormationMetadataSchema = z.object({
   id: z.string().min(1, "L'ID de la formation est requis"),
-  title: z.string().min(1, "Le titre de la formation est requis"),
-  
+  title: LocalizedStringSchema,
+
   // Description avec valeur par défaut (toujours présente)
-  description: z.string().default("Description à compléter"),
+  description: LocalizedStringSchema.default("Description à compléter"),
   
   // Version avec valeur par défaut
   version: z.string().default("1.0.0"),
@@ -76,8 +85,8 @@ export type FormationModule = z.infer<typeof ModuleSchema>;
 // Schéma encore plus permissif pour Unity (fallback)
 export const FormationMetadataSchemaPermissive = z.object({
   id: z.string(),
-  title: z.string(),
-  description: z.string().optional().default(""),
+  title: LocalizedStringSchema,
+  description: LocalizedStringSchema.optional().default(""),
   version: z.string().optional().default("1.0.0"),
   category: z.string().optional().default("Général"), // Accepte n'importe quelle chaîne
   duration: z.string().optional().default(""),

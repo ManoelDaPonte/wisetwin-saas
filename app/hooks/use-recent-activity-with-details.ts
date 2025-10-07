@@ -2,12 +2,21 @@ import { useQuery } from "@tanstack/react-query";
 import { useUserStats } from "./use-user-stats";
 import { useContainer } from "./use-container";
 import { Build } from "@/types/azure";
+import { useCurrentLanguage } from "@/stores/language-store";
 
 export function useRecentActivityWithDetails() {
   const { stats, isLoading: isStatsLoading, error: statsError } = useUserStats();
   const { containerId, isReady } = useContainer();
+  const currentLanguage = useCurrentLanguage();
 
   const recentActivity = stats?.recentActivity || [];
+
+  // Helper pour extraire le texte localisé des métadonnées
+  const getLocalizedText = (text: string | { en: string; fr: string } | undefined): string | undefined => {
+    if (!text) return undefined;
+    if (typeof text === "string") return text;
+    return text[currentLanguage] || text.fr || text.en;
+  };
 
   // Récupérer les détails des builds pour avoir les titres
   const buildsDetailsQuery = useQuery({
@@ -47,9 +56,7 @@ export function useRecentActivityWithDetails() {
 
         return {
           ...activity,
-          displayName: build?.metadata?.title && typeof build.metadata.title === "string"
-            ? build.metadata.title
-            : build?.name || activity.buildName,
+          displayName: getLocalizedText(build?.metadata?.title) || build?.name || activity.buildName,
           build,
         };
       });

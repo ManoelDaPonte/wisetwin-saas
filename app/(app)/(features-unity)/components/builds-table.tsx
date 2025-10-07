@@ -14,6 +14,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useContainer } from "@/app/hooks/use-container";
 import { Build } from "@/types/azure";
+import { useCurrentLanguage } from "@/stores/language-store";
 import {
   Card,
   CardContent,
@@ -68,6 +69,7 @@ export function BuildsTable({
 }: BuildsTableProps) {
   const router = useRouter();
   const { containerId } = useContainer();
+  const currentLanguage = useCurrentLanguage();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
@@ -79,6 +81,13 @@ export function BuildsTable({
   // Contenu unifié - tous les builds sont des formations
   const contentType = "formation";
   const contentTypePlural = "formations";
+
+  // Helper pour extraire le texte localisé des métadonnées
+  const getLocalizedText = (text: string | { en: string; fr: string } | undefined): string | undefined => {
+    if (!text) return undefined;
+    if (typeof text === "string") return text;
+    return text[currentLanguage] || text.fr || text.en;
+  };
 
   const filteredAndSortedBuilds = useMemo(() => {
     if (!builds?.builds) return [];
@@ -263,29 +272,18 @@ export function BuildsTable({
                       <TableCell>
                         <div className="space-y-1">
                           <div className="font-medium">
-                            {build.metadata?.title &&
-                            typeof build.metadata.title === "string"
-                              ? build.metadata.title
-                              : build.name}
+                            {getLocalizedText(build.metadata?.title) || build.name}
                           </div>
-                          {((build.metadata?.description &&
-                            typeof build.metadata.description === "string") ||
-                            build.description) && (
+                          {(getLocalizedText(build.metadata?.description) || build.description) && (
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <div className="text-sm text-muted-foreground line-clamp-2 max-w-md cursor-help">
-                                  {build.metadata?.description &&
-                                  typeof build.metadata.description === "string"
-                                    ? build.metadata.description
-                                    : build.description}
+                                  {getLocalizedText(build.metadata?.description) || build.description}
                                 </div>
                               </TooltipTrigger>
                               <TooltipContent className="max-w-md">
                                 <p className="whitespace-normal">
-                                  {build.metadata?.description &&
-                                  typeof build.metadata.description === "string"
-                                    ? build.metadata.description
-                                    : build.description}
+                                  {getLocalizedText(build.metadata?.description) || build.description}
                                 </p>
                               </TooltipContent>
                             </Tooltip>

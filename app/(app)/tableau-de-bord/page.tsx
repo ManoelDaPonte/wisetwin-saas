@@ -13,6 +13,7 @@ import {
 	useIsPersonalSpace,
 	useOrganizationStore,
 } from "@/stores/organization-store";
+import { useCurrentLanguage } from "@/stores/language-store";
 import { Calendar, CheckCircle2, Clock, Trophy, Award, ArrowRight } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -21,6 +22,7 @@ import type { Build } from "@/types";
 export default function DashboardPage() {
 	const t = useTranslations();
 	const { data: session } = useSession();
+	const currentLanguage = useCurrentLanguage();
 	const {} = useOrganizationStore();
 	const {} = useIsPersonalSpace();
 	const {
@@ -28,6 +30,13 @@ export default function DashboardPage() {
 		isLoading: isStatsLoading,
 		error: statsError,
 	} = useUserStats();
+
+	// Helper pour extraire le texte localisé des métadonnées
+	const getLocalizedText = (text: string | { en: string; fr: string } | undefined): string | undefined => {
+		if (!text) return undefined;
+		if (typeof text === "string") return text;
+		return text[currentLanguage] || text.fr || text.en;
+	};
 
 	const {
 		activities: recentActivitiesWithDetails,
@@ -229,9 +238,7 @@ export default function DashboardPage() {
 									</div>
 									<div className="flex-1">
 										<p className="text-sm font-medium">
-											{build.metadata?.title && typeof build.metadata.title === "string"
-												? build.metadata.title
-												: build.name}
+											{getLocalizedText(build.metadata?.title) || build.name}
 										</p>
 										<p className="text-xs text-muted-foreground">
 											{build.completion?.completedAt && format(new Date(build.completion.completedAt), "d MMMM yyyy", { locale: fr })}
