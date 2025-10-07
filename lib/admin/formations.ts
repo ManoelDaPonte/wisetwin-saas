@@ -40,15 +40,15 @@ export async function getAllFormations(): Promise<AdminFormation[]> {
       for (const build of allBuilds) {
         // Vérifier la présence des métadonnées
         let hasMetadata = false;
-        let title: string | undefined;
-        
+        let title: string | { en: string; fr: string } | undefined;
+
         try {
           const metadataResult = await getFormationMetadata({
             containerId: org.azureContainerId,
             buildType: build.buildType,
             buildName: build.name,
           });
-          
+
           hasMetadata = metadataResult.exists && !metadataResult.error;
           title = metadataResult.metadata?.title;
         } catch (error) {
@@ -85,15 +85,15 @@ export async function getAllFormations(): Promise<AdminFormation[]> {
       for (const build of allBuilds) {
         // Vérifier la présence des métadonnées
         let hasMetadata = false;
-        let title: string | undefined;
-        
+        let title: string | { en: string; fr: string } | undefined;
+
         try {
           const metadataResult = await getFormationMetadata({
             containerId: user.azureContainerId!,
             buildType: build.buildType,
             buildName: build.name,
           });
-          
+
           hasMetadata = metadataResult.exists && !metadataResult.error;
           title = metadataResult.metadata?.title;
         } catch (error) {

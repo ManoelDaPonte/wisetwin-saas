@@ -43,6 +43,7 @@ import { useTrainingTags } from "../hooks/use-training-tags";
 import { TagBadge } from "./tag-badge";
 import { BulkAssignBuildTagsData, BulkRemoveBuildTagsData } from "@/types/training";
 import { BuildType } from "@/types";
+import { useCurrentLanguage } from "@/stores/language-store";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import Image from "next/image"
@@ -52,12 +53,20 @@ interface BuildsManagerProps {
 }
 
 export function BuildsManager({}: BuildsManagerProps) {
+  const currentLanguage = useCurrentLanguage();
   const [search, setSearch] = useState("");
   const [selectedBuilds, setSelectedBuilds] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [filterByTag, setFilterByTag] = useState<string>("");
   const [showAssignDialog, setShowAssignDialog] = useState(false);
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
+
+  // Helper pour extraire le texte localisé des métadonnées
+  const getLocalizedText = (text: string | { en: string; fr: string } | undefined): string | undefined => {
+    if (!text) return undefined;
+    if (typeof text === "string") return text;
+    return text[currentLanguage] || text.fr || text.en;
+  };
 
   const {
     data: buildsWithTags,
@@ -407,14 +416,10 @@ export function BuildsManager({}: BuildsManagerProps) {
                             )}
                             <div>
                               <div className="font-medium">
-                                {build.metadata?.title && typeof build.metadata.title === "string"
-                                  ? build.metadata.title
-                                  : build.name}
+                                {getLocalizedText(build.metadata?.title) || build.name}
                               </div>
                               <div className="text-xs text-muted-foreground line-clamp-2 max-w-xs">
-                                {build.metadata?.description && typeof build.metadata.description === "string"
-                                  ? build.metadata.description
-                                  : "Formation interactive WiseTrainer"}
+                                {getLocalizedText(build.metadata?.description) || "Formation interactive WiseTrainer"}
                               </div>
                               {build.metadata?.objectives && 
                                 Array.isArray(build.metadata.objectives) && 

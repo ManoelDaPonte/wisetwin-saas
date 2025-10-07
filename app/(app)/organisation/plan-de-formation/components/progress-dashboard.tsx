@@ -39,16 +39,25 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import Image from "next/image";
 import type { TagWithStats } from "@/types/training";
+import { useCurrentLanguage } from "@/stores/language-store";
 
 interface ProgressDashboardProps {
   organizationId: string;
 }
 
 export function ProgressDashboard({}: ProgressDashboardProps) {
+  const currentLanguage = useCurrentLanguage();
   const [selectedTagId, setSelectedTagId] = useState<string>("all");
   const [expandedMembers, setExpandedMembers] = useState<Set<string>>(
     new Set()
   );
+
+  // Helper pour extraire le texte localisé des métadonnées
+  const getLocalizedText = (text: string | { en: string; fr: string } | undefined): string | undefined => {
+    if (!text) return undefined;
+    if (typeof text === "string") return text;
+    return text[currentLanguage] || text.fr || text.en;
+  };
 
   const {
     tagsWithStats,
@@ -768,9 +777,7 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                                                       )}
                                                       <div>
                                                         <span className="text-sm font-medium">
-                                                          {build.metadata
-                                                            ?.title ||
-                                                            build.name}
+                                                          {getLocalizedText(build.metadata?.title) || build.name}
                                                         </span>
                                                         <span className="text-xs text-muted-foreground ml-2">
                                                           {build.type}
@@ -860,8 +867,7 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                                                     )}
                                                     <div>
                                                       <span className="text-sm font-medium">
-                                                        {build.metadata
-                                                          ?.title || build.name}
+                                                        {getLocalizedText(build.metadata?.title) || build.name}
                                                       </span>
                                                       <span className="text-xs text-muted-foreground ml-2">
                                                         {build.type}

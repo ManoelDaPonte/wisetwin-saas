@@ -34,8 +34,8 @@ export interface Build {
   totalSize: number;
   // Métadonnées enrichies (si fichier metadata présent)
   metadata?: {
-    title?: string;
-    description?: string;
+    title?: string | { en: string; fr: string };
+    description?: string | { en: string; fr: string };
     difficulty?: string;
     duration?: string;
     tags?: string[];

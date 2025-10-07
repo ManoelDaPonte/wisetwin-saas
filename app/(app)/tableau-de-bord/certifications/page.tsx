@@ -16,6 +16,7 @@ import { useCompletedFormationsWithDetails } from "@/app/hooks/use-completed-for
 import { useContainer } from "@/app/hooks/use-container";
 import { useIsPersonalSpace } from "@/stores/organization-store";
 import { useTranslations } from "@/hooks/use-translations";
+import { useCurrentLanguage } from "@/stores/language-store";
 import { Build } from "@/types/azure";
 import {
 	Card,
@@ -69,6 +70,14 @@ export default function CertificationsPage() {
 	const { containerId, organizationId, isReady } = useContainer();
 	const isPersonalSpace = useIsPersonalSpace();
 	const t = useTranslations();
+	const currentLanguage = useCurrentLanguage();
+
+	// Helper pour extraire le texte localisé des métadonnées
+	const getLocalizedText = (text: string | { en: string; fr: string } | undefined): string | undefined => {
+		if (!text) return undefined;
+		if (typeof text === "string") return text;
+		return text[currentLanguage] || text.fr || text.en;
+	};
 
 	const { data, isLoading, error } = useCompletedFormationsWithDetails("wisetrainer");
 
@@ -78,9 +87,7 @@ export default function CertificationsPage() {
 		if (!completedBuilds) return [];
 
 		const filtered = completedBuilds.filter((build: BuildWithCompletion) => {
-			const displayName = build.metadata?.title && typeof build.metadata.title === "string"
-				? build.metadata.title
-				: build.name;
+			const displayName = getLocalizedText(build.metadata?.title) || build.name;
 			return displayName.toLowerCase().includes(searchTerm.toLowerCase());
 		});
 
@@ -90,12 +97,8 @@ export default function CertificationsPage() {
 
 			switch (sortState.field) {
 				case "name":
-					const nameA = a.metadata?.title && typeof a.metadata.title === "string"
-						? a.metadata.title
-						: a.name;
-					const nameB = b.metadata?.title && typeof b.metadata.title === "string"
-						? b.metadata.title
-						: b.name;
+					const nameA = getLocalizedText(a.metadata?.title) || a.name;
+					const nameB = getLocalizedText(b.metadata?.title) || b.name;
 					comparison = nameA.localeCompare(nameB);
 					break;
 				case "completedAt":
@@ -175,9 +178,7 @@ export default function CertificationsPage() {
 			const a = document.createElement("a");
 			a.style.display = "none";
 			a.href = url;
-			const displayName = build.metadata?.title && typeof build.metadata.title === "string"
-				? build.metadata.title
-				: build.name;
+			const displayName = getLocalizedText(build.metadata?.title) || build.name;
 			a.download = `Certificat-${displayName.replace(
 				/[^a-zA-Z0-9]/g,
 				"-"
@@ -317,9 +318,7 @@ export default function CertificationsPage() {
 								<TableBody>
 									{paginatedFormations.map((build: BuildWithCompletion) => {
 										const buildId = build.id || build.name;
-										const displayName = build.metadata?.title && typeof build.metadata.title === "string"
-											? build.metadata.title
-											: build.name;
+										const displayName = getLocalizedText(build.metadata?.title) || build.name;
 										return (
 											<TableRow key={buildId}>
 												<TableCell>

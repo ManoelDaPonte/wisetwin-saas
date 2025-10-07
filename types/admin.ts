@@ -43,7 +43,7 @@ export interface AdminFormation {
   userEmail?: string;
   lastModified?: Date;
   hasMetadata: boolean;
-  title?: string; // Titre depuis les métadonnées
+  title?: string | { en: string; fr: string }; // Titre depuis les métadonnées (peut être localisé)
   [key: string]: unknown; // Index signature pour compatibilité avec Record<string, unknown>
 }
 
