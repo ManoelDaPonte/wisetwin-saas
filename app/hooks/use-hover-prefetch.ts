@@ -24,14 +24,10 @@ const PREFETCH_STRATEGIES: RoutePrefetchStrategy = {
 	},
 	"/organisation": {
 		members: true,
+		wisetrainerBuilds: true,
 	},
 	"/organisation/membres": {
 		members: true,
-	},
-	"/organisation/tableau-de-bord": {
-		members: true,
-		wisetourBuilds: true,
-		wisetrainerBuilds: true,
 	},
 	"/tableau-de-bord": {
 		followedBuilds: true,

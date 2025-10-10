@@ -167,7 +167,7 @@ export async function sendWelcomeEmail(
   organizationName: string
 ) {
   const baseUrl = getBaseUrl();
-  const dashboardUrl = `${baseUrl}/organisation/tableau-de-bord`;
+  const dashboardUrl = `${baseUrl}/organisation`;
 
   const info = await transporter.sendMail({
     from: '"WiseTwin" <no-reply@wisetwin.eu>',

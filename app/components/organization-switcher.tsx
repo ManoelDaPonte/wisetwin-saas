@@ -43,11 +43,15 @@ export function OrganizationSwitcher() {
 
 	const handleSwitchToPersonal = React.useCallback(() => {
 		switchToPersonal();
-		// Si on est sur une page organisation, rediriger vers accueil
-		if (pathname.startsWith("/organisation")) {
-			router.push("/accueil");
-		}
-	}, [switchToPersonal, pathname, router]);
+		// Toujours rediriger vers accueil lors du changement de contexte
+		router.push("/accueil");
+	}, [switchToPersonal, router]);
+
+	const handleSwitchToOrganization = React.useCallback((org: typeof organizations[number]) => {
+		switchToOrganization(org);
+		// Toujours rediriger vers accueil lors du changement d'organisation
+		router.push("/accueil");
+	}, [switchToOrganization, router]);
 
 	React.useEffect(() => {
 		if (session?.user) {
@@ -117,7 +121,7 @@ export function OrganizationSwitcher() {
 											activeOrganization?.id === org.id
 										}
 										onSelect={() =>
-											switchToOrganization(org)
+											handleSwitchToOrganization(org)
 										}
 									/>
 								))}

@@ -24,7 +24,6 @@ export function AppBreadcrumb() {
 		"/organisation": t.navigation.organizationOverview,
 		"/organisation/membres": t.navigation.members,
 		"/organisation/parametres": t.navigation.settings,
-		"/organisation/tableau-de-bord": t.navigation.myDashboard,
 		"/wisetour": t.navigation.wisetour,
 		"/wisetrainer": t.navigation.wisetrainer,
 		"/organisation/plan-de-formation": t.navigation.trainingPlans,

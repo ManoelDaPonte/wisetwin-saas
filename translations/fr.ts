@@ -2,10 +2,152 @@ export const fr = {
   // Navigation et interface générale
   home: {
     welcome: "Bonjour",
-    subtitle: "Bienvenue sur WiseTwin, votre plateforme de simulateurs immersifs.",
-    signature: "Sécurité • Formation • Immersion • Excellence"
+    subtitle:
+      "Bienvenue sur Wise Twin, votre plateforme de simulateurs immersifs.",
+    signature: "Sécurité • Formation • Immersion • Excellence",
+    onboarding: {
+      title: "Démarrez votre parcours",
+      step1: "Rejoindre ou créer",
+      step1Desc: "Intégrez une organisation existante ou créez la vôtre",
+      step2: "Explorer les formations",
+      step2Desc: "Découvrez les modules WiseTrainer disponibles",
+      step3: "Suivre votre progression",
+      step3Desc: "Consultez vos statistiques et certifications",
+    },
+    concepts: {
+      title: "Comment fonctionne Wise Twin ?",
+      multitenant: {
+        title: "Système multi-organisations",
+        description:
+          "Travaillez dans votre espace personnel ou rejoignez plusieurs organisations",
+        detail1: "Chaque organisation a ses propres données isolées",
+        detail2: "Invitez et gérez les membres de votre équipe",
+        detail3: "Basculez entre plusieurs organisations facilement",
+      },
+      spaces: {
+        title: "Espaces de travail",
+        description:
+          "Basculez facilement entre vos différents contextes de travail",
+        detail1: "Espace personnel pour vos formations individuelles",
+        detail2: "Espaces d'organisation pour le travail en équipe",
+        detail3: "Permissions adaptées selon votre rôle",
+      },
+      trainings: {
+        title: "Formations immersives",
+        description:
+          "Accédez à des simulations 3D Unity pour votre apprentissage",
+        detail1: "Simulations 3D interactives avec Unity WebGL",
+        detail2: "Suivi de progression en temps réel",
+        detail3: "Certifications à l'issue des formations",
+      },
+    },
+    contextualMessages: {
+      newUser:
+        "Bienvenue sur Wise Twin ! Commençons par configurer votre espace",
+      personalSpace: "Vous êtes dans votre espace personnel",
+      organizationSpace: "Vous travaillez dans l'organisation",
+    },
+    quickActions: {
+      title: "Actions rapides",
+      personalDescription: "Gérez votre espace personnel et vos formations",
+      orgDescription: "Actions disponibles dans",
+      manageOrganizations: "Gérez vos organisations",
+      viewOrganizations: "Voir mes organisations",
+      orgManagement: "Gestion de l'organisation",
+      administerOrg: "Administrez",
+      trainingPlans: "Plans de formation",
+      settings: "Paramètres",
+      orgTrainings: "Formations de l'organisation",
+      accessResources: "Accédez aux ressources partagées",
+      availableTrainings: "Formations disponibles",
+      myProgress: "Ma progression",
+      trackProgress: "Suivez vos avancements personnels",
+    },
+    personalSpace: {
+      title: "Votre espace personnel",
+      description:
+        "Cet espace est présent par défaut pour vous permettre de tester gratuitement les fonctionnalités de la plateforme et découvrir nos démos avant toute démarche commerciale.",
+      invitation: {
+        title: "Vous avez reçu une invitation ?",
+        description:
+          "Rejoignez votre organisation en entrant le code d'invitation fourni par votre administrateur.",
+        cta: "Rejoindre avec un code",
+      },
+      create: {
+        title: "Créer votre organisation",
+        description:
+          "Créez votre propre espace de travail pour gérer vos équipes et vos formations.",
+        cta: "Créer une organisation",
+      },
+      discover: {
+        title: "Simplement découvrir",
+        description:
+          "Profitez de votre espace personnel pour explorer nos démos et tester gratuitement la plateforme avant toute démarche commerciale.",
+        cta: "Nous contacter",
+        contactSubject: "Demande d'information commerciale",
+        contactBody:
+          "Bonjour,\n\nJe découvre actuellement Wise Twin et souhaiterais obtenir plus d'informations sur vos solutions de formation immersive.\n\nCordialement,",
+      },
+    },
+    faq: {
+      title: "Questions fréquentes",
+      subtitle: "Trouvez rapidement des réponses à vos questions",
+      questions: {
+        password: {
+          question: "Comment changer mon mot de passe ?",
+          answer:
+            "Vous pouvez modifier votre mot de passe dans les paramètres de votre compte. Cliquez sur le lien ci-dessous pour y accéder directement.",
+          linkText: "Accéder aux paramètres",
+        },
+        organization: {
+          question: "Comment rejoindre ou créer une organisation ?",
+          answer:
+            "Pour rejoindre une organisation, vous avez besoin d'un code d'invitation fourni par un administrateur. Pour créer votre propre organisation, rendez-vous dans la section Organisation.",
+          linkText: "Gérer mes organisations",
+        },
+        trainings: {
+          question: "Où puis-je trouver les formations disponibles ?",
+          answer:
+            "Toutes les formations WiseTrainer sont accessibles depuis la page des formations. Vous y trouverez l'ensemble des modules disponibles pour votre espace actuel.",
+          linkText: "Voir les formations",
+        },
+        certification: {
+          question: "Comment obtenir mes certifications ?",
+          answer:
+            "Une fois une formation terminée, votre certificat est automatiquement généré. Vous pouvez le télécharger depuis votre tableau de bord des certifications.",
+          linkText: "Mes certifications",
+        },
+        switching: {
+          question:
+            "Comment basculer entre mon espace personnel et mes organisations ?",
+          answer:
+            "Utilisez le sélecteur d'organisation dans la barre latérale (en haut à gauche). Vous pouvez basculer facilement entre votre espace personnel et vos différentes organisations. Vous serez automatiquement redirigé vers la page d'accueil lors du changement.",
+        },
+      },
+    },
+    contact: {
+      title: "Besoin d'aide ?",
+      description:
+        "Notre équipe est là pour vous accompagner. Choisissez le type de demande qui correspond le mieux à vos besoins.",
+      commercial: {
+        title: "Questions commerciales",
+        description: "Pour toute demande d'information, démonstration ou devis",
+        cta: "Contacter l'équipe commerciale",
+      },
+      support: {
+        title: "Support technique",
+        description: "Pour toute question technique ou problème rencontré",
+        cta: "Contacter le support",
+      },
+      emailSubject: "Demande d'information commerciale",
+      emailBody:
+        "Bonjour,\n\nJe souhaiterais obtenir plus d'informations sur vos solutions.\n\nCordialement,",
+      supportSubject: "Demande de support technique",
+      supportBody:
+        "Bonjour,\n\nJe rencontre un problème technique et j'aurais besoin d'assistance.\n\nDescription du problème :\n\n\nCordialement,",
+    },
   },
-  
+
   // Navigation sidebar
   navigation: {
     // Labels des sections
@@ -25,7 +167,7 @@ export const fr = {
     wisetour: "Wisetour",
 
     // Section Organisation
-    organizationOverview: "Organisation",
+    organizationOverview: "Mon organisation",
     members: "Membres",
     trainingPlans: "Plans de formation",
     analytics: "Analytiques",
@@ -46,9 +188,9 @@ export const fr = {
     formations: "Formations",
     users: "Utilisateurs",
     organizations: "Organisations",
-    myVisits: "Mes visites"
+    myVisits: "Mes visites",
   },
-  
+
   // Authentification
   auth: {
     login: {
@@ -62,15 +204,17 @@ export const fr = {
       loginInProgress: "Connexion en cours...",
       noAccount: "Vous n'avez pas de compte ?",
       signUp: "S'inscrire",
-      invitationMessage: "Connectez-vous pour accepter votre invitation à rejoindre une organisation.",
+      invitationMessage:
+        "Connectez-vous pour accepter votre invitation à rejoindre une organisation.",
       errors: {
         invalidCredentials: "Email ou mot de passe incorrect",
-        generalError: "Une erreur est survenue. Veuillez réessayer."
-      }
+        generalError: "Une erreur est survenue. Veuillez réessayer.",
+      },
     },
     register: {
       title: "Créer un compte",
-      subtitle: "Remplissez les informations ci-dessous pour créer votre compte",
+      subtitle:
+        "Remplissez les informations ci-dessous pour créer votre compte",
       firstName: "Prénom",
       firstNamePlaceholder: "Jean",
       lastName: "Nom",
@@ -85,12 +229,13 @@ export const fr = {
       signIn: "Se connecter",
       errors: {
         passwordMismatch: "Les mots de passe ne correspondent pas",
-        generalError: "Une erreur est survenue. Veuillez réessayer."
-      }
+        generalError: "Une erreur est survenue. Veuillez réessayer.",
+      },
     },
     forgotPassword: {
       title: "Mot de passe oublié",
-      subtitle: "Saisissez votre adresse email pour recevoir un lien de réinitialisation",
+      subtitle:
+        "Saisissez votre adresse email pour recevoir un lien de réinitialisation",
       email: "Email",
       emailPlaceholder: "exemple@email.com",
       sendButton: "Envoyer le lien",
@@ -99,9 +244,10 @@ export const fr = {
       backToLogin: "Se connecter",
       success: {
         title: "Email envoyé",
-        message: "Si votre adresse email est dans notre système, vous recevrez un lien de réinitialisation dans quelques minutes.",
-        backToLogin: "Retour à la connexion"
-      }
+        message:
+          "Si votre adresse email est dans notre système, vous recevrez un lien de réinitialisation dans quelques minutes.",
+        backToLogin: "Retour à la connexion",
+      },
     },
     resetPassword: {
       title: "Nouveau mot de passe",
@@ -113,19 +259,21 @@ export const fr = {
       backToLogin: "Retour à la connexion",
       success: {
         title: "Mot de passe réinitialisé",
-        message: "Votre mot de passe a été réinitialisé avec succès. Vous allez être redirigé vers la page de connexion.",
-        loginNow: "Se connecter maintenant"
+        message:
+          "Votre mot de passe a été réinitialisé avec succès. Vous allez être redirigé vers la page de connexion.",
+        loginNow: "Se connecter maintenant",
       },
       errors: {
         invalidLink: {
           title: "Lien invalide",
           message: "Le lien de réinitialisation est invalide ou manquant.",
-          requestNew: "Demander un nouveau lien"
+          requestNew: "Demander un nouveau lien",
         },
-        missingToken: "Token manquant. Veuillez utiliser le lien reçu par email.",
-        passwordMismatch: "Les mots de passe ne correspondent pas"
-      }
-    }
+        missingToken:
+          "Token manquant. Veuillez utiliser le lien reçu par email.",
+        passwordMismatch: "Les mots de passe ne correspondent pas",
+      },
+    },
   },
 
   // Tableau de bord
@@ -134,11 +282,11 @@ export const fr = {
     noSession: "Veuillez vous connecter pour accéder à votre tableau de bord.",
     wisetrainer: {
       title: "WiseTrainer (Formations)",
-      completedTrainings: "Formations terminées"
+      completedTrainings: "Formations terminées",
     },
     wisetour: {
       title: "Wisetour (Visites)",
-      environmentsVisited: "Environnements visités"
+      environmentsVisited: "Environnements visités",
     },
     recentActivity: {
       title: "Activité récente",
@@ -147,8 +295,9 @@ export const fr = {
       training: "Formation",
       visit: "Visite",
       noActivity: "Aucune activité récente. Commencez une formation !",
-      errorLoading: "Une erreur est survenue lors du chargement des données. Veuillez rafraîchir la page."
-    }
+      errorLoading:
+        "Une erreur est survenue lors du chargement des données. Veuillez rafraîchir la page.",
+    },
   },
 
   // Certifications
@@ -161,45 +310,46 @@ export const fr = {
       completionDate: "Date de completion",
       actions: "Actions",
       downloadButton: "Télécharger",
-      generating: "Génération..."
+      generating: "Génération...",
     },
     stats: {
       availableSingular: "certification disponible",
-      availablePlural: "certifications disponibles"
+      availablePlural: "certifications disponibles",
     },
     pagination: {
       previous: "Précédent",
       next: "Suivant",
       page: "Page",
-      of: "sur"
+      of: "sur",
     },
     empty: {
       noResults: "Aucune certification trouvée pour",
       noCertifications: "Aucune certification disponible",
-      getStarted: "Terminez des formations pour obtenir vos premiers certificats"
+      getStarted:
+        "Terminez des formations pour obtenir vos premiers certificats",
     },
     errors: {
       organizationMissing: "Informations d'organisation manquantes",
-      downloadFailed: "Erreur lors du téléchargement"
+      downloadFailed: "Erreur lors du téléchargement",
     },
     success: {
-      downloadComplete: "Certificat téléchargé avec succès !"
-    }
+      downloadComplete: "Certificat téléchargé avec succès !",
+    },
   },
-  
+
   // Organisation
   organization: {
     title: "Organisation",
     joinWithCode: "Rejoindre avec un code",
-    createOrganization: "Créer une organisation", 
+    createOrganization: "Créer une organisation",
     manageMembers: "Gérer les membres",
     dashboard: "Tableau de bord",
     joinOrCreate: "Rejoignez une organisation ou créez la vôtre",
     manage: "Gérez",
     overview: {
       title: "Vue d'ensemble",
-      subtitle: "Tableau de bord de votre organisation"
-    }
+      subtitle: "Tableau de bord de votre organisation",
+    },
   },
 
   // Membres
@@ -209,24 +359,26 @@ export const fr = {
     invite: {
       button: "Inviter un membre",
       title: "Inviter un membre",
-      description: "Envoyez une invitation par email pour rejoindre votre organisation. L'invitation expirera dans 7 jours.",
+      description:
+        "Envoyez une invitation par email pour rejoindre votre organisation. L'invitation expirera dans 7 jours.",
       email: "Email",
       emailPlaceholder: "membre@example.com",
       emailDescription: "L'adresse email de la personne à inviter",
       role: "Rôle",
       rolePlaceholder: "Sélectionner un rôle",
-      roleDescription: "Les administrateurs peuvent inviter et gérer les membres",
+      roleDescription:
+        "Les administrateurs peuvent inviter et gérer les membres",
       roles: {
         member: "Membre",
-        admin: "Administrateur"
+        admin: "Administrateur",
       },
       cancel: "Annuler",
       send: "Envoyer l'invitation",
       sending: "Envoi...",
       errors: {
         invalidEmail: "Email invalide",
-        roleRequired: "Veuillez sélectionner un rôle"
-      }
+        roleRequired: "Veuillez sélectionner un rôle",
+      },
     },
     table: {
       name: "Nom",
@@ -238,27 +390,27 @@ export const fr = {
       statuses: {
         active: "Actif",
         invited: "Invité",
-        pending: "En attente"
+        pending: "En attente",
       },
       roles: {
         owner: "Propriétaire",
-        admin: "Administrateur", 
-        member: "Membre"
+        admin: "Administrateur",
+        member: "Membre",
       },
       empty: "Aucun membre trouvé",
-      loading: "Chargement des membres..."
+      loading: "Chargement des membres...",
     },
     actions: {
       changeRole: "Changer le rôle",
       remove: "Retirer",
-      cancelInvitation: "Annuler l'invitation"
-    }
+      cancelInvitation: "Annuler l'invitation",
+    },
   },
 
   // Paramètres organisation
   organizationSettings: {
     title: "Paramètres de l'organisation",
-    subtitle: "Gérez les paramètres et la configuration de"
+    subtitle: "Gérez les paramètres et la configuration de",
   },
 
   // Tableau de bord formations
@@ -272,7 +424,7 @@ export const fr = {
       averageTime: "Temps moyen",
       perTraining: "Par formation",
       noData: "Aucune donnée disponible",
-      noActiveTraining: "Aucune formation active"
+      noActiveTraining: "Aucune formation active",
     },
     ongoingTrainings: {
       title: "Formations en cours",
@@ -280,13 +432,13 @@ export const fr = {
       completed: "Terminée",
       ongoing: "En cours",
       users: "utilisateurs",
-      averageProgress: "Progression moyenne"
+      averageProgress: "Progression moyenne",
     },
     recentActivity: {
       title: "Activité récente",
       subtitle: "Dernières progressions des utilisateurs",
-      assignButton: "Assigner des formations"
-    }
+      assignButton: "Assigner des formations",
+    },
   },
 
   // Plan de formation
@@ -295,15 +447,17 @@ export const fr = {
     subtitle: "Gérez les formations de vos membres",
     restrictedAccess: {
       title: "Accès restreint",
-      message: "Seuls les administrateurs et propriétaires peuvent gérer les formations."
+      message:
+        "Seuls les administrateurs et propriétaires peuvent gérer les formations.",
     },
-    selectOrganization: "Veuillez sélectionner une organisation pour accéder à la gestion des formations.",
+    selectOrganization:
+      "Veuillez sélectionner une organisation pour accéder à la gestion des formations.",
     tabs: {
       dashboard: "Tableau de bord",
       plans: "Gérer mes Plans",
       members: "Associer les membres",
-      trainings: "Associer les formations"
-    }
+      trainings: "Associer les formations",
+    },
   },
 
   // Administration
@@ -321,13 +475,13 @@ export const fr = {
         trainings: "Formations",
         invitations: "Invitations",
         containerId: "Container ID",
-        created: "Créée"
+        created: "Créée",
       },
       actions: {
         edit: "Modifier",
         contactOwner: "Contact owner",
-        delete: "Supprimer"
-      }
+        delete: "Supprimer",
+      },
     },
     users: {
       title: "Tous les utilisateurs",
@@ -344,12 +498,12 @@ export const fr = {
         container: "Container",
         created: "Créé",
         none: "Aucun",
-        registered: "Inscrit"
+        registered: "Inscrit",
       },
       actions: {
         contact: "Contact",
-        delete: "Supprimer"
-      }
+        delete: "Supprimer",
+      },
     },
     trainings: {
       title: "Toutes les formations",
@@ -365,48 +519,50 @@ export const fr = {
         unknown: "Inconnue",
         metadata: "Métadonnées",
         present: "Présentes",
-        missing: "Manquantes"
+        missing: "Manquantes",
       },
       actions: {
-        edit: "Éditer"
-      }
-    }
+        edit: "Éditer",
+      },
+    },
   },
-  
+
   // Formations Unity
   wisetrainer: {
     title: "Formations disponibles",
-    subtitle: "Explorez et lancez les modules de formation Unity"
+    subtitle: "Explorez et lancez les modules de formation Unity",
   },
 
   wisetour: {
-    title: "Visites disponibles", 
-    subtitle: "Explorez et lancez les visites d'environnements industriels Unity"
+    title: "Visites disponibles",
+    subtitle:
+      "Explorez et lancez les visites d'environnements industriels Unity",
   },
 
   completedTrainings: {
     title: "Formations Terminées",
-    subtitle: "Consultez l'historique de vos formations terminées ({count} formation{s}) et relancez-les si nécessaire"
+    subtitle:
+      "Consultez l'historique de vos formations terminées ({count} formation{s}) et relancez-les si nécessaire",
   },
 
   myVisits: {
     title: "Mes Visites",
-    subtitle: "Gérez et suivez vos visites industrielles en cours"
+    subtitle: "Gérez et suivez vos visites industrielles en cours",
   },
 
   // Formations et environnements
   training: {
     title: "Formations & Environnements",
     subtitle: "Accédez à vos formations et environnements 3D",
-    wisetrainer: "WiseTrainer"
+    wisetrainer: "WiseTrainer",
   },
-  
+
   // Progression et certifications
   progress: {
     title: "Progression & Certifications",
     subtitle: "Suivez vos avancements et obtenez vos certifications",
     myDashboard: "Mon tableau de bord",
-    myCertifications: "Mes certifications"
+    myCertifications: "Mes certifications",
   },
 
   // Paramètres
@@ -415,7 +571,7 @@ export const fr = {
     subtitle: "Gérez vos préférences et paramètres de compte",
     profile: {
       title: "Profil",
-      subtitle: "Vos informations personnelles"
+      subtitle: "Vos informations personnelles",
     },
     appearance: {
       title: "Apparence",
@@ -423,7 +579,7 @@ export const fr = {
       theme: "Thème",
       light: "Clair",
       dark: "Sombre",
-      system: "Système"
+      system: "Système",
     },
     account: {
       title: "Compte",
@@ -445,39 +601,41 @@ export const fr = {
         confirmPlaceholder: "Confirmez votre nouveau mot de passe",
         button: "Changer le mot de passe",
         success: "Mot de passe changé avec succès",
-        error: "Erreur lors du changement de mot de passe"
-      }
+        error: "Erreur lors du changement de mot de passe",
+      },
     },
     dangerZone: {
       title: "Zone dangereuse",
       subtitle: "Actions irréversibles",
       deleteAccount: {
         title: "Supprimer le compte",
-        description: "Cette action supprimera définitivement votre compte et toutes vos données. Cette action est irréversible.",
+        description:
+          "Cette action supprimera définitivement votre compte et toutes vos données. Cette action est irréversible.",
         passwordLabel: "Mot de passe pour confirmer",
         passwordPlaceholder: "Entrez votre mot de passe pour confirmer",
         button: "Supprimer mon compte",
         confirmTitle: "Êtes-vous absolument sûr ?",
-        confirmDescription: "Cette action est irréversible. Cela supprimera définitivement votre compte, toutes vos données et tous les conteneurs Azure associés.",
+        confirmDescription:
+          "Cette action est irréversible. Cela supprimera définitivement votre compte, toutes vos données et tous les conteneurs Azure associés.",
         cancel: "Annuler",
         confirmButton: "Supprimer définitivement",
         passwordRequired: "Veuillez entrer votre mot de passe pour confirmer",
         success: "Compte supprimé avec succès",
-        error: "Erreur lors de la suppression du compte"
-      }
-    }
+        error: "Erreur lors de la suppression du compte",
+      },
+    },
   },
-  
+
   // Communs
   common: {
     user: "Utilisateur",
     loading: "Chargement...",
     loadingStates: {
-      generating: "Génération...", 
+      generating: "Génération...",
       creating: "Création en cours...",
       sending: "Envoi en cours...",
       connecting: "Connexion en cours...",
-      resetting: "Réinitialisation en cours..."
-    }
-  }
+      resetting: "Réinitialisation en cours...",
+    },
+  },
 } as const;
