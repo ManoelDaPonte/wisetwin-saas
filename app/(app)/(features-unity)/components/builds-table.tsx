@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { fr } from "date-fns/locale";
+import { fr, enUS } from "date-fns/locale";
 import {
   FileCode,
   Search,
@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { useContainer } from "@/app/hooks/use-container";
 import { Build } from "@/types/azure";
 import { useCurrentLanguage } from "@/stores/language-store";
+import { useTranslations } from "@/hooks/use-translations";
 import {
   Card,
   CardContent,
@@ -70,6 +71,8 @@ export function BuildsTable({
   const router = useRouter();
   const { containerId } = useContainer();
   const currentLanguage = useCurrentLanguage();
+  const t = useTranslations();
+  const dateLocale = currentLanguage === "fr" ? fr : enUS;
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
@@ -178,7 +181,7 @@ export function BuildsTable({
     return (
       <Alert variant="destructive">
         <AlertDescription>
-          Erreur lors du chargement des builds: {error.message}
+          {t.buildsTable.errors.loadingError} {error.message}
         </AlertDescription>
       </Alert>
     );
@@ -196,7 +199,7 @@ export function BuildsTable({
             <div className="relative">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder={`Rechercher une ${contentType}...`}
+                placeholder={t.buildsTable.searchPlaceholder}
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
@@ -209,9 +212,7 @@ export function BuildsTable({
         </div>
         {!isLoading && filteredAndSortedBuilds.length > 0 && (
           <div className="text-sm text-muted-foreground">
-            {filteredAndSortedBuilds.length} {contentType}
-            {filteredAndSortedBuilds.length > 1 ? "s" : ""} trouvée
-            {filteredAndSortedBuilds.length > 1 ? "s" : ""}
+            {filteredAndSortedBuilds.length} {filteredAndSortedBuilds.length > 1 ? t.buildsTable.stats.formationPlural : t.buildsTable.stats.formationSingular}
           </div>
         )}
       </CardHeader>
@@ -237,18 +238,18 @@ export function BuildsTable({
                   <TableRow>
                     <TableHead className="w-12"></TableHead>
                     <TableHead>
-                      <SortButton field="name">Formation</SortButton>
+                      <SortButton field="name">{t.buildsTable.table.formation}</SortButton>
                     </TableHead>
-                    <TableHead>Tags</TableHead>
-                    <TableHead>Difficulté</TableHead>
-                    <TableHead>Durée</TableHead>
+                    <TableHead>{t.buildsTable.table.tags}</TableHead>
+                    <TableHead>{t.buildsTable.table.difficulty}</TableHead>
+                    <TableHead>{t.buildsTable.table.duration}</TableHead>
                     <TableHead>
-                      <SortButton field="version">Version</SortButton>
+                      <SortButton field="version">{t.buildsTable.table.version}</SortButton>
                     </TableHead>
                     <TableHead>
-                      <SortButton field="lastModified">Modifié</SortButton>
+                      <SortButton field="lastModified">{t.buildsTable.table.modified}</SortButton>
                     </TableHead>
-                    <TableHead className="w-20">Actions</TableHead>
+                    <TableHead className="w-20">{t.buildsTable.table.actions}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -288,16 +289,6 @@ export function BuildsTable({
                               </TooltipContent>
                             </Tooltip>
                           )}
-                          {build.metadata?.objectives &&
-                            Array.isArray(build.metadata.objectives) &&
-                            build.metadata.objectives.length > 0 && (
-                              <div className="text-xs text-blue-600 dark:text-blue-400">
-                                {build.metadata.objectives.length} objectif
-                                {build.metadata.objectives.length > 1
-                                  ? "s"
-                                  : ""}
-                              </div>
-                            )}
                         </div>
                       </TableCell>
                       {/* Tags */}
@@ -325,7 +316,7 @@ export function BuildsTable({
                           </div>
                         ) : (
                           <span className="text-xs text-muted-foreground">
-                            -
+                            {t.buildsTable.placeholders.empty}
                           </span>
                         )}
                       </TableCell>
@@ -339,7 +330,7 @@ export function BuildsTable({
                           </Badge>
                         ) : (
                           <span className="text-xs text-muted-foreground">
-                            -
+                            {t.buildsTable.placeholders.empty}
                           </span>
                         )}
                       </TableCell>
@@ -353,7 +344,7 @@ export function BuildsTable({
                           </span>
                         ) : (
                           <span className="text-xs text-muted-foreground">
-                            -
+                            {t.buildsTable.placeholders.empty}
                           </span>
                         )}
                       </TableCell>
@@ -372,10 +363,10 @@ export function BuildsTable({
                                 new Date(build.lastModified),
                                 {
                                   addSuffix: true,
-                                  locale: fr,
+                                  locale: dateLocale,
                                 }
                               )
-                            : "récemment"}
+                            : t.buildsTable.time.recently}
                         </span>
                       </TableCell>
                       <TableCell>
@@ -387,8 +378,8 @@ export function BuildsTable({
                         >
                           <Play className="h-4 w-4" />
                           {mode === "completed"
-                            ? "Relancer formation"
-                            : "Lancer formation"}
+                            ? t.buildsTable.buttons.relaunch
+                            : t.buildsTable.buttons.launch}
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -401,9 +392,8 @@ export function BuildsTable({
             {totalPages > 1 && (
               <div className="flex items-center justify-between space-x-2 py-4 flex-shrink-0 border-t">
                 <div className="text-sm text-muted-foreground">
-                  Page {currentPage} sur {totalPages} (
-                  {filteredAndSortedBuilds.length} {contentType}
-                  {filteredAndSortedBuilds.length > 1 ? "s" : ""})
+                  {t.buildsTable.pagination.page} {currentPage} {t.buildsTable.pagination.of} {totalPages} (
+                  {filteredAndSortedBuilds.length} {filteredAndSortedBuilds.length > 1 ? t.buildsTable.pagination.formationPlural : t.buildsTable.pagination.formationSingular})
                 </div>
                 <div className="flex items-center space-x-2">
                   <Button
@@ -414,7 +404,7 @@ export function BuildsTable({
                     }
                     disabled={currentPage === 1}
                   >
-                    Précédent
+                    {t.buildsTable.pagination.previous}
                   </Button>
                   <div className="flex items-center space-x-1">
                     {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
@@ -452,7 +442,7 @@ export function BuildsTable({
                     }
                     disabled={currentPage === totalPages}
                   >
-                    Suivant
+                    {t.buildsTable.pagination.next}
                   </Button>
                 </div>
               </div>
@@ -463,14 +453,14 @@ export function BuildsTable({
             <FileCode className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p>
               {searchTerm
-                ? `Aucune ${contentType} trouvée pour "${searchTerm}"`
-                : `Aucune ${contentType} trouvée`}
+                ? `${t.buildsTable.empty.noResults} "${searchTerm}"`
+                : t.buildsTable.empty.noFormations}
             </p>
             {!searchTerm && (
               <p className="text-sm mt-1">
                 {mode === "catalog"
-                  ? "Uploadez des builds Unity dans le dossier correspondant"
-                  : `Vous n'avez pas encore commencé de ${contentTypePlural}`}
+                  ? t.buildsTable.empty.uploadBuilds
+                  : t.buildsTable.empty.noStarted}
               </p>
             )}
           </div>

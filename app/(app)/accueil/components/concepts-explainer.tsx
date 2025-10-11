@@ -51,24 +51,20 @@ export function ConceptsExplainer() {
 				</h2>
 			</div>
 
-			<div className="grid gap-4 md:grid-cols-3">
+			<div className="grid gap-6 md:grid-cols-3">
 				{concepts.map((concept) => {
 					const Icon = concept.icon;
 
 					return (
-						<Card key={concept.id} className="border-2">
+						<Card key={concept.id} className="hover:shadow-lg transition-shadow">
 							<CardHeader>
-								<div className="flex items-start justify-between mb-4">
+								<div className="flex items-center justify-between mb-4">
 									<div className="p-3 bg-primary/10 rounded-lg">
-										<Icon className="h-6 w-6 text-primary" />
+										<Icon className="h-8 w-8 text-primary" />
 									</div>
 								</div>
-								<CardTitle className="text-lg">
-									{concept.title}
-								</CardTitle>
-								<CardDescription className="text-sm">
-									{concept.description}
-								</CardDescription>
+								<CardTitle>{concept.title}</CardTitle>
+								<CardDescription>{concept.description}</CardDescription>
 							</CardHeader>
 
 							<CardContent>

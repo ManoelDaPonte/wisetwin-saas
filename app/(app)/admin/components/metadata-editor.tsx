@@ -49,14 +49,10 @@ export function MetadataEditor({
 	onSaveSuccess,
 }: MetadataEditorProps) {
 	const [tags, setTags] = useState<string[]>(initialMetadata.tags || []);
-	const [objectives, setObjectives] = useState<string[]>(
-		initialMetadata.objectives || []
-	);
 	const [prerequisites, setPrerequisites] = useState<string[]>(
 		initialMetadata.prerequisites || []
 	);
 	const [newTag, setNewTag] = useState("");
-	const [newObjective, setNewObjective] = useState("");
 	const [newPrerequisite, setNewPrerequisite] = useState("");
 	const [unityData, setUnityData] = useState<Record<string, unknown>>(
 		initialMetadata.unity || {}
@@ -88,7 +84,6 @@ export function MetadataEditor({
 		const metadataToSave: FormationMetadata = {
 			...data,
 			tags,
-			objectives,
 			prerequisites,
 			unity: unityData, // Inclure les données Unity
 			updatedAt: new Date().toISOString(),
@@ -455,77 +450,6 @@ export function MetadataEditor({
 														newTag.trim(),
 													]);
 													setNewTag("");
-												}
-											}}
-										>
-											<Plus className="h-4 w-4" />
-										</Button>
-									</div>
-								</div>
-
-								{/* Section Objectifs */}
-								<div className="space-y-3">
-									<FormLabel>
-										Objectifs de formation
-									</FormLabel>
-									<div className="space-y-2">
-										{objectives.map((objective, index) => (
-											<div
-												key={index}
-												className="flex items-center gap-2"
-											>
-												<div className="flex-1 text-sm p-2 bg-muted rounded">
-													{objective}
-												</div>
-												<Button
-													type="button"
-													variant="ghost"
-													size="sm"
-													onClick={() =>
-														setObjectives(
-															objectives.filter(
-																(_, i) =>
-																	i !== index
-															)
-														)
-													}
-												>
-													<X className="h-4 w-4" />
-												</Button>
-											</div>
-										))}
-									</div>
-									<div className="flex gap-2">
-										<Input
-											value={newObjective}
-											onChange={(e) =>
-												setNewObjective(e.target.value)
-											}
-											placeholder="Nouvel objectif"
-											onKeyPress={(e) => {
-												if (e.key === "Enter") {
-													e.preventDefault();
-													if (newObjective.trim()) {
-														setObjectives([
-															...objectives,
-															newObjective.trim(),
-														]);
-														setNewObjective("");
-													}
-												}
-											}}
-										/>
-										<Button
-											type="button"
-											variant="outline"
-											size="sm"
-											onClick={() => {
-												if (newObjective.trim()) {
-													setObjectives([
-														...objectives,
-														newObjective.trim(),
-													]);
-													setNewObjective("");
 												}
 											}}
 										>

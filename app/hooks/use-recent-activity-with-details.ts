@@ -20,7 +20,7 @@ export function useRecentActivityWithDetails() {
 
   // Récupérer les détails des builds pour avoir les titres
   const buildsDetailsQuery = useQuery({
-    queryKey: ["recentActivityDetails", containerId, recentActivity.map(a => a.buildName)],
+    queryKey: ["recentActivityDetails", containerId, currentLanguage, recentActivity.map(a => a.buildName)],
     queryFn: async () => {
       if (!containerId || recentActivity.length === 0) {
         return [];
@@ -57,6 +57,7 @@ export function useRecentActivityWithDetails() {
         return {
           ...activity,
           displayName: getLocalizedText(build?.metadata?.title) || build?.name || activity.buildName,
+          metadata: build?.metadata,
           build,
         };
       });

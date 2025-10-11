@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { fr } from "date-fns/locale";
+import { fr, enUS } from "date-fns/locale";
 import {
 	Search,
 	ChevronDown,
@@ -18,6 +18,8 @@ import {
 import { Member, Invitation } from "@/app/(app)/organisation/hooks/use-members";
 import { useSession } from "next-auth/react";
 import { useOrganizationStore } from "@/stores/organization-store";
+import { useCurrentLanguage } from "@/stores/language-store";
+import { useTranslations } from "@/hooks/use-translations";
 import { getDisplayName, getUserInitials } from "@/lib/user-utils";
 import {
 	Card,
@@ -95,6 +97,9 @@ export function MembersTable({
 	isRemoving,
 	isCancelling,
 }: MembersTableProps) {
+	const t = useTranslations();
+	const currentLanguage = useCurrentLanguage();
+	const dateLocale = currentLanguage === "fr" ? fr : enUS;
 	const { data: session } = useSession();
 	const { activeOrganization } = useOrganizationStore();
 	const [searchTerm, setSearchTerm] = useState("");
@@ -235,7 +240,7 @@ export function MembersTable({
 			<Card>
 				<CardContent className="py-8">
 					<p className="text-center text-muted-foreground">
-						Erreur : {error}
+						{t.members.errors.error} {error}
 					</p>
 				</CardContent>
 			</Card>
@@ -247,17 +252,16 @@ export function MembersTable({
 			<CardHeader className="flex-shrink-0">
 				<div className="flex items-center justify-between">
 					<div>
-						<CardTitle>Membres de l&apos;organisation</CardTitle>
+						<CardTitle>{t.members.title}</CardTitle>
 						<CardDescription>
-							Gérez les membres et les invitations de votre
-							organisation
+							{t.members.subtitle}
 						</CardDescription>
 					</div>
 					<div className="flex items-center gap-2">
 						<div className="relative">
 							<Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
 							<Input
-								placeholder="Rechercher un membre..."
+								placeholder={t.members.searchPlaceholder}
 								value={searchTerm}
 								onChange={(e) => {
 									setSearchTerm(e.target.value);
@@ -270,9 +274,7 @@ export function MembersTable({
 				</div>
 				{!isLoading && filteredAndSortedMembers.length > 0 && (
 					<div className="text-sm text-muted-foreground">
-						{filteredAndSortedMembers.length} membre
-						{filteredAndSortedMembers.length > 1 ? "s" : ""} trouvé
-						{filteredAndSortedMembers.length > 1 ? "s" : ""}
+						{filteredAndSortedMembers.length} {filteredAndSortedMembers.length > 1 ? t.members.stats.memberPlural : t.members.stats.memberSingular}
 					</div>
 				)}
 			</CardHeader>
@@ -300,26 +302,26 @@ export function MembersTable({
 										<TableHead className="w-12"></TableHead>
 										<TableHead>
 											<SortButton field="name">
-												Membre
+												{t.members.table.member}
 											</SortButton>
 										</TableHead>
 										<TableHead>
 											<SortButton field="email">
-												Email
+												{t.members.table.email}
 											</SortButton>
 										</TableHead>
 										<TableHead>
 											<SortButton field="role">
-												Rôle
+												{t.members.table.role}
 											</SortButton>
 										</TableHead>
 										<TableHead>
 											<SortButton field="joinedAt">
-												Membre depuis
+												{t.members.table.memberSince}
 											</SortButton>
 										</TableHead>
 										<TableHead className="w-20">
-											Actions
+											{t.members.table.actions}
 										</TableHead>
 									</TableRow>
 								</TableHeader>
@@ -356,14 +358,14 @@ export function MembersTable({
 																session?.user
 																	?.id && (
 																<span className="text-muted-foreground ml-2 text-sm">
-																	(vous)
+																	{t.members.you}
 																</span>
 															)}
 													</div>
 													{item.type ===
 														"invitation" && (
 														<div className="text-xs text-muted-foreground">
-															Invitation en attente
+															{t.members.table.statuses.invitationPending}
 														</div>
 													)}
 												</div>
@@ -375,11 +377,11 @@ export function MembersTable({
 											</TableCell>
 											<TableCell>
 												<div className="flex items-center gap-2">
-													<RoleBadge role={item.role} />
+													<RoleBadge role={item.role} t={t} />
 													{item.type ===
 														"invitation" && (
 														<Badge variant="secondary">
-															En attente
+															{t.members.table.statuses.pending}
 														</Badge>
 													)}
 												</div>
@@ -393,22 +395,22 @@ export function MembersTable({
 															),
 															{
 																addSuffix: true,
-																locale: fr,
+																locale: dateLocale,
 															}
 														)
 													) : item.type ===
 													  "invitation" ? (
-														`Expire ${formatDistanceToNow(
+														`${t.members.expiresPrefix} ${formatDistanceToNow(
 															new Date(
 																item.expiresAt!
 															),
 															{
 																addSuffix: true,
-																locale: fr,
+																locale: dateLocale,
 															}
 														)}`
 													) : (
-														"Date inconnue"
+														t.members.dateUnknown
 													)}
 												</span>
 											</TableCell>
@@ -443,8 +445,7 @@ export function MembersTable({
 																		}
 																	>
 																		<ShieldCheck className="mr-2 h-4 w-4" />
-																		Promouvoir
-																		admin
+																		{t.members.actions.promoteAdmin}
 																	</DropdownMenuItem>
 																)}
 																{item.role ===
@@ -458,8 +459,7 @@ export function MembersTable({
 																		}
 																	>
 																		<Shield className="mr-2 h-4 w-4" />
-																		Rétrograder
-																		membre
+																		{t.members.actions.demoteMember}
 																	</DropdownMenuItem>
 																)}
 																<DropdownMenuSeparator />
@@ -472,7 +472,7 @@ export function MembersTable({
 																	className="text-destructive"
 																>
 																	<UserMinus className="mr-2 h-4 w-4" />
-																	Retirer
+																	{t.members.actions.remove}
 																</DropdownMenuItem>
 															</DropdownMenuContent>
 														</DropdownMenu>
@@ -503,11 +503,10 @@ export function MembersTable({
 						{totalPages > 1 && (
 							<div className="flex items-center justify-between space-x-2 py-4 flex-shrink-0 border-t">
 								<div className="text-sm text-muted-foreground">
-									Page {currentPage} sur {totalPages} (
-									{filteredAndSortedMembers.length} membre
-									{filteredAndSortedMembers.length > 1
-										? "s"
-										: ""}
+									{t.members.pagination.page} {currentPage} {t.members.pagination.of} {totalPages} (
+									{filteredAndSortedMembers.length} {filteredAndSortedMembers.length > 1
+										? t.members.stats.memberPlural.replace(" trouvés", "s")
+										: t.members.stats.memberSingular.replace(" trouvé", "")}
 									)
 								</div>
 								<div className="flex items-center space-x-2">
@@ -521,7 +520,7 @@ export function MembersTable({
 										}
 										disabled={currentPage === 1}
 									>
-										Précédent
+										{t.members.pagination.previous}
 									</Button>
 									<div className="flex items-center space-x-1">
 										{Array.from(
@@ -578,7 +577,7 @@ export function MembersTable({
 										}
 										disabled={currentPage === totalPages}
 									>
-										Suivant
+										{t.members.pagination.next}
 									</Button>
 								</div>
 							</div>
@@ -589,12 +588,12 @@ export function MembersTable({
 						<Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
 						<p>
 							{searchTerm
-								? `Aucun membre trouvé pour "${searchTerm}"`
-								: "Aucun membre trouvé"}
+								? `${t.members.empty.noResultsFor} "${searchTerm}"`
+								: t.members.empty.noMembers}
 						</p>
 						{!searchTerm && (
 							<p className="text-sm mt-1">
-								Invitez des membres pour commencer
+								{t.members.empty.inviteMembers}
 							</p>
 						)}
 					</div>
@@ -604,11 +603,11 @@ export function MembersTable({
 	);
 }
 
-function RoleBadge({ role }: { role: "OWNER" | "ADMIN" | "MEMBER" }) {
+function RoleBadge({ role, t }: { role: "OWNER" | "ADMIN" | "MEMBER"; t: ReturnType<typeof useTranslations> }) {
 	const variants = {
-		OWNER: { label: "Propriétaire", variant: "default" as const },
-		ADMIN: { label: "Admin", variant: "secondary" as const },
-		MEMBER: { label: "Membre", variant: "outline" as const },
+		OWNER: { label: t.members.table.roles.owner, variant: "default" as const },
+		ADMIN: { label: t.members.table.roles.admin, variant: "secondary" as const },
+		MEMBER: { label: t.members.table.roles.member, variant: "outline" as const },
 	};
 
 	const { label, variant } = variants[role];

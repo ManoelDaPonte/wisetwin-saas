@@ -11,6 +11,7 @@ import {
 import { useOrganizations } from "@/app/hooks/use-organizations";
 import { CreateOrganizationDialog } from "@/app/components/create-organization-dialog";
 import { JoinOrganizationDialog } from "@/app/components/join-organization-dialog";
+import { useTranslations } from "@/hooks/use-translations";
 import { OrganizationMenuItem } from "@/app/components/organization-menu-item";
 import {
 	DropdownMenu,
@@ -32,6 +33,7 @@ export function OrganizationSwitcher() {
 	const { isMobile } = useSidebar();
 	const router = useRouter();
 	const pathname = usePathname();
+	const t = useTranslations();
 	const {
 		activeOrganization,
 		organizations,
@@ -61,8 +63,8 @@ export function OrganizationSwitcher() {
 
 	const CurrentIcon = isPersonalSpace ? User : Building2;
 	const currentName = isPersonalSpace
-		? "Espace personnel"
-		: activeOrganization?.name || "Sélectionner";
+		? t.organizationSwitcher.personalSpace
+		: activeOrganization?.name || t.organizationSwitcher.select;
 
 	return (
 		<SidebarMenu>
@@ -82,9 +84,9 @@ export function OrganizationSwitcher() {
 								</span>
 								<span className="truncate text-xs">
 									{isPersonalSpace
-										? "Personnel"
+										? t.organizationSwitcher.labels.personal
 										: activeOrganization?.role ||
-										  "Organisation"}
+										  t.organizationSwitcher.labels.organization}
 								</span>
 							</div>
 							<ChevronsUpDown className="ml-auto" />
@@ -98,7 +100,7 @@ export function OrganizationSwitcher() {
 						sideOffset={4}
 					>
 						<DropdownMenuLabel className="text-xs text-muted-foreground">
-							Espaces
+							{t.organizationSwitcher.labels.spaces}
 						</DropdownMenuLabel>
 
 						<OrganizationMenuItem
@@ -111,7 +113,7 @@ export function OrganizationSwitcher() {
 							<>
 								<DropdownMenuSeparator />
 								<DropdownMenuLabel className="text-xs text-muted-foreground">
-									Organisations
+									{t.organizationSwitcher.labels.organizations}
 								</DropdownMenuLabel>
 								{organizations.map((org) => (
 									<OrganizationMenuItem
@@ -139,7 +141,7 @@ export function OrganizationSwitcher() {
 									<Plus className="size-4" />
 								</div>
 								<div className="font-medium text-muted-foreground">
-									Créer une organisation
+									{t.organizationSwitcher.actions.createOrganization}
 								</div>
 							</DropdownMenuItem>
 						</CreateOrganizationDialog>
@@ -153,7 +155,7 @@ export function OrganizationSwitcher() {
 									<UserPlus className="size-4" />
 								</div>
 								<div className="font-medium text-muted-foreground">
-									Rejoindre une organisation
+									{t.organizationSwitcher.actions.joinOrganization}
 								</div>
 							</DropdownMenuItem>
 						</JoinOrganizationDialog>

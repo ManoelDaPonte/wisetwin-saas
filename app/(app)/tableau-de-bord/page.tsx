@@ -1,7 +1,6 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUserStats } from "@/app/hooks/use-user-stats";
@@ -66,73 +65,64 @@ export default function DashboardPage() {
 		<div className="space-y-8">
 			{/* Métriques principales */}
 			<div className="grid gap-4 md:grid-cols-3">
-				<Card>
-					<CardHeader>
-						<CardTitle className="flex items-center gap-2">
-							<CheckCircle2 className="h-5 w-5" />
-							Formations terminées
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						{isStatsLoading ? (
-							<Skeleton className="h-8 w-16" />
-						) : (
-							<div className="text-center">
-								<div className="text-3xl font-bold text-primary mb-2">
+				<Card className="overflow-hidden p-0">
+					{isStatsLoading ? (
+						<Skeleton className="h-28 w-full" />
+					) : (
+						<div className="flex h-full min-h-28">
+							<div className="flex items-center justify-center bg-primary w-20 flex-shrink-0">
+								<CheckCircle2 className="h-8 w-8 text-primary-foreground" />
+							</div>
+							<div className="flex-1 flex flex-col items-center justify-center py-6 px-4">
+								<div className="text-3xl font-bold text-primary">
 									{stats?.totalFormationsCompleted || 0}
 								</div>
-								<p className="text-sm text-muted-foreground">
-									formations complétées
+								<p className="text-sm text-muted-foreground mt-1">
+									formations terminées
 								</p>
 							</div>
-						)}
-					</CardContent>
+						</div>
+					)}
 				</Card>
 
-				<Card>
-					<CardHeader>
-						<CardTitle className="flex items-center gap-2">
-							<Clock className="h-5 w-5" />
-							Temps total
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						{isStatsLoading ? (
-							<Skeleton className="h-8 w-16" />
-						) : (
-							<div className="text-center">
-								<div className="text-3xl font-bold text-primary mb-2">
+				<Card className="overflow-hidden p-0">
+					{isStatsLoading ? (
+						<Skeleton className="h-28 w-full" />
+					) : (
+						<div className="flex h-full min-h-28">
+							<div className="flex items-center justify-center bg-primary w-20 flex-shrink-0">
+								<Clock className="h-8 w-8 text-primary-foreground" />
+							</div>
+							<div className="flex-1 flex flex-col items-center justify-center py-6 px-4">
+								<div className="text-3xl font-bold text-primary">
 									{stats?.totalTimeSpent ? `${stats.totalTimeSpent.toFixed(1)}h` : '0h'}
 								</div>
-								<p className="text-sm text-muted-foreground">
+								<p className="text-sm text-muted-foreground mt-1">
 									de formation
 								</p>
 							</div>
-						)}
-					</CardContent>
+						</div>
+					)}
 				</Card>
 
-				<Card>
-					<CardHeader>
-						<CardTitle className="flex items-center gap-2">
-							<Trophy className="h-5 w-5" />
-							Moyenne des scores
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						{isStatsLoading ? (
-							<Skeleton className="h-8 w-16" />
-						) : (
-							<div className="text-center">
-								<div className="text-3xl font-bold text-primary mb-2">
+				<Card className="overflow-hidden p-0">
+					{isStatsLoading ? (
+						<Skeleton className="h-28 w-full" />
+					) : (
+						<div className="flex h-full min-h-28">
+							<div className="flex items-center justify-center bg-primary w-20 flex-shrink-0">
+								<Trophy className="h-8 w-8 text-primary-foreground" />
+							</div>
+							<div className="flex-1 flex flex-col items-center justify-center py-6 px-4">
+								<div className="text-3xl font-bold text-primary">
 									{stats?.averageScore ? `${stats.averageScore.toFixed(0)}%` : '0%'}
 								</div>
-								<p className="text-sm text-muted-foreground">
-									taux de réussite
+								<p className="text-sm text-muted-foreground mt-1">
+									moyenne des scores
 								</p>
 							</div>
-						)}
-					</CardContent>
+						</div>
+					)}
 				</Card>
 			</div>
 
@@ -168,7 +158,7 @@ export default function DashboardPage() {
 								.slice(0, 3)
 								.map((activity) => (
 									<div key={activity.id} className="flex items-center gap-4 p-4 border rounded-lg">
-										<div className="p-2 rounded-full bg-green-100 text-green-600">
+										<div className="p-2 rounded-full bg-muted">
 											<CheckCircle2 className="h-4 w-4" />
 										</div>
 										<div className="flex-1">
@@ -176,19 +166,12 @@ export default function DashboardPage() {
 												{t.dashboard.recentActivity.you} {t.dashboard.recentActivity.completed}{" "}
 												<span className="font-medium">{activity.displayName}</span>
 											</p>
-											<div className="flex items-center gap-2 mt-1">
-												<Badge variant="outline" className="text-xs">
-													{activity.buildType === "wisetrainer"
-														? t.dashboard.recentActivity.training
-														: t.dashboard.recentActivity.visit}
-												</Badge>
-												<p className="text-xs text-muted-foreground">
-													{formatDistanceToNow(new Date(activity.timestamp), {
-														addSuffix: true,
-														locale: fr,
-													})}
-												</p>
-											</div>
+											<p className="text-xs text-muted-foreground mt-1">
+												{formatDistanceToNow(new Date(activity.timestamp), {
+													addSuffix: true,
+													locale: fr,
+												})}
+											</p>
 										</div>
 									</div>
 								))}
@@ -233,7 +216,7 @@ export default function DashboardPage() {
 						<div className="space-y-4">
 							{certificationsData.builds.slice(0, 3).map((build: Build) => (
 								<div key={build.id || build.name} className="flex items-center gap-4 p-4 border rounded-lg">
-									<div className="p-2 rounded-full bg-blue-100 text-blue-600">
+									<div className="p-2 rounded-full bg-muted">
 										<Award className="h-4 w-4" />
 									</div>
 									<div className="flex-1">
@@ -244,9 +227,6 @@ export default function DashboardPage() {
 											{build.completion?.completedAt && format(new Date(build.completion.completedAt), "d MMMM yyyy", { locale: fr })}
 										</p>
 									</div>
-									<Badge variant="secondary" className="bg-green-100 text-green-800">
-										Terminée
-									</Badge>
 								</div>
 							))}
 						</div>

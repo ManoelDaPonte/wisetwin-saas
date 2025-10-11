@@ -52,14 +52,19 @@ import { TagBadge } from "./tag-badge";
 import { CreateTagDialog } from "./create-tag-dialog";
 import { EditTagDialog } from "./edit-tag-dialog";
 import { formatDistanceToNow, format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { fr, enUS } from "date-fns/locale";
 import { TrainingTag, UpdateTrainingTagData } from "@/types/training";
+import { useTranslations } from "@/hooks/use-translations";
+import { useCurrentLanguage } from "@/stores/language-store";
 
 interface TagsManagerProps {
 	organizationId: string;
 }
 
 export function TagsManager({}: TagsManagerProps) {
+	const t = useTranslations();
+	const currentLanguage = useCurrentLanguage();
+	const dateLocale = currentLanguage === "fr" ? fr : enUS;
 	const [search, setSearch] = useState("");
 	const [tagToDelete, setTagToDelete] = useState<string | null>(null);
 	const [tagToEdit, setTagToEdit] = useState<TrainingTag | null>(null);
@@ -124,13 +129,13 @@ export function TagsManager({}: TagsManagerProps) {
 				<CardContent className="flex flex-col items-center justify-center p-6">
 					<AlertCircle className="h-12 w-12 text-destructive mb-4" />
 					<h3 className="text-lg font-medium mb-2">
-						Erreur de chargement
+						{t.tagsManager.errors.loadingError}
 					</h3>
 					<p className="text-muted-foreground text-center mb-4">
-						{error?.message || "Impossible de charger les plans"}
+						{error?.message || t.tagsManager.errors.cannotLoadPlans}
 					</p>
 					<Button onClick={() => refetch()} variant="outline">
-						Réessayer
+						{t.tagsManager.errors.retry}
 					</Button>
 				</CardContent>
 			</Card>
@@ -145,18 +150,17 @@ export function TagsManager({}: TagsManagerProps) {
 					<div className="flex items-center justify-between">
 						<div>
 							<CardTitle className="text-base">
-								Plans de formation disponibles
+								{t.tagsManager.title}
 							</CardTitle>
 							<CardDescription>
-								Gérez tous les plans de formation de votre
-								organisation
+								{t.tagsManager.subtitle}
 							</CardDescription>
 						</div>
 						<div className="flex gap-2">
 							<div className="relative max-w-sm">
 								<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
 								<Input
-									placeholder="Rechercher un plan..."
+									placeholder={t.tagsManager.searchPlaceholder}
 									value={search}
 									onChange={(e) => setSearch(e.target.value)}
 									className="pl-10"
@@ -178,19 +182,19 @@ export function TagsManager({}: TagsManagerProps) {
 							<Table>
 								<TableHeader>
 									<TableRow>
-										<TableHead>Plan de formation</TableHead>
-										<TableHead>Description</TableHead>
+										<TableHead>{t.tagsManager.table.plan}</TableHead>
+										<TableHead>{t.tagsManager.table.description}</TableHead>
 										<TableHead className="text-center">
-											Membres
+											{t.tagsManager.table.members}
 										</TableHead>
 										<TableHead className="text-center">
-											Formations
+											{t.tagsManager.table.trainings}
 										</TableHead>
-										<TableHead>Échéance</TableHead>
-										<TableHead>Priorité</TableHead>
-										<TableHead>Créé</TableHead>
+										<TableHead>{t.tagsManager.table.dueDate}</TableHead>
+										<TableHead>{t.tagsManager.table.priority}</TableHead>
+										<TableHead>{t.tagsManager.table.created}</TableHead>
 										<TableHead className="w-[100px]">
-											Actions
+											{t.tagsManager.table.actions}
 										</TableHead>
 									</TableRow>
 								</TableHeader>
@@ -235,8 +239,8 @@ export function TagsManager({}: TagsManagerProps) {
 						<div className="text-center py-8">
 							<div className="text-muted-foreground mb-4">
 								{search
-									? "Aucun plan trouvé pour cette recherche"
-									: "Aucun plan de formation créé"}
+									? t.tagsManager.empty.noResults
+									: t.tagsManager.empty.noPlans}
 							</div>
 							{canManage && !search && (
 								<CreateTagDialog
@@ -251,20 +255,20 @@ export function TagsManager({}: TagsManagerProps) {
 							<Table>
 								<TableHeader>
 									<TableRow>
-										<TableHead>Plan de formation</TableHead>
-										<TableHead>Description</TableHead>
+										<TableHead>{t.tagsManager.table.plan}</TableHead>
+										<TableHead>{t.tagsManager.table.description}</TableHead>
 										<TableHead className="text-center">
-											Membres
+											{t.tagsManager.table.members}
 										</TableHead>
 										<TableHead className="text-center">
-											Formations
+											{t.tagsManager.table.trainings}
 										</TableHead>
-										<TableHead>Échéance</TableHead>
-										<TableHead>Priorité</TableHead>
-										<TableHead>Créé</TableHead>
+										<TableHead>{t.tagsManager.table.dueDate}</TableHead>
+										<TableHead>{t.tagsManager.table.priority}</TableHead>
+										<TableHead>{t.tagsManager.table.created}</TableHead>
 										{canManage && (
 											<TableHead className="w-[70px]">
-												Actions
+												{t.tagsManager.table.actions}
 											</TableHead>
 										)}
 									</TableRow>
@@ -286,7 +290,7 @@ export function TagsManager({}: TagsManagerProps) {
 														</p>
 													) : (
 														<span className="text-sm text-muted-foreground italic">
-															Pas de description
+															{t.tagsManager.table.noDescription}
 														</span>
 													)}
 												</div>
@@ -326,13 +330,13 @@ export function TagsManager({}: TagsManagerProps) {
 																	tag.dueDate
 																),
 																"dd/MM/yyyy",
-																{ locale: fr }
+																{ locale: dateLocale }
 															)}
 														</span>
 													</div>
 												) : (
 													<span className="text-sm text-muted-foreground italic">
-														Aucune
+														{t.tagsManager.table.noDueDate}
 													</span>
 												)}
 											</TableCell>
@@ -349,11 +353,11 @@ export function TagsManager({}: TagsManagerProps) {
 													className="text-xs"
 												>
 													{tag.priority === "HIGH"
-														? "Élevée"
+														? t.tagsManager.priorities.high
 														: tag.priority ===
 														  "MEDIUM"
-														? "Moyenne"
-														: "Faible"}
+														? t.tagsManager.priorities.medium
+														: t.tagsManager.priorities.low}
 												</Badge>
 											</TableCell>
 											<TableCell>
@@ -362,7 +366,7 @@ export function TagsManager({}: TagsManagerProps) {
 														new Date(tag.createdAt),
 														{
 															addSuffix: true,
-															locale: fr,
+															locale: dateLocale,
 														}
 													)}
 												</span>
@@ -389,7 +393,7 @@ export function TagsManager({}: TagsManagerProps) {
 																}
 															>
 																<Edit className="mr-2 h-4 w-4" />
-																Modifier
+																{t.tagsManager.actions.edit}
 															</DropdownMenuItem>
 															{canDelete && (
 																<>
@@ -403,7 +407,7 @@ export function TagsManager({}: TagsManagerProps) {
 																		}
 																	>
 																		<Trash2 className="mr-2 h-4 w-4" />
-																		Supprimer
+																		{t.tagsManager.actions.delete}
 																	</DropdownMenuItem>
 																</>
 															)}
@@ -428,16 +432,15 @@ export function TagsManager({}: TagsManagerProps) {
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>
-							Supprimer ce plan de formation ?
+							{t.tagsManager.deleteDialog.title}
 						</AlertDialogTitle>
 						<AlertDialogDescription>
-							Cette action est irréversible. Le plan de formation
-							sera supprimé définitivement, ainsi que :
+							{t.tagsManager.deleteDialog.description}
 						</AlertDialogDescription>
 						<ul className="list-disc list-inside mt-2 space-y-1 text-sm text-muted-foreground">
-							<li>Toutes les assignations aux membres</li>
-							<li>Toutes les assignations aux formations</li>
-							<li>Toutes les données de progression associées</li>
+							<li>{t.tagsManager.deleteDialog.consequence1}</li>
+							<li>{t.tagsManager.deleteDialog.consequence2}</li>
+							<li>{t.tagsManager.deleteDialog.consequence3}</li>
 						</ul>
 					</AlertDialogHeader>
 					{deleteError && (
@@ -447,7 +450,7 @@ export function TagsManager({}: TagsManagerProps) {
 					)}
 					<AlertDialogFooter>
 						<AlertDialogCancel disabled={isDeleting}>
-							Annuler
+							{t.tagsManager.deleteDialog.cancel}
 						</AlertDialogCancel>
 						<AlertDialogAction
 							onClick={handleDeleteTag}
@@ -457,7 +460,7 @@ export function TagsManager({}: TagsManagerProps) {
 							{isDeleting && (
 								<Loader2 className="w-4 h-4 mr-2 animate-spin" />
 							)}
-							Supprimer
+							{t.tagsManager.deleteDialog.confirm}
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

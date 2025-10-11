@@ -421,13 +421,6 @@ export function BuildsManager({}: BuildsManagerProps) {
                               <div className="text-xs text-muted-foreground line-clamp-2 max-w-xs">
                                 {getLocalizedText(build.metadata?.description) || "Formation interactive WiseTrainer"}
                               </div>
-                              {build.metadata?.objectives && 
-                                Array.isArray(build.metadata.objectives) && 
-                                build.metadata.objectives.length > 0 && (
-                                <div className="text-xs text-blue-600 dark:text-blue-400">
-                                  {build.metadata.objectives.length} objectif{build.metadata.objectives.length > 1 ? "s" : ""}
-                                </div>
-                              )}
                             </div>
                           </div>
                         </TableCell>

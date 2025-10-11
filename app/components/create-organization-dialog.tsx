@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useOrganizations } from "@/app/hooks/use-organizations";
 import { useOrganizationStore } from "@/stores/organization-store";
 import { Plus } from "lucide-react";
+import { useTranslations } from "@/hooks/use-translations";
 
 interface CreateOrganizationDialogProps {
 	children?: React.ReactNode;
@@ -26,6 +27,7 @@ export function CreateOrganizationDialog({
 	children,
 	onSuccess,
 }: CreateOrganizationDialogProps) {
+	const t = useTranslations();
 	const [isOpen, setIsOpen] = React.useState(false);
 	const [name, setName] = React.useState("");
 	const [description, setDescription] = React.useState("");
@@ -50,7 +52,7 @@ export function CreateOrganizationDialog({
 	const trigger = children || (
 		<Button size="sm" className="gap-2">
 			<Plus className="h-4 w-4" />
-			Nouvelle organisation
+			{t.createOrganizationDialog.triggerButton}
 		</Button>
 	);
 
@@ -60,23 +62,22 @@ export function CreateOrganizationDialog({
 			<DialogContent>
 				<form onSubmit={handleSubmit}>
 					<DialogHeader>
-						<DialogTitle>Créer une organisation</DialogTitle>
+						<DialogTitle>{t.createOrganizationDialog.title}</DialogTitle>
 						<DialogDescription>
-							Les organisations vous permettent de gérer vos
-							équipes et de partager des ressources.
+							{t.createOrganizationDialog.description}
 						</DialogDescription>
 					</DialogHeader>
 
 					<div className="grid gap-4 py-4">
 						<div className="grid gap-2">
 							<Label htmlFor="name">
-								Nom de l&apos;organisation
+								{t.createOrganizationDialog.fields.name}
 							</Label>
 							<Input
 								id="name"
 								value={name}
 								onChange={(e) => setName(e.target.value)}
-								placeholder="Mon organisation"
+								placeholder={t.createOrganizationDialog.fields.namePlaceholder}
 								required
 								disabled={isLoading}
 							/>
@@ -84,13 +85,13 @@ export function CreateOrganizationDialog({
 
 						<div className="grid gap-2">
 							<Label htmlFor="description">
-								Description (optionnelle)
+								{t.createOrganizationDialog.fields.description}
 							</Label>
 							<Textarea
 								id="description"
 								value={description}
 								onChange={(e) => setDescription(e.target.value)}
-								placeholder="Description de votre organisation..."
+								placeholder={t.createOrganizationDialog.fields.descriptionPlaceholder}
 								rows={3}
 								disabled={isLoading}
 							/>
@@ -108,13 +109,13 @@ export function CreateOrganizationDialog({
 							onClick={() => setIsOpen(false)}
 							disabled={isLoading}
 						>
-							Annuler
+							{t.createOrganizationDialog.buttons.cancel}
 						</Button>
 						<Button
 							type="submit"
 							disabled={isLoading || !name.trim()}
 						>
-							{isLoading ? "Création..." : "Créer l'organisation"}
+							{isLoading ? t.createOrganizationDialog.buttons.creating : t.createOrganizationDialog.buttons.create}
 						</Button>
 					</DialogFooter>
 				</form>

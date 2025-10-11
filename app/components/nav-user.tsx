@@ -22,8 +22,10 @@ import {
 import { useSession, signOut } from "next-auth/react";
 import { useOrganizationStore } from "@/stores/organization-store";
 import { getDisplayName, getUserInitials } from "@/lib/user-utils";
+import { useTranslations } from "@/hooks/use-translations";
 
 export function NavUser() {
+	const t = useTranslations();
 	const { data: session } = useSession();
 	const { isMobile } = useSidebar();
 	const router = useRouter();
@@ -95,7 +97,7 @@ export function NavUser() {
 								onClick={() => router.push("/parametres")}
 							>
 								<Settings2 className="mr-2 h-4 w-4" />
-								Paramètres
+								{t.navigation.userMenu.settings}
 							</DropdownMenuItem>
 							<DropdownMenuItem
 								onClick={() => {
@@ -104,7 +106,7 @@ export function NavUser() {
 								}}
 							>
 								<LogOut className="mr-2 h-4 w-4" />
-								Déconnexion
+								{t.navigation.userMenu.logout}
 							</DropdownMenuItem>
 						</DropdownMenuGroup>
 					</DropdownMenuContent>

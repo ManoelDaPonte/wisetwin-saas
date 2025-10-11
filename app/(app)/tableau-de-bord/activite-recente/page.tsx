@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { formatDistanceToNow, format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { fr, enUS } from "date-fns/locale";
 import {
 	Calendar,
 	Search,
@@ -15,6 +15,8 @@ import { useRecentActivityWithDetails } from "@/app/hooks/use-recent-activity-wi
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useContainer } from "@/app/hooks/use-container";
+import { useTranslations } from "@/hooks/use-translations";
+import { useCurrentLanguage } from "@/stores/language-store";
 import {
 	Card,
 	CardContent,
@@ -48,6 +50,9 @@ export default function ActivityPage() {
 	const router = useRouter();
 	const { data: session } = useSession();
 	const { containerId } = useContainer();
+	const t = useTranslations();
+	const currentLanguage = useCurrentLanguage();
+	const dateLocale = currentLanguage === "fr" ? fr : enUS;
 	const [searchTerm, setSearchTerm] = useState("");
 	const [currentPage, setCurrentPage] = useState(1);
 	const [itemsPerPage] = useState(10);
@@ -62,12 +67,20 @@ export default function ActivityPage() {
 		error,
 	} = useRecentActivityWithDetails();
 
+	// Helper pour extraire le texte localisé des métadonnées
+	const getLocalizedText = (text: string | { en: string; fr: string } | undefined): string | undefined => {
+		if (!text) return undefined;
+		if (typeof text === "string") return text;
+		return text[currentLanguage] || text.fr || text.en;
+	};
+
 	const filteredAndSortedActivities = useMemo(() => {
 		if (!activities) return [];
 
-		const filtered = activities.filter((activity) =>
-			activity.displayName.toLowerCase().includes(searchTerm.toLowerCase())
-		);
+		const filtered = activities.filter((activity) => {
+			const localizedTitle = getLocalizedText(activity.metadata?.title) || activity.displayName;
+			return localizedTitle.toLowerCase().includes(searchTerm.toLowerCase());
+		});
 
 		// Tri
 		filtered.sort((a, b) => {
@@ -75,7 +88,9 @@ export default function ActivityPage() {
 
 			switch (sortState.field) {
 				case "buildName":
-					comparison = a.displayName.localeCompare(b.displayName);
+					const titleA = getLocalizedText(a.metadata?.title) || a.displayName;
+					const titleB = getLocalizedText(b.metadata?.title) || b.displayName;
+					comparison = titleA.localeCompare(titleB);
 					break;
 				case "buildType":
 					comparison = a.buildType.localeCompare(b.buildType);
@@ -91,7 +106,7 @@ export default function ActivityPage() {
 		});
 
 		return filtered;
-	}, [activities, searchTerm, sortState]);
+	}, [activities, searchTerm, sortState, currentLanguage]);
 
 	const paginatedActivities = useMemo(() => {
 		const startIndex = (currentPage - 1) * itemsPerPage;
@@ -152,7 +167,7 @@ export default function ActivityPage() {
 				<Card>
 					<CardContent className="pt-6">
 						<p className="text-center text-muted-foreground">
-							Veuillez vous connecter
+							{t.recentActivity.errors.pleaseLogin}
 						</p>
 					</CardContent>
 				</Card>
@@ -165,7 +180,7 @@ export default function ActivityPage() {
 			<div className="container mx-auto py-8">
 				<Alert variant="destructive">
 					<AlertDescription>
-						Erreur lors du chargement de l&apos;activité: {error.message}
+						{t.recentActivity.errors.loadingError} {error.message}
 					</AlertDescription>
 				</Alert>
 			</div>
@@ -179,17 +194,17 @@ export default function ActivityPage() {
 					<div>
 						<CardTitle className="flex items-center gap-2">
 							<Calendar className="h-5 w-5" />
-							Activité récente
+							{t.recentActivity.pageTitle}
 						</CardTitle>
 						<CardDescription>
-							Historique complet de vos formations
+							{t.recentActivity.subtitle}
 						</CardDescription>
 					</div>
 					<div className="flex items-center gap-2">
 						<div className="relative">
 							<Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
 							<Input
-								placeholder="Rechercher une formation..."
+								placeholder={t.recentActivity.searchPlaceholder}
 								value={searchTerm}
 								onChange={(e) => {
 									setSearchTerm(e.target.value);
@@ -202,9 +217,7 @@ export default function ActivityPage() {
 				</div>
 				{!isLoading && filteredAndSortedActivities.length > 0 && (
 					<div className="text-sm text-muted-foreground">
-						{filteredAndSortedActivities.length} activité
-						{filteredAndSortedActivities.length > 1 ? "s" : ""} trouvée
-						{filteredAndSortedActivities.length > 1 ? "s" : ""}
+						{filteredAndSortedActivities.length} {filteredAndSortedActivities.length > 1 ? t.recentActivity.stats.activitiesPlural : t.recentActivity.stats.activitiesSingular}
 					</div>
 				)}
 			</CardHeader>
@@ -233,21 +246,21 @@ export default function ActivityPage() {
 									<TableRow>
 										<TableHead>
 											<SortButton field="buildName">
-												Formation
+												{t.recentActivity.table.formation}
 											</SortButton>
 										</TableHead>
 										<TableHead>
 											<SortButton field="buildType">
-												Type
+												{t.recentActivity.table.type}
 											</SortButton>
 										</TableHead>
 										<TableHead>
 											<SortButton field="timestamp">
-												Date
+												{t.recentActivity.table.date}
 											</SortButton>
 										</TableHead>
 										<TableHead className="w-32">
-											Actions
+											{t.recentActivity.table.actions}
 										</TableHead>
 									</TableRow>
 								</TableHeader>
@@ -256,14 +269,14 @@ export default function ActivityPage() {
 										<TableRow key={activity.id}>
 											<TableCell>
 												<div className="font-medium">
-													{activity.displayName}
+													{getLocalizedText(activity.metadata?.title) || activity.displayName}
 												</div>
 											</TableCell>
 											<TableCell>
 												<Badge variant="outline">
 													{activity.buildType === "wisetrainer"
-														? "Formation"
-														: "Visite"}
+														? t.recentActivity.typeLabels.training
+														: t.recentActivity.typeLabels.visit}
 												</Badge>
 											</TableCell>
 											<TableCell>
@@ -271,8 +284,8 @@ export default function ActivityPage() {
 													<div className="text-sm">
 														{format(
 															new Date(activity.timestamp),
-															"d MMMM yyyy 'à' HH:mm",
-															{ locale: fr }
+															currentLanguage === "fr" ? "d MMMM yyyy 'à' HH:mm" : "MMMM d, yyyy 'at' HH:mm",
+															{ locale: dateLocale }
 														)}
 													</div>
 													<div className="text-xs text-muted-foreground">
@@ -280,7 +293,7 @@ export default function ActivityPage() {
 															new Date(activity.timestamp),
 															{
 																addSuffix: true,
-																locale: fr,
+																locale: dateLocale,
 															}
 														)}
 													</div>
@@ -294,7 +307,7 @@ export default function ActivityPage() {
 													className="flex items-center gap-2"
 												>
 													<Play className="h-4 w-4" />
-													Relancer
+													{t.recentActivity.relaunchButton}
 												</Button>
 											</TableCell>
 										</TableRow>
@@ -307,11 +320,10 @@ export default function ActivityPage() {
 						{totalPages > 1 && (
 							<div className="flex items-center justify-between space-x-2 py-4 flex-shrink-0 border-t">
 								<div className="text-sm text-muted-foreground">
-									Page {currentPage} sur {totalPages} (
-									{filteredAndSortedActivities.length} activité
-									{filteredAndSortedActivities.length > 1
-										? "s"
-										: ""}
+									{t.recentActivity.pagination.page} {currentPage} {t.recentActivity.pagination.of} {totalPages} (
+									{filteredAndSortedActivities.length} {filteredAndSortedActivities.length > 1
+										? t.recentActivity.pagination.activitiesPlural
+										: t.recentActivity.pagination.activitiesSingular}
 									)
 								</div>
 								<div className="flex items-center space-x-2">
@@ -325,7 +337,7 @@ export default function ActivityPage() {
 										}
 										disabled={currentPage === 1}
 									>
-										Précédent
+										{t.recentActivity.pagination.previous}
 									</Button>
 									<div className="flex items-center space-x-1">
 										{Array.from(
@@ -382,7 +394,7 @@ export default function ActivityPage() {
 										}
 										disabled={currentPage === totalPages}
 									>
-										Suivant
+										{t.recentActivity.pagination.next}
 									</Button>
 								</div>
 							</div>
@@ -393,12 +405,12 @@ export default function ActivityPage() {
 						<Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
 						<p>
 							{searchTerm
-								? `Aucune activité trouvée pour "${searchTerm}"`
-								: "Aucune activité trouvée"}
+								? `${t.recentActivity.empty.noResults} "${searchTerm}"`
+								: t.recentActivity.empty.noActivity}
 						</p>
 						{!searchTerm && (
 							<p className="text-sm mt-1">
-								Commencez des formations pour voir votre activité ici
+								{t.recentActivity.empty.getStarted}
 							</p>
 						)}
 					</div>

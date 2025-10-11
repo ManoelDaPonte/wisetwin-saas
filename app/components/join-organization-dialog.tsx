@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useOrganizations } from "@/app/hooks/use-organizations"
+import { useTranslations } from "@/hooks/use-translations"
 import {
   Dialog,
   DialogContent,
@@ -22,6 +23,7 @@ interface JoinOrganizationDialogProps {
 }
 
 export function JoinOrganizationDialog({ children }: JoinOrganizationDialogProps) {
+  const t = useTranslations()
   const { fetchOrganizations } = useOrganizations()
   const [open, setOpen] = useState(false)
   const [code, setCode] = useState("")
@@ -43,7 +45,7 @@ export function JoinOrganizationDialog({ children }: JoinOrganizationDialogProps
 
       if (!response.ok) {
         const data = await response.json()
-        throw new Error(data.error || "Code invalide")
+        throw new Error(data.error || t.joinOrganizationDialog.errors.invalidCode)
       }
 
       // Rafraîchir la liste des organisations
@@ -51,7 +53,7 @@ export function JoinOrganizationDialog({ children }: JoinOrganizationDialogProps
       setOpen(false)
       setCode("")
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Une erreur est survenue")
+      setError(err instanceof Error ? err.message : t.joinOrganizationDialog.errors.generalError)
     } finally {
       setLoading(false)
     }
@@ -72,26 +74,26 @@ export function JoinOrganizationDialog({ children }: JoinOrganizationDialogProps
         {children || (
           <Button variant="outline" className="w-full justify-start">
             <UserPlus className="mr-2 h-4 w-4" />
-            Rejoindre une organisation
+            {t.joinOrganizationDialog.title}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Rejoindre une organisation</DialogTitle>
+            <DialogTitle>{t.joinOrganizationDialog.title}</DialogTitle>
             <DialogDescription>
-              Entrez le code d&apos;invitation pour rejoindre une organisation.
+              {t.joinOrganizationDialog.description}
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="grid gap-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="code">Code d&apos;invitation</Label>
+              <Label htmlFor="code">{t.joinOrganizationDialog.fields.code}</Label>
               <Input
                 id="code"
                 type="text"
-                placeholder="ABCD1234"
+                placeholder={t.joinOrganizationDialog.fields.codePlaceholder}
                 value={code}
                 onChange={(e) => setCode(e.target.value.toUpperCase())}
                 maxLength={8}
@@ -101,7 +103,7 @@ export function JoinOrganizationDialog({ children }: JoinOrganizationDialogProps
                 autoFocus
               />
               <p className="text-sm text-muted-foreground">
-                Le code contient 8 caractères (lettres et chiffres)
+                {t.joinOrganizationDialog.fields.codeDescription}
               </p>
             </div>
 
@@ -119,13 +121,13 @@ export function JoinOrganizationDialog({ children }: JoinOrganizationDialogProps
               onClick={() => handleOpenChange(false)}
               disabled={loading}
             >
-              Annuler
+              {t.joinOrganizationDialog.buttons.cancel}
             </Button>
             <Button
               type="submit"
               disabled={loading || code.length !== 8}
             >
-              {loading ? "Traitement..." : "Rejoindre"}
+              {loading ? t.joinOrganizationDialog.buttons.processing : t.joinOrganizationDialog.buttons.join}
             </Button>
           </DialogFooter>
         </form>

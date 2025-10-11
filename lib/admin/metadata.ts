@@ -6,7 +6,6 @@ export const ModuleSchema = z.object({
   title: z.string().min(1, "Le titre du module est requis"),
   description: z.string().optional(),
   duration: z.string().optional(),
-  objectives: z.array(z.string()).optional(),
   order: z.number().optional(),
 });
 
@@ -55,10 +54,7 @@ export const FormationMetadataSchema = z.object({
   
   // Modules de la formation
   modules: z.array(ModuleSchema).default([]),
-  
-  // Objectifs de la formation
-  objectives: z.array(z.string()).default([]),
-  
+
   // Prérequis
   prerequisites: z.array(z.string()).default([]),
   
@@ -94,7 +90,6 @@ export const FormationMetadataSchemaPermissive = z.object({
   tags: z.array(z.string()).optional().default([]),
   imageUrl: z.string().optional().default(""),
   modules: z.array(z.any()).optional().default([]), // Accepte n'importe quel module
-  objectives: z.array(z.string()).optional().default([]),
   prerequisites: z.array(z.string()).optional().default([]),
   createdAt: z.string().optional().default(() => new Date().toISOString()),
   updatedAt: z.string().optional().default(() => new Date().toISOString()),
@@ -113,7 +108,6 @@ export const getDefaultMetadata = (formationName: string): FormationMetadata => 
   tags: [],
   imageUrl: "",
   modules: [],
-  objectives: [],
   prerequisites: [],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),

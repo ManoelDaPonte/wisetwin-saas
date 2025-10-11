@@ -178,6 +178,12 @@ export const fr = {
     allUsers: "Tous les utilisateurs",
     allOrganizations: "Toutes les organisations",
 
+    // Menu utilisateur (bas de sidebar)
+    userMenu: {
+      settings: "Paramètres",
+      logout: "Déconnexion",
+    },
+
     // Anciens (pour compatibilité - non utilisés dans sidebar)
     overview: "Vue d'ensemble",
     certifications: "Certifications",
@@ -300,6 +306,45 @@ export const fr = {
     },
   },
 
+  // Page Activité Récente
+  recentActivity: {
+    pageTitle: "Activité récente",
+    subtitle: "Historique complet de vos formations",
+    searchPlaceholder: "Rechercher une formation...",
+    table: {
+      formation: "Formation",
+      type: "Type",
+      date: "Date",
+      actions: "Actions",
+    },
+    typeLabels: {
+      training: "Formation",
+      visit: "Visite",
+    },
+    relaunchButton: "Relancer",
+    stats: {
+      activitiesSingular: "activité trouvée",
+      activitiesPlural: "activités trouvées",
+    },
+    pagination: {
+      page: "Page",
+      of: "sur",
+      activitiesSingular: "activité",
+      activitiesPlural: "activités",
+      previous: "Précédent",
+      next: "Suivant",
+    },
+    empty: {
+      noResults: "Aucune activité trouvée pour",
+      noActivity: "Aucune activité trouvée",
+      getStarted: "Commencez des formations pour voir votre activité ici",
+    },
+    errors: {
+      pleaseLogin: "Veuillez vous connecter",
+      loadingError: "Erreur lors du chargement de l'activité:",
+    },
+  },
+
   // Certifications
   certifications: {
     title: "Mes Certifications",
@@ -352,10 +397,69 @@ export const fr = {
     },
   },
 
+  // Sélecteur d'organisation
+  organizationSwitcher: {
+    personalSpace: "Espace personnel",
+    select: "Sélectionner",
+    labels: {
+      personal: "Personnel",
+      organization: "Organisation",
+      spaces: "Espaces",
+      organizations: "Organisations",
+    },
+    actions: {
+      createOrganization: "Créer une organisation",
+      joinOrganization: "Rejoindre une organisation",
+    },
+  },
+
+  // Dialogue création d'organisation
+  createOrganizationDialog: {
+    triggerButton: "Nouvelle organisation",
+    title: "Créer une organisation",
+    description:
+      "Les organisations vous permettent de gérer vos équipes et de partager des ressources.",
+    fields: {
+      name: "Nom de l'organisation",
+      namePlaceholder: "Mon organisation",
+      description: "Description (optionnelle)",
+      descriptionPlaceholder: "Description de votre organisation...",
+    },
+    buttons: {
+      cancel: "Annuler",
+      creating: "Création...",
+      create: "Créer l'organisation",
+    },
+  },
+
+  // Dialogue rejoindre organisation
+  joinOrganizationDialog: {
+    title: "Rejoindre une organisation",
+    description: "Entrez le code d'invitation pour rejoindre une organisation.",
+    fields: {
+      code: "Code d'invitation",
+      codePlaceholder: "ABCD1234",
+      codeDescription: "Le code contient 8 caractères (lettres et chiffres)",
+    },
+    buttons: {
+      cancel: "Annuler",
+      processing: "Traitement...",
+      join: "Rejoindre",
+    },
+    errors: {
+      invalidCode: "Code invalide",
+      generalError: "Une erreur est survenue",
+    },
+  },
+
   // Membres
   members: {
-    title: "Membres",
-    subtitle: "Gérez les membres et leurs permissions dans",
+    title: "Membres de l'organisation",
+    subtitle: "Gérez les membres et les invitations de votre organisation",
+    searchPlaceholder: "Rechercher un membre...",
+    you: "(vous)",
+    expiresPrefix: "Expire",
+    dateUnknown: "Date inconnue",
     invite: {
       button: "Inviter un membre",
       title: "Inviter un membre",
@@ -381,16 +485,17 @@ export const fr = {
       },
     },
     table: {
-      name: "Nom",
+      member: "Membre",
       email: "Email",
       role: "Rôle",
       status: "Statut",
-      joinedAt: "Rejoint le",
+      memberSince: "Membre depuis",
       actions: "Actions",
       statuses: {
         active: "Actif",
         invited: "Invité",
         pending: "En attente",
+        invitationPending: "Invitation en attente",
       },
       roles: {
         owner: "Propriétaire",
@@ -400,10 +505,30 @@ export const fr = {
       empty: "Aucun membre trouvé",
       loading: "Chargement des membres...",
     },
+    stats: {
+      memberSingular: "membre trouvé",
+      memberPlural: "membres trouvés",
+    },
     actions: {
       changeRole: "Changer le rôle",
+      promoteAdmin: "Promouvoir admin",
+      demoteMember: "Rétrograder membre",
       remove: "Retirer",
       cancelInvitation: "Annuler l'invitation",
+    },
+    pagination: {
+      page: "Page",
+      of: "sur",
+      previous: "Précédent",
+      next: "Suivant",
+    },
+    empty: {
+      noResultsFor: "Aucun membre trouvé pour",
+      noMembers: "Aucun membre trouvé",
+      inviteMembers: "Invitez des membres pour commencer",
+    },
+    errors: {
+      error: "Erreur :",
     },
   },
 
@@ -457,6 +582,53 @@ export const fr = {
       plans: "Gérer mes Plans",
       members: "Associer les membres",
       trainings: "Associer les formations",
+    },
+  },
+
+  // Gestionnaire de plans (Tags Manager)
+  tagsManager: {
+    title: "Plans de formation disponibles",
+    subtitle: "Gérez tous les plans de formation de votre organisation",
+    searchPlaceholder: "Rechercher un plan...",
+    table: {
+      plan: "Plan de formation",
+      description: "Description",
+      members: "Membres",
+      trainings: "Formations",
+      dueDate: "Échéance",
+      priority: "Priorité",
+      created: "Créé",
+      actions: "Actions",
+      noDescription: "Pas de description",
+      noDueDate: "Aucune",
+    },
+    priorities: {
+      high: "Élevée",
+      medium: "Moyenne",
+      low: "Faible",
+    },
+    actions: {
+      edit: "Modifier",
+      delete: "Supprimer",
+    },
+    empty: {
+      noResults: "Aucun plan trouvé pour cette recherche",
+      noPlans: "Aucun plan de formation créé",
+    },
+    deleteDialog: {
+      title: "Supprimer ce plan de formation ?",
+      description:
+        "Cette action est irréversible. Le plan de formation sera supprimé définitivement, ainsi que :",
+      consequence1: "Toutes les assignations aux membres",
+      consequence2: "Toutes les assignations aux formations",
+      consequence3: "Toutes les données de progression associées",
+      cancel: "Annuler",
+      confirm: "Supprimer",
+    },
+    errors: {
+      loadingError: "Erreur de chargement",
+      cannotLoadPlans: "Impossible de charger les plans",
+      retry: "Réessayer",
     },
   },
 
@@ -537,6 +709,51 @@ export const fr = {
     title: "Visites disponibles",
     subtitle:
       "Explorez et lancez les visites d'environnements industriels Unity",
+  },
+
+  // Table des Builds (formations/visites)
+  buildsTable: {
+    searchPlaceholder: "Rechercher une formation...",
+    table: {
+      formation: "Formation",
+      tags: "Tags",
+      difficulty: "Difficulté",
+      duration: "Durée",
+      version: "Version",
+      modified: "Modifié",
+      actions: "Actions",
+    },
+    stats: {
+      formationSingular: "formation trouvée",
+      formationPlural: "formations trouvées",
+    },
+    buttons: {
+      launch: "Lancer formation",
+      relaunch: "Relancer formation",
+    },
+    time: {
+      recently: "récemment",
+    },
+    pagination: {
+      page: "Page",
+      of: "sur",
+      formationSingular: "formation",
+      formationPlural: "formations",
+      previous: "Précédent",
+      next: "Suivant",
+    },
+    empty: {
+      noResults: "Aucune formation trouvée pour",
+      noFormations: "Aucune formation trouvée",
+      uploadBuilds: "Uploadez des builds Unity dans le dossier correspondant",
+      noStarted: "Vous n'avez pas encore commencé de formations",
+    },
+    errors: {
+      loadingError: "Erreur lors du chargement des builds:",
+    },
+    placeholders: {
+      empty: "-",
+    },
   },
 
   completedTrainings: {

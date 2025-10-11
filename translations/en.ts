@@ -174,6 +174,12 @@ export const en = {
     allUsers: "All Users",
     allOrganizations: "All Organizations",
 
+    // User menu (bottom of sidebar)
+    userMenu: {
+      settings: "Settings",
+      logout: "Sign out",
+    },
+
     // Anciens (pour compatibilité - non utilisés dans sidebar)
     overview: "Overview",
     certifications: "Certifications",
@@ -293,6 +299,45 @@ export const en = {
     },
   },
 
+  // Recent Activity Page
+  recentActivity: {
+    pageTitle: "Recent activity",
+    subtitle: "Complete history of your trainings",
+    searchPlaceholder: "Search for a training...",
+    table: {
+      formation: "Training",
+      type: "Type",
+      date: "Date",
+      actions: "Actions",
+    },
+    typeLabels: {
+      training: "Training",
+      visit: "Visit",
+    },
+    relaunchButton: "Relaunch",
+    stats: {
+      activitiesSingular: "activity found",
+      activitiesPlural: "activities found",
+    },
+    pagination: {
+      page: "Page",
+      of: "of",
+      activitiesSingular: "activity",
+      activitiesPlural: "activities",
+      previous: "Previous",
+      next: "Next",
+    },
+    empty: {
+      noResults: "No activity found for",
+      noActivity: "No activity found",
+      getStarted: "Start trainings to see your activity here",
+    },
+    errors: {
+      pleaseLogin: "Please sign in",
+      loadingError: "Error loading activity:",
+    },
+  },
+
   // Certifications
   certifications: {
     title: "My Certifications",
@@ -344,10 +389,69 @@ export const en = {
     },
   },
 
+  // Organization Switcher
+  organizationSwitcher: {
+    personalSpace: "Personal space",
+    select: "Select",
+    labels: {
+      personal: "Personal",
+      organization: "Organization",
+      spaces: "Spaces",
+      organizations: "Organizations",
+    },
+    actions: {
+      createOrganization: "Create an organization",
+      joinOrganization: "Join an organization",
+    },
+  },
+
+  // Create Organization Dialog
+  createOrganizationDialog: {
+    triggerButton: "New organization",
+    title: "Create an organization",
+    description:
+      "Organizations allow you to manage your teams and share resources.",
+    fields: {
+      name: "Organization name",
+      namePlaceholder: "My organization",
+      description: "Description (optional)",
+      descriptionPlaceholder: "Your organization description...",
+    },
+    buttons: {
+      cancel: "Cancel",
+      creating: "Creating...",
+      create: "Create organization",
+    },
+  },
+
+  // Join Organization Dialog
+  joinOrganizationDialog: {
+    title: "Join an organization",
+    description: "Enter the invitation code to join an organization.",
+    fields: {
+      code: "Invitation code",
+      codePlaceholder: "ABCD1234",
+      codeDescription: "The code contains 8 characters (letters and numbers)",
+    },
+    buttons: {
+      cancel: "Cancel",
+      processing: "Processing...",
+      join: "Join",
+    },
+    errors: {
+      invalidCode: "Invalid code",
+      generalError: "An error occurred",
+    },
+  },
+
   // Members
   members: {
-    title: "Members",
-    subtitle: "Manage members and their permissions in",
+    title: "Organization members",
+    subtitle: "Manage members and invitations for your organization",
+    searchPlaceholder: "Search for a member...",
+    you: "(you)",
+    expiresPrefix: "Expires",
+    dateUnknown: "Unknown date",
     invite: {
       button: "Invite member",
       title: "Invite member",
@@ -372,16 +476,17 @@ export const en = {
       },
     },
     table: {
-      name: "Name",
+      member: "Member",
       email: "Email",
       role: "Role",
       status: "Status",
-      joinedAt: "Joined",
+      memberSince: "Member since",
       actions: "Actions",
       statuses: {
         active: "Active",
         invited: "Invited",
         pending: "Pending",
+        invitationPending: "Invitation pending",
       },
       roles: {
         owner: "Owner",
@@ -391,10 +496,30 @@ export const en = {
       empty: "No members found",
       loading: "Loading members...",
     },
+    stats: {
+      memberSingular: "member found",
+      memberPlural: "members found",
+    },
     actions: {
       changeRole: "Change role",
+      promoteAdmin: "Promote to admin",
+      demoteMember: "Demote to member",
       remove: "Remove",
       cancelInvitation: "Cancel invitation",
+    },
+    pagination: {
+      page: "Page",
+      of: "of",
+      previous: "Previous",
+      next: "Next",
+    },
+    empty: {
+      noResultsFor: "No member found for",
+      noMembers: "No members found",
+      inviteMembers: "Invite members to get started",
+    },
+    errors: {
+      error: "Error:",
     },
   },
 
@@ -447,6 +572,53 @@ export const en = {
       plans: "Manage my trainings plans",
       members: "Link members",
       trainings: "Link trainings",
+    },
+  },
+
+  // Tags Manager (Training Plans)
+  tagsManager: {
+    title: "Available training plans",
+    subtitle: "Manage all your organization's training plans",
+    searchPlaceholder: "Search for a plan...",
+    table: {
+      plan: "Training plan",
+      description: "Description",
+      members: "Members",
+      trainings: "Trainings",
+      dueDate: "Due date",
+      priority: "Priority",
+      created: "Created",
+      actions: "Actions",
+      noDescription: "No description",
+      noDueDate: "None",
+    },
+    priorities: {
+      high: "High",
+      medium: "Medium",
+      low: "Low",
+    },
+    actions: {
+      edit: "Edit",
+      delete: "Delete",
+    },
+    empty: {
+      noResults: "No plan found for this search",
+      noPlans: "No training plan created",
+    },
+    deleteDialog: {
+      title: "Delete this training plan?",
+      description:
+        "This action is irreversible. The training plan will be permanently deleted, along with:",
+      consequence1: "All member assignments",
+      consequence2: "All training assignments",
+      consequence3: "All associated progress data",
+      cancel: "Cancel",
+      confirm: "Delete",
+    },
+    errors: {
+      loadingError: "Loading error",
+      cannotLoadPlans: "Unable to load plans",
+      retry: "Retry",
     },
   },
 
@@ -526,6 +698,51 @@ export const en = {
   wisetour: {
     title: "Available visits",
     subtitle: "Explore and launch Unity industrial environment visits",
+  },
+
+  // Builds Table (trainings/visits)
+  buildsTable: {
+    searchPlaceholder: "Search for a training...",
+    table: {
+      formation: "Training",
+      tags: "Tags",
+      difficulty: "Difficulty",
+      duration: "Duration",
+      version: "Version",
+      modified: "Modified",
+      actions: "Actions",
+    },
+    stats: {
+      formationSingular: "training found",
+      formationPlural: "trainings found",
+    },
+    buttons: {
+      launch: "Launch training",
+      relaunch: "Relaunch training",
+    },
+    time: {
+      recently: "recently",
+    },
+    pagination: {
+      page: "Page",
+      of: "of",
+      formationSingular: "training",
+      formationPlural: "trainings",
+      previous: "Previous",
+      next: "Next",
+    },
+    empty: {
+      noResults: "No training found for",
+      noFormations: "No training found",
+      uploadBuilds: "Upload Unity builds to the corresponding folder",
+      noStarted: "You haven't started any trainings yet",
+    },
+    errors: {
+      loadingError: "Error loading builds:",
+    },
+    placeholders: {
+      empty: "-",
+    },
   },
 
   completedTrainings: {
