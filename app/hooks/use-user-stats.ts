@@ -17,6 +17,8 @@ export interface RecentActivity {
   buildName: string;
   buildType: 'wisetrainer' | 'wisetour';
   timestamp: string;
+  score?: number; // Score obtenu (pourcentage)
+  imageUrl?: string; // URL de l'image de la formation
 }
 
 

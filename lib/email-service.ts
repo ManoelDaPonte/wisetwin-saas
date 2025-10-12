@@ -3,7 +3,7 @@ import { env } from "@/lib/env";
 import { InvitationEmailData } from "@/types/organization";
 
 // Configuration du transporteur email
-const transporter = nodemailer.createTransport({
+export const transporter = nodemailer.createTransport({
   host: "smtp.hostinger.com",
   port: 587,
   secure: false,

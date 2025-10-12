@@ -10,6 +10,7 @@ import { TagsManager } from "./components/tags-manager";
 import { MemberTagsManager } from "./components/member-tags-manager";
 import { BuildsManager } from "./components/builds-manager";
 import { ProgressDashboard } from "./components/progress-dashboard";
+import { GlobalReminderButton } from "./components/global-reminder-button";
 
 export default function GestionFormationsPage() {
   const t = useTranslations();
@@ -60,6 +61,7 @@ export default function GestionFormationsPage() {
           </h1>
           <p className="text-muted-foreground">{t.trainingPlan.subtitle}</p>
         </div>
+        <GlobalReminderButton />
       </div>
 
       {/* Navigation par onglets */}

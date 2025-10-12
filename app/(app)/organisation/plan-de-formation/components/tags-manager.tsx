@@ -48,6 +48,7 @@ import {
 	AlertCircle,
 } from "lucide-react";
 import { useTrainingTagsManager } from "../hooks/use-training-tags";
+import { useTrainingDashboard } from "../hooks/use-training-system";
 import { TagBadge } from "./tag-badge";
 import { CreateTagDialog } from "./create-tag-dialog";
 import { EditTagDialog } from "./edit-tag-dialog";
@@ -56,6 +57,7 @@ import { fr, enUS } from "date-fns/locale";
 import { TrainingTag, UpdateTrainingTagData } from "@/types/training";
 import { useTranslations } from "@/hooks/use-translations";
 import { useCurrentLanguage } from "@/stores/language-store";
+import { Progress } from "@/components/ui/progress";
 
 interface TagsManagerProps {
 	organizationId: string;
@@ -87,6 +89,12 @@ export function TagsManager({}: TagsManagerProps) {
 		canDelete,
 		refetch,
 	} = useTrainingTagsManager();
+
+	// Récupérer les statistiques de complétion
+	const { tagsWithStats, isLoading: isLoadingStats } = useTrainingDashboard();
+
+	// Créer une map pour accéder rapidement aux stats
+	const statsMap = new Map(tagsWithStats.map(tag => [tag.id, tag]));
 
 	// Filtrage des tags par recherche
 	const filteredTags = tags.filter(
@@ -190,6 +198,9 @@ export function TagsManager({}: TagsManagerProps) {
 										<TableHead className="text-center">
 											{t.tagsManager.table.trainings}
 										</TableHead>
+										<TableHead className="text-center">
+											Progression
+										</TableHead>
 										<TableHead>{t.tagsManager.table.dueDate}</TableHead>
 										<TableHead>{t.tagsManager.table.priority}</TableHead>
 										<TableHead>{t.tagsManager.table.created}</TableHead>
@@ -217,6 +228,9 @@ export function TagsManager({}: TagsManagerProps) {
 											</TableCell>
 											<TableCell className="text-center">
 												<Skeleton className="h-4 w-8 mx-auto" />
+											</TableCell>
+											<TableCell className="text-center">
+												<Skeleton className="h-4 w-16 mx-auto" />
 											</TableCell>
 											<TableCell>
 												<Skeleton className="h-4 w-24" />
@@ -262,6 +276,9 @@ export function TagsManager({}: TagsManagerProps) {
 										</TableHead>
 										<TableHead className="text-center">
 											{t.tagsManager.table.trainings}
+										</TableHead>
+										<TableHead className="text-center">
+											Progression
 										</TableHead>
 										<TableHead>{t.tagsManager.table.dueDate}</TableHead>
 										<TableHead>{t.tagsManager.table.priority}</TableHead>
@@ -312,6 +329,33 @@ export function TagsManager({}: TagsManagerProps) {
 															?.buildTags || 0}
 													</span>
 												</div>
+											</TableCell>
+											<TableCell className="text-center">
+												{(() => {
+													const stats = statsMap.get(tag.id);
+													if (!stats || stats.memberCount === 0 || stats.buildCount === 0) {
+														return (
+															<span className="text-sm text-muted-foreground">-</span>
+														);
+													}
+
+													// Calculer le nombre de membres qui ont terminé TOUTES les formations
+													const membersCompleted = Math.floor(stats.totalCompletions / stats.buildCount);
+													const totalMembers = stats.memberCount;
+													const percentage = stats.completionRate;
+
+													return (
+														<div className="space-y-1">
+															<span className="text-sm font-medium">
+																{membersCompleted}/{totalMembers}
+															</span>
+															<Progress
+																value={percentage}
+																className="h-1.5 w-16 mx-auto"
+															/>
+														</div>
+													);
+												})()}
 											</TableCell>
 											<TableCell>
 												{tag.dueDate ? (

@@ -97,13 +97,26 @@ export async function GET(request: NextRequest) {
       ? trainingAnalytics.reduce((sum, analytics) => sum + analytics.successRate, 0) / trainingAnalytics.length
       : 0;
 
-    // Activité récente (dernières formations terminées)
-    const recentActivity = completedBuilds.slice(0, 10).map(build => ({
-      id: build.id,
+    // Récupérer TOUTES les activités depuis TrainingAnalytics pour l'historique complet
+    // Cela inclut toutes les tentatives, même multiples sur la même formation
+    const allAnalytics = await prisma.trainingAnalytics.findMany({
+      where: {
+        userId: targetUserId,
+        containerId,
+      },
+      orderBy: { endTime: 'desc' },
+      take: 50, // Limiter pour les performances
+    });
+
+    // Activité récente - toutes les activités, même duplications
+    const recentActivity = allAnalytics.slice(0, 10).map(analytics => ({
+      id: analytics.id,
       type: 'completion' as const,
-      buildName: build.buildName,
-      buildType: build.buildType.toLowerCase() as 'wisetrainer' | 'wisetour',
-      timestamp: build.completedAt || build.updatedAt,
+      buildName: analytics.buildName,
+      buildType: analytics.buildType.toLowerCase() as 'wisetrainer' | 'wisetour',
+      timestamp: analytics.endTime.toISOString(),
+      score: analytics.completionStatus === 'COMPLETED' ? analytics.successRate : undefined,
+      // imageUrl sera ajouté par le hook use-recent-activity-with-details
     }));
 
     const userStats = {

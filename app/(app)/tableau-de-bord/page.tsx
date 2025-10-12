@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUserStats } from "@/app/hooks/use-user-stats";
-import { useCompletedFormationsWithDetails } from "@/app/hooks/use-completed-formations";
+import { useCertifiedFormations } from "@/app/hooks/use-certified-formations";
 import { useRecentActivityWithDetails } from "@/app/hooks/use-recent-activity-with-details";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "@/hooks/use-translations";
@@ -16,7 +16,6 @@ import { useCurrentLanguage } from "@/stores/language-store";
 import { Calendar, CheckCircle2, Clock, Trophy, Award, ArrowRight } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import { fr } from "date-fns/locale";
-import type { Build } from "@/types";
 
 export default function DashboardPage() {
 	const t = useTranslations();
@@ -43,9 +42,9 @@ export default function DashboardPage() {
 	} = useRecentActivityWithDetails();
 
 	const {
-		data: certificationsData,
+		certifications,
 		isLoading: isCertificationsLoading,
-	} = useCompletedFormationsWithDetails("wisetrainer");
+	} = useCertifiedFormations();
 
 	if (!session) {
 		return (
@@ -173,6 +172,22 @@ export default function DashboardPage() {
 												})}
 											</p>
 										</div>
+										{activity.score !== undefined && (
+											<div className="text-right">
+												{activity.score >= 80 && (
+													<Trophy className="h-4 w-4 text-yellow-500 inline-block mr-1" />
+												)}
+												<span className={`font-medium ${
+													activity.score >= 80
+														? "text-green-600 dark:text-green-400"
+														: activity.score >= 60
+															? "text-yellow-600 dark:text-yellow-400"
+															: "text-red-600 dark:text-red-400"
+												}`}>
+													{Math.round(activity.score)}%
+												</span>
+											</div>
+										)}
 									</div>
 								))}
 						</div>
@@ -195,7 +210,7 @@ export default function DashboardPage() {
 							<Award className="h-5 w-5" />
 							Dernières certifications
 						</CardTitle>
-						{certificationsData?.builds && certificationsData.builds.length > 0 && (
+						{certifications && certifications.length > 0 && (
 							<Button variant="ghost" size="sm" asChild>
 								<a href="/tableau-de-bord/certifications">
 									Voir tout
@@ -212,20 +227,26 @@ export default function DashboardPage() {
 								<Skeleton key={i} className="h-16 w-full" />
 							))}
 						</div>
-					) : certificationsData?.builds && certificationsData.builds.length > 0 ? (
+					) : certifications && certifications.length > 0 ? (
 						<div className="space-y-4">
-							{certificationsData.builds.slice(0, 3).map((build: Build) => (
-								<div key={build.id || build.name} className="flex items-center gap-4 p-4 border rounded-lg">
+							{certifications.slice(0, 3).map((cert) => (
+								<div key={cert.build.id || cert.build.name} className="flex items-center gap-4 p-4 border rounded-lg">
 									<div className="p-2 rounded-full bg-muted">
 										<Award className="h-4 w-4" />
 									</div>
 									<div className="flex-1">
 										<p className="text-sm font-medium">
-											{getLocalizedText(build.metadata?.title) || build.name}
+											{getLocalizedText(cert.build.metadata?.title) || cert.build.name}
 										</p>
 										<p className="text-xs text-muted-foreground">
-											{build.completion?.completedAt && format(new Date(build.completion.completedAt), "d MMMM yyyy", { locale: fr })}
+											{format(new Date(cert.completedAt), "d MMMM yyyy", { locale: fr })}
 										</p>
+									</div>
+									<div className="text-right">
+										<Trophy className="h-4 w-4 text-yellow-500 inline-block mr-1" />
+										<span className="font-medium text-green-600 dark:text-green-400">
+											{Math.round(cert.score)}%
+										</span>
 									</div>
 								</div>
 							))}

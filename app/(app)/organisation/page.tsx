@@ -8,6 +8,7 @@ import { useBuilds } from "@/app/hooks/use-builds";
 import { useTrainingAnalytics } from "./plan-de-formation/hooks/use-training-analytics";
 import { OrganizationStats } from "./components/organization-stats";
 import { OrganizationActions } from "./components/organization-actions";
+import { OrganizationTrends } from "./components/organization-trends";
 import { useTranslations } from "@/hooks/use-translations";
 
 export default function OrganizationPage() {
@@ -54,16 +55,6 @@ export default function OrganizationPage() {
 
 	return (
 		<div className="space-y-8">
-			<div>
-				<h1 className="text-2xl font-bold tracking-tight">
-					{t.organization.overview.title}
-				</h1>
-				<p className="text-muted-foreground">
-					{t.organization.overview.subtitle}{" "}
-					{activeOrganization.name}
-				</p>
-			</div>
-
 			{/* Statistiques rapides */}
 			<OrganizationStats
 				memberCount={memberCount}
@@ -77,6 +68,12 @@ export default function OrganizationPage() {
 
 			{/* Actions rapides - cachées pour les membres */}
 			<OrganizationActions canManage={!isMember} />
+
+			{/* Graphique de tendances */}
+			<OrganizationTrends
+				isLoading={isAnalyticsLoading}
+				analyticsData={analyticsData?.analytics}
+			/>
 		</div>
 	);
 }

@@ -11,6 +11,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Table,
   TableBody,
   TableCell,
@@ -35,6 +42,7 @@ import {
 import { useTrainingDashboard } from "../hooks/use-training-system";
 import { useBuildsWithTags } from "../hooks/use-build-tags";
 import { useTrainingAnalytics } from "../hooks/use-training-analytics";
+import { useTrainingReminders } from "../hooks/use-training-reminders";
 import { TagBadge } from "./tag-badge";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -53,6 +61,10 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
   const [expandedMembers, setExpandedMembers] = useState<Set<string>>(
     new Set()
   );
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "completed" | "overdue">("all");
+
+  // Hook pour les rappels
+  const { sendIndividualReminder, sendTagReminder, isSendingIndividual, isSendingTag } = useTrainingReminders();
 
   // Helper pour extraire le texte localisé des métadonnées
   const getLocalizedText = (text: string | { en: string; fr: string } | undefined): string | undefined => {
@@ -163,6 +175,26 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
 
     return completedMembers;
   };
+
+  // Filtrer les plans en fonction du statut sélectionné
+  const filteredTags = tagsWithStats.filter(tag => {
+    // D'abord calculer le nombre de membres ayant terminé
+    const completedCount = getTagCompletionCount(tag);
+    const isCompleted = tag.memberCount > 0 && completedCount === tag.memberCount;
+    const isOverdue = tag.isOverdue;
+    const isActive = !isCompleted && !isOverdue;
+
+    switch(statusFilter) {
+      case "active":
+        return isActive;
+      case "completed":
+        return isCompleted;
+      case "overdue":
+        return isOverdue && !isCompleted;
+      default:
+        return true;
+    }
+  });
 
   if (isLoading) {
     return (
@@ -350,10 +382,22 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                   Cliquez sur un plan pour voir les détails et la progression
                 </CardDescription>
               </div>
-              <Badge variant="outline" className="text-xs">
-                {tagsWithStats.length} plan
-                {tagsWithStats.length > 1 ? "s" : ""}
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Select value={statusFilter} onValueChange={(value: any) => setStatusFilter(value)}>
+                  <SelectTrigger className="w-[140px] h-8">
+                    <SelectValue placeholder="Filtrer par..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tous</SelectItem>
+                    <SelectItem value="active">En cours</SelectItem>
+                    <SelectItem value="completed">Terminés</SelectItem>
+                    <SelectItem value="overdue">En retard</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Badge variant="outline" className="text-xs">
+                  {filteredTags.length} / {tagsWithStats.length}
+                </Badge>
+              </div>
             </div>
           </CardHeader>
         ) : (
@@ -379,22 +423,35 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                   </div>
                 </div>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  refetchAnalytics();
-                  refetchDashboard();
-                }}
-                disabled={isRefetching}
-              >
-                <RefreshCw
-                  className={`h-4 w-4 mr-2 ${
-                    isRefetching ? "animate-spin" : ""
-                  }`}
-                />
-                Actualiser
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    sendTagReminder({ tagId: selectedTagId });
+                  }}
+                  disabled={isSendingTag}
+                >
+                  <Bell className={`h-4 w-4 mr-2 ${isSendingTag ? "animate-pulse" : ""}`} />
+                  {isSendingTag ? "Envoi..." : "Rappeler tous"}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    refetchAnalytics();
+                    refetchDashboard();
+                  }}
+                  disabled={isRefetching}
+                >
+                  <RefreshCw
+                    className={`h-4 w-4 mr-2 ${
+                      isRefetching ? "animate-spin" : ""
+                    }`}
+                  />
+                  Actualiser
+                </Button>
+              </div>
             </div>
           </CardHeader>
         )}
@@ -412,9 +469,19 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                     Créez votre premier tag dans l&apos;onglet &quot;Tags&quot;
                   </p>
                 </div>
+              ) : filteredTags.length === 0 ? (
+                <div className="text-center py-8">
+                  <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">
+                    Aucun plan ne correspond au filtre sélectionné
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Essayez de changer le filtre pour voir d'autres plans
+                  </p>
+                </div>
               ) : (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {tagsWithStats.map((tag) => {
+                  {filteredTags.map((tag) => {
                     return (
                       <Card
                         key={tag.id}
@@ -716,10 +783,16 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                                     size="sm"
                                     onClick={(e) => {
                                       e.stopPropagation();
+                                      // Envoyer le rappel individuel
+                                      sendIndividualReminder({
+                                        memberId: member.id,
+                                        tagId: selectedTagId,
+                                      });
                                     }}
+                                    disabled={isSendingIndividual || selectedTagId === "all"}
                                   >
                                     <Bell className="w-3 h-3 mr-1 text-muted-foreground" />
-                                    Rappel
+                                    {isSendingIndividual ? "Envoi..." : "Rappel"}
                                   </Button>
                                 </TableCell>
                               </TableRow>

@@ -1,7 +1,7 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building2, Users, CheckCircle, Clock } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Building2, Users, CheckCircle2, Clock } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface OrganizationStatsProps {
@@ -25,88 +25,84 @@ export function OrganizationStats({
 }: OrganizationStatsProps) {
 	return (
 		<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-			<Card>
-				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="text-sm font-medium">
-						Membres
-					</CardTitle>
-					<Users className="h-4 w-4 text-muted-foreground" />
-				</CardHeader>
-				<CardContent>
-					{isMembersLoading ? (
-						<Skeleton className="h-8 w-16" />
-					) : (
-						<div className="text-2xl font-bold">
-							{memberCount}
+			<Card className="overflow-hidden p-0">
+				{isMembersLoading ? (
+					<Skeleton className="h-28 w-full" />
+				) : (
+					<div className="flex h-full min-h-28">
+						<div className="flex items-center justify-center bg-primary w-20 flex-shrink-0">
+							<Users className="h-8 w-8 text-primary-foreground" />
 						</div>
-					)}
-					<p className="text-xs text-muted-foreground">
-						Utilisateurs
-					</p>
-				</CardContent>
+						<div className="flex-1 flex flex-col items-center justify-center py-6 px-4">
+							<div className="text-3xl font-bold text-primary">
+								{memberCount}
+							</div>
+							<p className="text-sm text-muted-foreground mt-1">
+								membres actifs
+							</p>
+						</div>
+					</div>
+				)}
 			</Card>
 
-			<Card>
-				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="text-sm font-medium">
-						Formations
-					</CardTitle>
-					<Building2 className="h-4 w-4 text-muted-foreground" />
-				</CardHeader>
-				<CardContent>
-					{isWisetrainerLoading ? (
-						<Skeleton className="h-8 w-16" />
-					) : (
-						<div className="text-2xl font-bold">
-							{wisetrainerCount}
+			<Card className="overflow-hidden p-0">
+				{isWisetrainerLoading ? (
+					<Skeleton className="h-28 w-full" />
+				) : (
+					<div className="flex h-full min-h-28">
+						<div className="flex items-center justify-center bg-primary w-20 flex-shrink-0">
+							<Building2 className="h-8 w-8 text-primary-foreground" />
 						</div>
-					)}
-					<p className="text-xs text-muted-foreground">
-						Disponibles
-					</p>
-				</CardContent>
+						<div className="flex-1 flex flex-col items-center justify-center py-6 px-4">
+							<div className="text-3xl font-bold text-primary">
+								{wisetrainerCount}
+							</div>
+							<p className="text-sm text-muted-foreground mt-1">
+								formations disponibles
+							</p>
+						</div>
+					</div>
+				)}
 			</Card>
 
-			<Card>
-				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="text-sm font-medium">
-						Complétées
-					</CardTitle>
-					<CheckCircle className="h-4 w-4 text-muted-foreground" />
-				</CardHeader>
-				<CardContent>
-					{isStatsLoading ? (
-						<Skeleton className="h-8 w-16" />
-					) : (
-						<div className="text-2xl font-bold">
-							{totalFormationsCompleted}
+			<Card className="overflow-hidden p-0">
+				{isStatsLoading ? (
+					<Skeleton className="h-28 w-full" />
+				) : (
+					<div className="flex h-full min-h-28">
+						<div className="flex items-center justify-center bg-primary w-20 flex-shrink-0">
+							<CheckCircle2 className="h-8 w-8 text-primary-foreground" />
 						</div>
-					)}
-					<p className="text-xs text-muted-foreground">
-						Total terminées
-					</p>
-				</CardContent>
+						<div className="flex-1 flex flex-col items-center justify-center py-6 px-4">
+							<div className="text-3xl font-bold text-primary">
+								{totalFormationsCompleted}
+							</div>
+							<p className="text-sm text-muted-foreground mt-1">
+								formations terminées
+							</p>
+						</div>
+					</div>
+				)}
 			</Card>
 
-			<Card>
-				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="text-sm font-medium">
-						Temps total
-					</CardTitle>
-					<Clock className="h-4 w-4 text-muted-foreground" />
-				</CardHeader>
-				<CardContent>
-					{isStatsLoading ? (
-						<Skeleton className="h-8 w-16" />
-					) : (
-						<div className="text-2xl font-bold">
-							{totalTimeSpent.toFixed(0)}h
+			<Card className="overflow-hidden p-0">
+				{isStatsLoading ? (
+					<Skeleton className="h-28 w-full" />
+				) : (
+					<div className="flex h-full min-h-28">
+						<div className="flex items-center justify-center bg-primary w-20 flex-shrink-0">
+							<Clock className="h-8 w-8 text-primary-foreground" />
 						</div>
-					)}
-					<p className="text-xs text-muted-foreground">
-						De formation
-					</p>
-				</CardContent>
+						<div className="flex-1 flex flex-col items-center justify-center py-6 px-4">
+							<div className="text-3xl font-bold text-primary">
+								{totalTimeSpent.toFixed(0)}h
+							</div>
+							<p className="text-sm text-muted-foreground mt-1">
+								de formation
+							</p>
+						</div>
+					</div>
+				)}
 			</Card>
 		</div>
 	);

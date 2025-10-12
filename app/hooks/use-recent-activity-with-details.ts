@@ -59,6 +59,7 @@ export function useRecentActivityWithDetails() {
           displayName: getLocalizedText(build?.metadata?.title) || build?.name || activity.buildName,
           metadata: build?.metadata,
           build,
+          imageUrl: build?.imageUrl || build?.metadata?.imageUrl, // Ajouter l'URL de l'image
         };
       });
     },
