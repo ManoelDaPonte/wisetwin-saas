@@ -201,8 +201,12 @@ export async function listBuilds(
           build.difficulty = metadataJson.difficulty || build.difficulty;
           build.duration = metadataJson.duration || build.duration;
           build.tags = metadataJson.tags || build.tags;
-          build.objectives = metadataJson.objectives || build.objectives;
-          build.prerequisites = metadataJson.prerequisites || build.prerequisites;
+          if (Array.isArray(metadataJson.objectives)) {
+            build.objectives = metadataJson.objectives || build.objectives;
+          }
+          if (Array.isArray(metadataJson.prerequisites)) {
+            build.prerequisites = metadataJson.prerequisites || build.prerequisites;
+          }
         } catch (error) {
           console.warn(`Erreur lors de la lecture des métadonnées pour ${buildName}:`, error);
           build.metadata = null;

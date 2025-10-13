@@ -98,9 +98,7 @@ async function fetchCertifiedFormations(
 // Fonction alternative si l'API analytics n'existe pas encore
 async function fetchCertifiedFormationsAlternative(
   containerId: string,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _organizationId: string | null,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _userId: string
 ): Promise<CertifiedFormation[]> {
   try {
@@ -126,7 +124,6 @@ async function fetchCertifiedFormationsAlternative(
     const builds = buildsData.builds || [];
 
     // Utiliser l'activité récente qui contient les scores
-    const certifiedFormations: CertifiedFormation[] = [];
     const processedBuilds = new Map<string, CertifiedFormation>();
 
     // Filtrer les activités avec score >= 80%

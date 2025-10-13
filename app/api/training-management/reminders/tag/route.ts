@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { withOrgAuth, OrgAuthenticatedRequest } from "@/lib/auth-wrapper";
 import { prisma } from "@/lib/prisma";
 import { sendTrainingReminderEmail } from "@/lib/email-service-reminders";
-import { getUserInitials, getDisplayName } from "@/lib/user-utils";
+import { getDisplayName } from "@/lib/user-utils";
 
 // Configuration des envois
 const BATCH_SIZE = 5; // Nombre d'emails envoyés en parallèle

@@ -61,13 +61,22 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
   const [expandedMembers, setExpandedMembers] = useState<Set<string>>(
     new Set()
   );
-  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "completed" | "overdue">("all");
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "active" | "completed" | "overdue"
+  >("all");
 
   // Hook pour les rappels
-  const { sendIndividualReminder, sendTagReminder, isSendingIndividual, isSendingTag } = useTrainingReminders();
+  const {
+    sendIndividualReminder,
+    sendTagReminder,
+    isSendingIndividual,
+    isSendingTag,
+  } = useTrainingReminders();
 
   // Helper pour extraire le texte localisé des métadonnées
-  const getLocalizedText = (text: string | { en: string; fr: string } | undefined): string | undefined => {
+  const getLocalizedText = (
+    text: string | { en: string; fr: string } | undefined
+  ): string | undefined => {
     if (!text) return undefined;
     if (typeof text === "string") return text;
     return text[currentLanguage] || text.fr || text.en;
@@ -177,14 +186,15 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
   };
 
   // Filtrer les plans en fonction du statut sélectionné
-  const filteredTags = tagsWithStats.filter(tag => {
+  const filteredTags = tagsWithStats.filter((tag) => {
     // D'abord calculer le nombre de membres ayant terminé
     const completedCount = getTagCompletionCount(tag);
-    const isCompleted = tag.memberCount > 0 && completedCount === tag.memberCount;
+    const isCompleted =
+      tag.memberCount > 0 && completedCount === tag.memberCount;
     const isOverdue = tag.isOverdue;
     const isActive = !isCompleted && !isOverdue;
 
-    switch(statusFilter) {
+    switch (statusFilter) {
       case "active":
         return isActive;
       case "completed":
@@ -383,7 +393,10 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                 </CardDescription>
               </div>
               <div className="flex items-center gap-2">
-                <Select value={statusFilter} onValueChange={(value: any) => setStatusFilter(value)}>
+                <Select
+                  value={statusFilter}
+                  onValueChange={(value) => setStatusFilter(value as "all" | "active" | "completed" | "overdue")}
+                >
                   <SelectTrigger className="w-[140px] h-8">
                     <SelectValue placeholder="Filtrer par..." />
                   </SelectTrigger>
@@ -432,7 +445,11 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                   }}
                   disabled={isSendingTag}
                 >
-                  <Bell className={`h-4 w-4 mr-2 ${isSendingTag ? "animate-pulse" : ""}`} />
+                  <Bell
+                    className={`h-4 w-4 mr-2 ${
+                      isSendingTag ? "animate-pulse" : ""
+                    }`}
+                  />
                   {isSendingTag ? "Envoi..." : "Rappeler tous"}
                 </Button>
                 <Button
@@ -476,7 +493,7 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                     Aucun plan ne correspond au filtre sélectionné
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Essayez de changer le filtre pour voir d'autres plans
+                    Essayez de changer le filtre pour voir d&apos;autres plans
                   </p>
                 </div>
               ) : (
@@ -607,7 +624,8 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                           </p>
                           <div className="flex items-center gap-2">
                             <p className="text-2xl font-bold">
-                              {(selectedTagStats?.memberCount || 0) - getTagCompletionCount(selectedTag)}
+                              {(selectedTagStats?.memberCount || 0) -
+                                getTagCompletionCount(selectedTag)}
                             </p>
                           </div>
                         </div>
@@ -743,11 +761,14 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                                       member.id,
                                       selectedTagId
                                     );
-                                    const isCompleted = progress.percentage === 100;
+                                    const isCompleted =
+                                      progress.percentage === 100;
 
                                     return (
                                       <Badge
-                                        variant={isCompleted ? "default" : "outline"}
+                                        variant={
+                                          isCompleted ? "default" : "outline"
+                                        }
                                         className="text-xs"
                                       >
                                         {isCompleted ? "Terminé" : "En cours"}
@@ -789,10 +810,15 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                                         tagId: selectedTagId,
                                       });
                                     }}
-                                    disabled={isSendingIndividual || selectedTagId === "all"}
+                                    disabled={
+                                      isSendingIndividual ||
+                                      selectedTagId === "all"
+                                    }
                                   >
                                     <Bell className="w-3 h-3 mr-1 text-muted-foreground" />
-                                    {isSendingIndividual ? "Envoi..." : "Rappel"}
+                                    {isSendingIndividual
+                                      ? "Envoi..."
+                                      : "Rappel"}
                                   </Button>
                                 </TableCell>
                               </TableRow>
@@ -860,7 +886,10 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                                                       )}
                                                       <div>
                                                         <span className="text-sm font-medium">
-                                                          {getLocalizedText(build.metadata?.title) || build.name}
+                                                          {getLocalizedText(
+                                                            build.metadata
+                                                              ?.title
+                                                          ) || build.name}
                                                         </span>
                                                         <span className="text-xs text-muted-foreground ml-2">
                                                           {build.type}
@@ -950,7 +979,9 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                                                     )}
                                                     <div>
                                                       <span className="text-sm font-medium">
-                                                        {getLocalizedText(build.metadata?.title) || build.name}
+                                                        {getLocalizedText(
+                                                          build.metadata?.title
+                                                        ) || build.name}
                                                       </span>
                                                       <span className="text-xs text-muted-foreground ml-2">
                                                         {build.type}

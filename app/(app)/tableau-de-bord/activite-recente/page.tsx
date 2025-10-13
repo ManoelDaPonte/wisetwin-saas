@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { formatDistanceToNow, format } from "date-fns";
 import { fr, enUS } from "date-fns/locale";
 import {
@@ -67,13 +67,13 @@ export default function ActivityPage() {
   const { activities, isLoading, error } = useRecentActivityWithDetails();
 
   // Helper pour extraire le texte localisé des métadonnées
-  const getLocalizedText = (
+  const getLocalizedText = useCallback((
     text: string | { en: string; fr: string } | undefined
   ): string | undefined => {
     if (!text) return undefined;
     if (typeof text === "string") return text;
     return text[currentLanguage] || text.fr || text.en;
-  };
+  }, [currentLanguage]);
 
   const filteredAndSortedActivities = useMemo(() => {
     if (!activities) return [];
@@ -110,7 +110,7 @@ export default function ActivityPage() {
     });
 
     return filtered;
-  }, [activities, searchTerm, sortState, currentLanguage]);
+  }, [activities, searchTerm, sortState, getLocalizedText]);
 
   const paginatedActivities = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;

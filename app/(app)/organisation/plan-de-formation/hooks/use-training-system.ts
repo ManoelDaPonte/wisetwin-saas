@@ -42,7 +42,7 @@ export function useTrainingSystem() {
         memberTags.some(mt => mt.userId === member.id)
       ).length,
     };
-  }, [tagsQuery.data?.tags, memberTagsQuery.data?.memberTags, membersQuery.members, buildTagsQuery.data]);
+  }, [tagsQuery.data?.tags, memberTagsQuery.data?.memberTags, membersQuery.members]);
 
   // Tags avec statistiques détaillées
   const tagsWithStats = useMemo(() => {

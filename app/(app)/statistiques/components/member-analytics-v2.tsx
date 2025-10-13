@@ -368,7 +368,7 @@ export function MemberAnalyticsV2({ analytics }: MemberAnalyticsProps) {
                     {(() => {
                       const hasNewFormat = selectedSession.session.interactions.some(i =>
                         (i.type === "question" && i.subtype) ||
-                        (i.type === "procedure" && i.data && (i.data as any).title)
+                        (i.type === "procedure" && i.data && "title" in i.data && i.data.title)
                       );
                       if (!hasNewFormat) {
                         return (

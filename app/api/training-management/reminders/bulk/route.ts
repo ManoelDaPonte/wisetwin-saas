@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { withOrgAuth, OrgAuthenticatedRequest } from "@/lib/auth-wrapper";
 import { prisma } from "@/lib/prisma";
 import { sendBulkTrainingReminderEmail } from "@/lib/email-service-reminders";
-import { getUserInitials, getDisplayName } from "@/lib/user-utils";
+import { getDisplayName } from "@/lib/user-utils";
 
 // Configuration des envois
 const BATCH_SIZE = 5; // Nombre d'emails envoyés en parallèle
@@ -26,11 +26,16 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
     // Vérifier le cooldown global
     const lastSent = lastBulkSent.get(request.organization.id);
     if (lastSent) {
-      const hoursSinceLastBulk = (Date.now() - lastSent.getTime()) / (1000 * 60 * 60);
+      const hoursSinceLastBulk =
+        (Date.now() - lastSent.getTime()) / (1000 * 60 * 60);
       if (hoursSinceLastBulk < BULK_COOLDOWN_HOURS) {
-        const remainingHours = Math.ceil(BULK_COOLDOWN_HOURS - hoursSinceLastBulk);
+        const remainingHours = Math.ceil(
+          BULK_COOLDOWN_HOURS - hoursSinceLastBulk
+        );
         return NextResponse.json(
-          { error: `Un rappel global a déjà été envoyé récemment. Prochain rappel possible dans ${remainingHours} heures.` },
+          {
+            error: `Un rappel global a déjà été envoyé récemment. Prochain rappel possible dans ${remainingHours} heures.`,
+          },
           { status: 429 }
         );
       }
@@ -51,11 +56,11 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
                 email: true,
                 firstName: true,
                 name: true,
-              }
-            }
-          }
-        }
-      }
+              },
+            },
+          },
+        },
+      },
     });
 
     if (tags.length === 0) {
@@ -66,11 +71,17 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
     }
 
     // Récupérer tous les membres uniques assignés à au moins un plan
-    const uniqueMembers = new Map<string, any>();
+    type UserInfo = {
+      id: string;
+      email: string;
+      firstName: string | null;
+      name: string | null;
+    };
+    const uniqueMembers = new Map<string, UserInfo>();
     const memberTags = new Map<string, string[]>(); // userId -> tagIds[]
 
-    tags.forEach(tag => {
-      tag.memberTags.forEach(mt => {
+    tags.forEach((tag) => {
+      tag.memberTags.forEach((mt) => {
         uniqueMembers.set(mt.userId, mt.user);
         if (!memberTags.has(mt.userId)) {
           memberTags.set(mt.userId, []);
@@ -86,7 +97,7 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
         details: {
           totalPlans: tags.length,
           notified: 0,
-        }
+        },
       });
     }
 
@@ -95,7 +106,8 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
       return NextResponse.json(
         {
           error: `Trop de membres à notifier (${uniqueMembers.size}). Maximum ${MAX_EMAILS_PER_REQUEST} par requête.`,
-          suggestion: "Divisez l'envoi en plusieurs requêtes ou contactez le support."
+          suggestion:
+            "Divisez l'envoi en plusieurs requêtes ou contactez le support.",
         },
         { status: 400 }
       );
@@ -103,22 +115,22 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
 
     // Récupérer tous les analytics pour déterminer les progressions
     const allBuildNames = new Set<string>();
-    tags.forEach(tag => {
-      tag.buildTags.forEach(bt => allBuildNames.add(bt.buildName));
+    tags.forEach((tag) => {
+      tag.buildTags.forEach((bt) => allBuildNames.add(bt.buildName));
     });
 
     const allAnalytics = await prisma.trainingAnalytics.findMany({
       where: {
         buildName: { in: Array.from(allBuildNames) },
         completionStatus: "COMPLETED",
-        userId: { in: Array.from(uniqueMembers.keys()) }
+        userId: { in: Array.from(uniqueMembers.keys()) },
       },
       distinct: ["userId", "buildName"],
     });
 
     // Organiser les completions par utilisateur et build
     const completionsByUser = new Map<string, Set<string>>();
-    allAnalytics.forEach(analytic => {
+    allAnalytics.forEach((analytic) => {
       if (!completionsByUser.has(analytic.userId)) {
         completionsByUser.set(analytic.userId, new Set());
       }
@@ -133,22 +145,26 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
     };
 
     // Préparer tous les emails à envoyer
-    const emailTasks: Array<{userId: string, user: any}> = [];
+    const emailTasks: Array<{ userId: string; user: UserInfo }> = [];
 
     for (const [userId, user] of uniqueMembers.entries()) {
       const userTagIds = memberTags.get(userId) || [];
-      const userTags = tags.filter(tag => userTagIds.includes(tag.id));
+      const userTags = tags.filter((tag) => userTagIds.includes(tag.id));
       const userCompletions = completionsByUser.get(userId) || new Set();
 
       // Préparer les données pour chaque plan du membre
-      const plansData = userTags.map(tag => {
-        const buildNames = tag.buildTags.map(bt => bt.buildName);
-        const formations = buildNames.map(buildName => ({
+      const plansData = userTags.map((tag) => {
+        const buildNames = tag.buildTags.map((bt) => bt.buildName);
+        const formations = buildNames.map((buildName) => ({
           name: buildName,
-          status: userCompletions.has(buildName) ? "completed" as const : "not_started" as const
+          status: userCompletions.has(buildName)
+            ? ("completed" as const)
+            : ("not_started" as const),
         }));
 
-        const completedCount = buildNames.filter(bn => userCompletions.has(bn)).length;
+        const completedCount = buildNames.filter((bn) =>
+          userCompletions.has(bn)
+        ).length;
         const totalCount = buildNames.length;
 
         return {
@@ -161,7 +177,9 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
       });
 
       // Filtrer les plans non terminés
-      const incompletePlans = plansData.filter(plan => plan.completedCount < plan.totalCount);
+      const incompletePlans = plansData.filter(
+        (plan) => plan.completedCount < plan.totalCount
+      );
 
       if (incompletePlans.length === 0) {
         results.alreadyCompleted.push(user.email);
@@ -178,18 +196,22 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
       const batchPromises = batch.map(async ({ userId, user }) => {
         try {
           const userTagIds = memberTags.get(userId) || [];
-          const userTags = tags.filter(tag => userTagIds.includes(tag.id));
+          const userTags = tags.filter((tag) => userTagIds.includes(tag.id));
           const userCompletions = completionsByUser.get(userId) || new Set();
 
           // Préparer les données pour chaque plan du membre
-          const plansData = userTags.map(tag => {
-            const buildNames = tag.buildTags.map(bt => bt.buildName);
-            const formations = buildNames.map(buildName => ({
+          const plansData = userTags.map((tag) => {
+            const buildNames = tag.buildTags.map((bt) => bt.buildName);
+            const formations = buildNames.map((buildName) => ({
               name: buildName,
-              status: userCompletions.has(buildName) ? "completed" as const : "not_started" as const
+              status: userCompletions.has(buildName)
+                ? ("completed" as const)
+                : ("not_started" as const),
             }));
 
-            const completedCount = buildNames.filter(bn => userCompletions.has(bn)).length;
+            const completedCount = buildNames.filter((bn) =>
+              userCompletions.has(bn)
+            ).length;
             const totalCount = buildNames.length;
 
             return {
@@ -202,7 +224,9 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
           });
 
           // Filtrer les plans non terminés
-          const incompletePlans = plansData.filter(plan => plan.completedCount < plan.totalCount);
+          const incompletePlans = plansData.filter(
+            (plan) => plan.completedCount < plan.totalCount
+          );
 
           // Envoyer l'email avec tous les plans en cours
           await sendBulkTrainingReminderEmail({
@@ -214,10 +238,13 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
 
           results.success.push(user.email);
         } catch (error) {
-          console.error(`Failed to send bulk reminder to ${user.email}:`, error);
+          console.error(
+            `Failed to send bulk reminder to ${user.email}:`,
+            error
+          );
           results.failed.push({
             email: user.email,
-            error: error instanceof Error ? error.message : "Erreur inconnue"
+            error: error instanceof Error ? error.message : "Erreur inconnue",
           });
         }
       });
@@ -227,7 +254,7 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
 
       // Petit délai entre les batches pour éviter de surcharger
       if (i + BATCH_SIZE < emailTasks.length) {
-        await new Promise(resolve => setTimeout(resolve, BATCH_DELAY));
+        await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY));
       }
     }
 
@@ -237,7 +264,9 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
     }
 
     // Logger l'envoi global
-    console.log(`Bulk reminder sent by ${request.user.email}. Success: ${results.success.length}, Failed: ${results.failed.length}, Already completed: ${results.alreadyCompleted.length}`);
+    console.log(
+      `Bulk reminder sent by ${request.user.email}. Success: ${results.success.length}, Failed: ${results.failed.length}, Already completed: ${results.alreadyCompleted.length}`
+    );
 
     return NextResponse.json({
       success: true,
@@ -250,10 +279,13 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
         alreadyCompleted: results.alreadyCompleted.length,
         failedEmails: results.failed,
         summary: {
-          plansWithMembers: tags.filter(t => t.memberTags.length > 0).length,
-          totalAssignments: tags.reduce((sum, tag) => sum + tag.memberTags.length, 0),
-        }
-      }
+          plansWithMembers: tags.filter((t) => t.memberTags.length > 0).length,
+          totalAssignments: tags.reduce(
+            (sum, tag) => sum + tag.memberTags.length,
+            0
+          ),
+        },
+      },
     });
   } catch (error) {
     console.error("Error sending bulk reminders:", error);

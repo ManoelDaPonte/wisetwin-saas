@@ -3,7 +3,6 @@
 import { useState } from "react";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -15,15 +14,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BellRing, AlertTriangle, Users, BookOpen, Loader2 } from "lucide-react";
+import {
+  BellRing,
+  AlertTriangle,
+  Users,
+  BookOpen,
+  Loader2,
+} from "lucide-react";
 import { useTrainingReminders } from "../hooks/use-training-reminders";
 import { useTrainingDashboard } from "../hooks/use-training-system";
 import { useOrganizationStore } from "@/stores/organization-store";
@@ -36,32 +35,30 @@ export function GlobalReminderButton() {
   const { sendBulkReminder, isSendingBulk } = useTrainingReminders();
 
   // Récupérer les statistiques globales
-  const {
-    tagsWithStats,
-    membersWithStats,
-    dashboardMetrics,
-    isLoading,
-  } = useTrainingDashboard();
+  const { tagsWithStats, membersWithStats, isLoading } =
+    useTrainingDashboard();
 
   // Calculer les statistiques pour l'affichage
   // Un plan actif est : pas terminé ET (pas d'échéance OU échéance pas encore dépassée) ET avec des membres
-  const activePlans = tagsWithStats.filter(tag => {
+  const activePlans = tagsWithStats.filter((tag) => {
     const notCompleted = !tag.isCompleted;
     const notOverdue = !tag.dueDate || new Date(tag.dueDate) >= new Date();
     const hasMembers = tag.memberCount > 0;
     return notCompleted && notOverdue && hasMembers;
   });
-  const totalMembers = new Set(membersWithStats.map(m => m.id)).size;
-  const membersWithIncompletePlans = membersWithStats.filter(member => {
+  const totalMembers = new Set(membersWithStats.map((m) => m.id)).size;
+  const membersWithIncompletePlans = membersWithStats.filter((member) => {
     // Vérifier si le membre a au moins un plan non terminé
-    return member.assignedTags.some(tag => {
-      const tagData = tagsWithStats.find(t => t.id === tag.id);
+    return member.assignedTags.some((tag) => {
+      const tagData = tagsWithStats.find((t) => t.id === tag.id);
       return tagData && tagData.completionRate < 100;
     });
   }).length;
 
   // Vérifier les permissions
-  const canSendReminders = activeOrganization?.role === "OWNER" || activeOrganization?.role === "ADMIN";
+  const canSendReminders =
+    activeOrganization?.role === "OWNER" ||
+    activeOrganization?.role === "ADMIN";
 
   if (!canSendReminders) {
     return null; // Ne pas afficher le bouton si l'utilisateur n'a pas les permissions
@@ -99,15 +96,14 @@ export function GlobalReminderButton() {
         <Button
           variant="outline"
           className="relative"
-          disabled={activePlans.length === 0 || membersWithIncompletePlans === 0}
+          disabled={
+            activePlans.length === 0 || membersWithIncompletePlans === 0
+          }
         >
           <BellRing className="w-4 h-4 mr-2" />
           Rappel global
           {activePlans.length > 0 && (
-            <Badge
-              variant="secondary"
-              className="ml-2 px-1.5 py-0 h-5 text-xs"
-            >
+            <Badge variant="secondary" className="ml-2 px-1.5 py-0 h-5 text-xs">
               {activePlans.length}
             </Badge>
           )}
@@ -120,7 +116,8 @@ export function GlobalReminderButton() {
             Envoi de rappels globaux
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Cette action enverra des emails de rappel à tous les membres ayant des plans de formation en cours.
+            Cette action enverra des emails de rappel à tous les membres ayant
+            des plans de formation en cours.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -129,7 +126,7 @@ export function GlobalReminderButton() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium">
-                Impact de l'envoi
+                Impact de l&apos;envoi
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -137,24 +134,36 @@ export function GlobalReminderButton() {
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <BookOpen className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">Plans actifs</span>
+                    <span className="text-sm text-muted-foreground">
+                      Plans actifs
+                    </span>
                   </div>
                   <p className="text-2xl font-bold">{activePlans.length}</p>
                 </div>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <Users className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">Membres concernés</span>
+                    <span className="text-sm text-muted-foreground">
+                      Membres concernés
+                    </span>
                   </div>
-                  <p className="text-2xl font-bold">{membersWithIncompletePlans}</p>
-                  <p className="text-xs text-muted-foreground">sur {totalMembers} membres</p>
+                  <p className="text-2xl font-bold">
+                    {membersWithIncompletePlans}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    sur {totalMembers} membres
+                  </p>
                 </div>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <BellRing className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">Emails à envoyer</span>
+                    <span className="text-sm text-muted-foreground">
+                      Emails à envoyer
+                    </span>
                   </div>
-                  <p className="text-2xl font-bold text-orange-600">~{membersWithIncompletePlans}</p>
+                  <p className="text-2xl font-bold text-orange-600">
+                    ~{membersWithIncompletePlans}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -164,26 +173,38 @@ export function GlobalReminderButton() {
           <Card className="border-orange-200 bg-orange-50/50">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-orange-800">
-                Points d'attention
+                Points d&apos;attention
               </CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm text-orange-700">
                 <li className="flex items-start gap-2">
                   <span className="text-orange-500 mt-0.5">•</span>
-                  <span>Chaque membre recevra un seul email récapitulant tous ses plans en cours</span>
+                  <span>
+                    Chaque membre recevra un seul email récapitulant tous ses
+                    plans en cours
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-orange-500 mt-0.5">•</span>
-                  <span>Les membres ayant terminé tous leurs plans ne seront pas notifiés</span>
+                  <span>
+                    Les membres ayant terminé tous leurs plans ne seront pas
+                    notifiés
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-orange-500 mt-0.5">•</span>
-                  <span>Un délai de 48 heures sera appliqué avant le prochain rappel global</span>
+                  <span>
+                    Un délai de 48 heures sera appliqué avant le prochain rappel
+                    global
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-orange-500 mt-0.5">•</span>
-                  <span>L'envoi peut prendre quelques minutes selon le nombre de destinataires</span>
+                  <span>
+                    L&apos;envoi peut prendre quelques minutes selon le nombre
+                    de destinataires
+                  </span>
                 </li>
               </ul>
             </CardContent>
@@ -205,7 +226,12 @@ export function GlobalReminderButton() {
                 Je confirme vouloir envoyer ces rappels
               </Label>
               <p className="text-xs text-muted-foreground">
-                Je comprends que {membersWithIncompletePlans} membre{membersWithIncompletePlans > 1 ? 's' : ''} {membersWithIncompletePlans > 1 ? 'vont' : 'va'} recevoir un email de rappel concernant {membersWithIncompletePlans > 1 ? 'leurs' : 'ses'} plans de formation en cours.
+                Je comprends que {membersWithIncompletePlans} membre
+                {membersWithIncompletePlans > 1 ? "s" : ""}{" "}
+                {membersWithIncompletePlans > 1 ? "vont" : "va"} recevoir un
+                email de rappel concernant{" "}
+                {membersWithIncompletePlans > 1 ? "leurs" : "ses"} plans de
+                formation en cours.
               </p>
             </div>
           </div>

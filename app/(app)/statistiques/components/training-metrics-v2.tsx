@@ -162,7 +162,7 @@ export function TrainingMetricsV2({ analytics }: TrainingMetricsProps) {
               (procedureData.instruction.length > 100 ? "..." : "")
               : "Procédure");
 
-          const existingProcedure = existing.allProcedures.get(procedureTitle) || {
+          const existingProcedure = existing.allProcedures?.get(procedureTitle) || {
             title: procedureTitle,
             totalAttempts: 0,
             successCount: 0,
@@ -187,7 +187,7 @@ export function TrainingMetricsV2({ analytics }: TrainingMetricsProps) {
             existingProcedure.steps.push(stepInfo);
           }
 
-          existing.allProcedures.set(procedureTitle, existingProcedure);
+          existing.allProcedures?.set(procedureTitle, existingProcedure);
         }
       });
 

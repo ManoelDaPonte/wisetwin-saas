@@ -138,9 +138,12 @@ export function Unity3DViewer({
 		// Utiliser uniquement la méthode officielle react-unity-webgl
 		addEventListener("TrainingCompleted", handleTrainingCompleted);
 
+		// Copier la référence locale pour le cleanup
+		const processedRef = hasProcessedRef.current;
+
 		return () => {
 			removeEventListener("TrainingCompleted", handleTrainingCompleted);
-			hasProcessedRef.current.clear();
+			processedRef.clear();
 		};
 	}, [
 		addEventListener,

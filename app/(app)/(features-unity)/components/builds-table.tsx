@@ -81,12 +81,10 @@ export function BuildsTable({
     direction: "asc",
   });
 
-  // Contenu unifié - tous les builds sont des formations
-  const contentType = "formation";
-  const contentTypePlural = "formations";
-
   // Helper pour extraire le texte localisé des métadonnées
-  const getLocalizedText = (text: string | { en: string; fr: string } | undefined): string | undefined => {
+  const getLocalizedText = (
+    text: string | { en: string; fr: string } | undefined
+  ): string | undefined => {
     if (!text) return undefined;
     if (typeof text === "string") return text;
     return text[currentLanguage] || text.fr || text.en;
@@ -212,7 +210,10 @@ export function BuildsTable({
         </div>
         {!isLoading && filteredAndSortedBuilds.length > 0 && (
           <div className="text-sm text-muted-foreground">
-            {filteredAndSortedBuilds.length} {filteredAndSortedBuilds.length > 1 ? t.buildsTable.stats.formationPlural : t.buildsTable.stats.formationSingular}
+            {filteredAndSortedBuilds.length}{" "}
+            {filteredAndSortedBuilds.length > 1
+              ? t.buildsTable.stats.formationPlural
+              : t.buildsTable.stats.formationSingular}
           </div>
         )}
       </CardHeader>
@@ -238,18 +239,26 @@ export function BuildsTable({
                   <TableRow>
                     <TableHead className="w-12"></TableHead>
                     <TableHead>
-                      <SortButton field="name">{t.buildsTable.table.formation}</SortButton>
+                      <SortButton field="name">
+                        {t.buildsTable.table.formation}
+                      </SortButton>
                     </TableHead>
                     <TableHead>{t.buildsTable.table.tags}</TableHead>
                     <TableHead>{t.buildsTable.table.difficulty}</TableHead>
                     <TableHead>{t.buildsTable.table.duration}</TableHead>
                     <TableHead>
-                      <SortButton field="version">{t.buildsTable.table.version}</SortButton>
+                      <SortButton field="version">
+                        {t.buildsTable.table.version}
+                      </SortButton>
                     </TableHead>
                     <TableHead>
-                      <SortButton field="lastModified">{t.buildsTable.table.modified}</SortButton>
+                      <SortButton field="lastModified">
+                        {t.buildsTable.table.modified}
+                      </SortButton>
                     </TableHead>
-                    <TableHead className="w-20">{t.buildsTable.table.actions}</TableHead>
+                    <TableHead className="w-20">
+                      {t.buildsTable.table.actions}
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -273,18 +282,24 @@ export function BuildsTable({
                       <TableCell>
                         <div className="space-y-1">
                           <div className="font-medium">
-                            {getLocalizedText(build.metadata?.title) || build.name}
+                            {getLocalizedText(build.metadata?.title) ||
+                              build.name}
                           </div>
-                          {(getLocalizedText(build.metadata?.description) || build.description) && (
+                          {(getLocalizedText(build.metadata?.description) ||
+                            build.description) && (
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <div className="text-sm text-muted-foreground line-clamp-2 max-w-md cursor-help">
-                                  {getLocalizedText(build.metadata?.description) || build.description}
+                                  {getLocalizedText(
+                                    build.metadata?.description
+                                  ) || build.description}
                                 </div>
                               </TooltipTrigger>
                               <TooltipContent className="max-w-md">
                                 <p className="whitespace-normal">
-                                  {getLocalizedText(build.metadata?.description) || build.description}
+                                  {getLocalizedText(
+                                    build.metadata?.description
+                                  ) || build.description}
                                 </p>
                               </TooltipContent>
                             </Tooltip>
@@ -392,8 +407,13 @@ export function BuildsTable({
             {totalPages > 1 && (
               <div className="flex items-center justify-between space-x-2 py-4 flex-shrink-0 border-t">
                 <div className="text-sm text-muted-foreground">
-                  {t.buildsTable.pagination.page} {currentPage} {t.buildsTable.pagination.of} {totalPages} (
-                  {filteredAndSortedBuilds.length} {filteredAndSortedBuilds.length > 1 ? t.buildsTable.pagination.formationPlural : t.buildsTable.pagination.formationSingular})
+                  {t.buildsTable.pagination.page} {currentPage}{" "}
+                  {t.buildsTable.pagination.of} {totalPages} (
+                  {filteredAndSortedBuilds.length}{" "}
+                  {filteredAndSortedBuilds.length > 1
+                    ? t.buildsTable.pagination.formationPlural
+                    : t.buildsTable.pagination.formationSingular}
+                  )
                 </div>
                 <div className="flex items-center space-x-2">
                   <Button

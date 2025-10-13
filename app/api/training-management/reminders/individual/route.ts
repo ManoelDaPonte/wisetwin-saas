@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { withOrgAuth, OrgAuthenticatedRequest } from "@/lib/auth-wrapper";
 import { prisma } from "@/lib/prisma";
 import { sendTrainingReminderEmail } from "@/lib/email-service-reminders";
-import { getUserInitials, getDisplayName } from "@/lib/user-utils";
+import { getDisplayName } from "@/lib/user-utils";
 
 // Rate limiting: Store last email sent time per user
 const lastEmailSent = new Map<string, Date>();
@@ -33,11 +33,14 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
     const cooldownKey = `${memberId}-${tagId}`;
     const lastSent = lastEmailSent.get(cooldownKey);
     if (lastSent) {
-      const hoursSinceLastEmail = (Date.now() - lastSent.getTime()) / (1000 * 60 * 60);
+      const hoursSinceLastEmail =
+        (Date.now() - lastSent.getTime()) / (1000 * 60 * 60);
       if (hoursSinceLastEmail < COOLDOWN_HOURS) {
         const remainingHours = Math.ceil(COOLDOWN_HOURS - hoursSinceLastEmail);
         return NextResponse.json(
-          { error: `Un rappel a déjà été envoyé récemment. Prochain rappel possible dans ${remainingHours} heures.` },
+          {
+            error: `Un rappel a déjà été envoyé récemment. Prochain rappel possible dans ${remainingHours} heures.`,
+          },
           { status: 429 }
         );
       }
@@ -51,14 +54,11 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
         email: true,
         firstName: true,
         name: true,
-      }
+      },
     });
 
     if (!member) {
-      return NextResponse.json(
-        { error: "Membre non trouvé" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Membre non trouvé" }, { status: 404 });
     }
 
     // Récupérer le plan (tag)
@@ -66,7 +66,7 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
       where: { id: tagId },
       include: {
         buildTags: true,
-      }
+      },
     });
 
     if (!tag) {
@@ -82,8 +82,8 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
         userId_tagId: {
           userId: memberId,
           tagId: tagId,
-        }
-      }
+        },
+      },
     });
 
     if (!memberTag) {
@@ -94,7 +94,7 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
     }
 
     // Récupérer les formations du plan
-    const buildNames = tag.buildTags.map(bt => bt.buildName);
+    const buildNames = tag.buildTags.map((bt) => bt.buildName);
 
     // Récupérer les analytics pour ce membre et ces formations
     const analytics = await prisma.trainingAnalytics.findMany({
@@ -106,12 +106,14 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
       distinct: ["buildName"],
     });
 
-    const completedBuildNames = new Set(analytics.map(a => a.buildName));
+    const completedBuildNames = new Set(analytics.map((a) => a.buildName));
 
     // Préparer les données des formations
-    const formations = buildNames.map(buildName => ({
+    const formations = buildNames.map((buildName) => ({
       name: buildName,
-      status: completedBuildNames.has(buildName) ? "completed" as const : "not_started" as const
+      status: completedBuildNames.has(buildName)
+        ? ("completed" as const)
+        : ("not_started" as const),
     }));
 
     const completedCount = completedBuildNames.size;
@@ -133,7 +135,9 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
     lastEmailSent.set(cooldownKey, new Date());
 
     // Logger l'envoi
-    console.log(`Reminder sent to ${member.email} for plan ${tag.name} by ${request.user.email}`);
+    console.log(
+      `Reminder sent to ${member.email} for plan ${tag.name} by ${request.user.email}`
+    );
 
     return NextResponse.json({
       success: true,
@@ -142,7 +146,7 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
         member: member.email,
         plan: tag.name,
         progression: `${completedCount}/${totalCount}`,
-      }
+      },
     });
   } catch (error) {
     console.error("Error sending individual reminder:", error);

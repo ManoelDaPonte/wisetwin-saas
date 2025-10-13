@@ -25,6 +25,7 @@ interface ReminderResponse {
     plan?: string;
     progression?: string;
     totalMembers?: number;
+    totalPlans?: number;
     notified?: number;
     failed?: number;
     alreadyCompleted?: number;
@@ -154,7 +155,7 @@ export function useSendTagReminder() {
       if (result.success) {
         const details = result.details;
 
-        if (details?.notified === 0 && details?.totalMembers > 0) {
+        if (details?.notified === 0 && (details?.totalMembers ?? 0) > 0) {
           toast.info("Aucun rappel nécessaire", {
             description: "Tous les membres ont déjà terminé ce plan",
           });

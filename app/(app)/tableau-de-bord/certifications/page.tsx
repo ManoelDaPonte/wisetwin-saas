@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { format, formatDistanceToNow } from "date-fns";
 import { fr, enUS } from "date-fns/locale";
 import {
@@ -85,13 +85,13 @@ export default function CertificationsPage() {
   const dateLocale = currentLanguage === "fr" ? fr : enUS;
 
   // Helper pour extraire le texte localisé des métadonnées
-  const getLocalizedText = (
+  const getLocalizedText = useCallback((
     text: string | { en: string; fr: string } | undefined
   ): string | undefined => {
     if (!text) return undefined;
     if (typeof text === "string") return text;
     return text[currentLanguage] || text.fr || text.en;
-  };
+  }, [currentLanguage]);
 
   const { certifications, isLoading, error } = useCertifiedFormations();
 
@@ -130,7 +130,7 @@ export default function CertificationsPage() {
     });
 
     return filtered;
-  }, [certifications, searchTerm, sortState, currentLanguage]);
+  }, [certifications, searchTerm, sortState, getLocalizedText]);
 
   const paginatedFormations = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;

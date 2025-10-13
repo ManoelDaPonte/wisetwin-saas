@@ -1,6 +1,5 @@
 "use client";
 
-import { useOrganizationStore } from "@/stores/organization-store";
 import { useTranslations } from "@/hooks/use-translations";
 import { WelcomeHero } from "./components/welcome-hero";
 import { ConceptsExplainer } from "./components/concepts-explainer";
@@ -12,7 +11,6 @@ import { Separator } from "@/components/ui/separator";
 
 export default function HomePage() {
   const t = useTranslations();
-  const { organizations } = useOrganizationStore();
 
   return (
     <div className="container mx-auto py-8 space-y-12">
