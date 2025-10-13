@@ -33,6 +33,8 @@ export const QuestionAnalyticsDataSchema = z.object({
   userAnswers: z.array(z.array(z.number())), // Historique de toutes les tentatives
   firstAttemptCorrect: z.boolean(),
   finalScore: z.number(),
+  selectionMode: z.enum(["single", "multiple"]).optional(),
+  questionType: z.string().optional(),
 });
 
 // Données spécifiques pour une interaction de type Procédure
@@ -95,6 +97,9 @@ export const CreateTrainingAnalyticsSchema = z.object({
   trainingId: z.string(),
   buildName: z.string(),
   buildType: z.enum(["wisetour", "wisetrainer", "WISETOUR", "WISETRAINER"]).transform(val => val.toUpperCase()),
+  // Accepter "version" depuis Unity et le transformer en "buildVersion"
+  version: z.string().optional(),
+  buildVersion: z.string().optional(),
   containerId: z.string(),
   startTime: z.string(), // ISO 8601 format
   endTime: z.string(), // ISO 8601 format
@@ -103,6 +108,10 @@ export const CreateTrainingAnalyticsSchema = z.object({
   interactions: z.array(InteractionRecordSchema),
   summary: AnalyticsSummarySchema,
   authToken: z.string().optional(), // Token JWT pour l'authentification
+}).transform((data) => {
+  // Si "version" est fourni par Unity, l'utiliser comme buildVersion
+  const buildVersion = data.version || data.buildVersion || "1.0.0";
+  return { ...data, buildVersion };
 });
 
 // Query params pour récupérer les analytics
@@ -111,6 +120,7 @@ export const GetTrainingAnalyticsQuerySchema = z.object({
   organizationId: z.string().optional(),
   buildName: z.string().optional(),
   buildType: z.enum(["wisetour", "wisetrainer", "WISETOUR", "WISETRAINER"]).optional(),
+  buildVersion: z.string().optional(), // Filtrer par version du build
   tagId: z.string().optional(),
   startDate: z.string().optional(), // ISO date
   endDate: z.string().optional(), // ISO date

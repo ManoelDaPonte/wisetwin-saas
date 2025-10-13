@@ -27,7 +27,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
-import { BookOpen, Users, Clock, ChevronRight, BarChart3 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { BookOpen, Users, Clock, ChevronRight, BarChart3, Wrench } from "lucide-react";
 import type {
   TrainingAnalytics,
   TrainingDetails,
@@ -36,6 +43,8 @@ import type {
   QuestionUserResponse,
   InteractionData,
   QuestionInteractionData,
+  ProcedureInteractionData,
+  ProcedureStats,
 } from "@/types/training";
 
 interface TrainingMetricsProps {
@@ -51,12 +60,42 @@ export function TrainingMetricsV2({ analytics }: TrainingMetricsProps) {
     visible: false,
     data: null,
   });
+  const [selectedVersion, setSelectedVersion] = useState<string>("all");
+
+  // Extraire les versions disponibles et les normaliser
+  const availableVersions = React.useMemo(() => {
+    const versions = new Set<string>();
+    analytics.forEach((session) => {
+      const version = session.buildVersion || "1.0.0"; // Version par défaut pour anciennes données
+      versions.add(version);
+    });
+    return Array.from(versions).sort((a, b) => {
+      // Tri sémantique des versions (ex: 1.0.0 < 1.0.1 < 1.1.0)
+      const aParts = a.split('.').map(Number);
+      const bParts = b.split('.').map(Number);
+      for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+        const aPart = aParts[i] || 0;
+        const bPart = bParts[i] || 0;
+        if (aPart !== bPart) return bPart - aPart; // Ordre décroissant
+      }
+      return 0;
+    });
+  }, [analytics]);
+
+  // Filtrer les analytics par version
+  const filteredAnalytics = React.useMemo(() => {
+    if (selectedVersion === "all") return analytics;
+    return analytics.filter((session) => {
+      const version = session.buildVersion || "1.0.0";
+      return version === selectedVersion;
+    });
+  }, [analytics, selectedVersion]);
 
   // Agréger les données par formation
   const trainingStats = React.useMemo(() => {
     const stats = new Map<string, TrainingStatsWithQuestions>();
 
-    analytics.forEach((session) => {
+    filteredAnalytics.forEach((session) => {
       const key = session.buildName;
       const existing = stats.get(key) || {
         buildName: session.buildName,
@@ -66,6 +105,7 @@ export function TrainingMetricsV2({ analytics }: TrainingMetricsProps) {
         averageSuccessRate: 0,
         completedCount: 0,
         allQuestions: new Map<string, QuestionStats>(),
+        allProcedures: new Map(),
       };
 
       existing.uniqueUsers.add(session.user.id);
@@ -111,6 +151,44 @@ export function TrainingMetricsV2({ analytics }: TrainingMetricsProps) {
 
           existing.allQuestions.set(questionText, existingQuestion);
         }
+
+        // Analyser les procédures
+        if (interaction.type === "procedure" && interaction.data) {
+          const procedureData = interaction.data as ProcedureInteractionData;
+          // Utiliser title si disponible, sinon instruction tronqué
+          const procedureTitle = procedureData.title ||
+            (procedureData.instruction ?
+              procedureData.instruction.substring(0, 100) +
+              (procedureData.instruction.length > 100 ? "..." : "")
+              : "Procédure");
+
+          const existingProcedure = existing.allProcedures.get(procedureTitle) || {
+            title: procedureTitle,
+            totalAttempts: 0,
+            successCount: 0,
+            failCount: 0,
+            avgDuration: 0,
+            totalDuration: 0,
+            steps: [],
+          };
+
+          existingProcedure.totalAttempts++;
+          existingProcedure.totalDuration += interaction.duration;
+
+          if (interaction.success) {
+            existingProcedure.successCount++;
+          } else {
+            existingProcedure.failCount++;
+          }
+
+          // Ajouter les détails de l'étape si pas déjà présent
+          const stepInfo = `Étape ${procedureData.stepNumber}/${procedureData.totalSteps}`;
+          if (!existingProcedure.steps.includes(stepInfo)) {
+            existingProcedure.steps.push(stepInfo);
+          }
+
+          existing.allProcedures.set(procedureTitle, existingProcedure);
+        }
       });
 
       stats.set(key, existing);
@@ -133,8 +211,12 @@ export function TrainingMetricsV2({ analytics }: TrainingMetricsProps) {
           : 0,
       uniqueUsersCount: stat.uniqueUsers.size,
       questionsArray: Array.from(stat.allQuestions.values()),
+      proceduresArray: stat.allProcedures ? Array.from(stat.allProcedures.values()).map(p => ({
+        ...p,
+        avgDuration: p.totalAttempts > 0 ? p.totalDuration / p.totalAttempts : 0,
+      })) : [],
     }));
-  }, [analytics]);
+  }, [filteredAnalytics]);
 
   const showTrainingDetails = (training: TrainingStatsWithQuestions) => {
     setSelectedTraining({
@@ -148,11 +230,31 @@ export function TrainingMetricsV2({ analytics }: TrainingMetricsProps) {
     <>
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Résultats par formation</CardTitle>
-          <CardDescription>
-            Cliquez sur une formation pour voir les résultats moyens par
-            question
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-base">Résultats par formation</CardTitle>
+              <CardDescription>
+                Cliquez sur une formation pour voir les résultats moyens par
+                question
+              </CardDescription>
+            </div>
+            {availableVersions.length > 1 && (
+              <Select value={selectedVersion} onValueChange={setSelectedVersion}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Version" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Toutes versions</SelectItem>
+                  {availableVersions.map((version) => (
+                    <SelectItem key={version} value={version}>
+                      Version {version}
+                      {version === "1.0.0" && " (Legacy)"}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
@@ -235,7 +337,7 @@ export function TrainingMetricsV2({ analytics }: TrainingMetricsProps) {
           setSelectedTraining({ ...selectedTraining, visible: open })
         }
       >
-        <DialogContent className="max-w-5xl max-h-[85vh]">
+        <DialogContent className="max-w-7xl max-h-[90vh]">
           <DialogHeader>
             <DialogTitle>
               Analyse détaillée : {selectedTraining.trainingName}
@@ -252,7 +354,7 @@ export function TrainingMetricsV2({ analytics }: TrainingMetricsProps) {
           </DialogHeader>
 
           {selectedTraining.data && (
-            <ScrollArea className="h-[65vh] pr-4">
+            <ScrollArea className="h-[75vh] pr-4">
               <div className="space-y-6">
                 {/* Vue d'ensemble */}
                 <Card>
@@ -384,21 +486,26 @@ export function TrainingMetricsV2({ analytics }: TrainingMetricsProps) {
                                     const timesChosen =
                                       question.userResponses.reduce(
                                         (count: number, response: QuestionUserResponse) => {
-                                          if (
-                                            response.userAnswers?.[0]?.includes(
-                                              i
-                                            )
-                                          ) {
-                                            return count + 1;
+                                          // Vérifier dans toutes les tentatives de cet utilisateur
+                                          let selectedInThisResponse = false;
+                                          if (response.userAnswers && Array.isArray(response.userAnswers)) {
+                                            // userAnswers est un tableau de tableaux (historique des tentatives)
+                                            for (const attempt of response.userAnswers) {
+                                              if (Array.isArray(attempt) && attempt.includes(i)) {
+                                                selectedInThisResponse = true;
+                                                break;
+                                              }
+                                            }
                                           }
-                                          return count;
+                                          return count + (selectedInThisResponse ? 1 : 0);
                                         },
                                         0
                                       );
 
                                     const chosenPercentage =
-                                      (timesChosen / question.totalAttempts) *
-                                      100;
+                                      question.totalAttempts > 0
+                                        ? (timesChosen / question.totalAttempts) * 100
+                                        : 0;
 
                                     return (
                                       <div
@@ -484,6 +591,126 @@ export function TrainingMetricsV2({ analytics }: TrainingMetricsProps) {
                       );
                     })}
                 </div>
+
+                {/* Analyse des procédures */}
+                {selectedTraining.data?.proceduresArray &&
+                 selectedTraining.data.proceduresArray.length > 0 && (
+                  <div className="space-y-4">
+                    <h3 className="font-medium flex items-center gap-2">
+                      <Wrench className="h-4 w-4" />
+                      Procédures ({selectedTraining.data.proceduresArray.length})
+                    </h3>
+
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-sm">
+                          Liste des procédures
+                        </CardTitle>
+                        <CardDescription>
+                          Toutes les procédures réalisées avec leurs statistiques de réussite
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          {selectedTraining.data.proceduresArray
+                            .sort((a: ProcedureStats, b: ProcedureStats) => {
+                              const aSuccessRate =
+                                (a.successCount / a.totalAttempts) * 100;
+                              const bSuccessRate =
+                                (b.successCount / b.totalAttempts) * 100;
+                              return aSuccessRate - bSuccessRate; // Trier par difficulté
+                            })
+                            .map((procedure: ProcedureStats, index: number) => {
+                              const successRate =
+                                (procedure.successCount / procedure.totalAttempts) * 100;
+                              const avgDurationMin = Math.round((procedure.avgDuration || 0) / 60);
+
+                              return (
+                                <div
+                                  key={index}
+                                  className={`p-4 rounded-lg border ${
+                                    successRate < 60
+                                      ? "border-red-500/50 dark:border-red-500/30 bg-red-500/5"
+                                      : successRate < 80
+                                      ? "border-yellow-500/50 dark:border-yellow-500/30 bg-yellow-500/5"
+                                      : "border-green-500/50 dark:border-green-500/30 bg-green-500/5"
+                                  }`}
+                                >
+                                  <div className="flex items-start justify-between gap-4">
+                                    <div className="flex-1 space-y-2">
+                                      <div className="flex items-center gap-2">
+                                        <span className="text-xs font-medium text-muted-foreground">
+                                          #{index + 1}
+                                        </span>
+                                        <p className="font-medium text-sm">
+                                          {procedure.title.length > 100
+                                            ? procedure.title.substring(0, 100) + "..."
+                                            : procedure.title}
+                                        </p>
+                                      </div>
+
+                                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                                        <span>
+                                          {procedure.totalAttempts} tentative{procedure.totalAttempts > 1 ? 's' : ''}
+                                        </span>
+                                        <span>•</span>
+                                        <span>
+                                          {procedure.steps.length} étape{procedure.steps.length > 1 ? 's' : ''}
+                                        </span>
+                                        {avgDurationMin > 0 && (
+                                          <>
+                                            <span>•</span>
+                                            <span className="flex items-center gap-1">
+                                              <Clock className="h-3 w-3" />
+                                              {avgDurationMin} min moy.
+                                            </span>
+                                          </>
+                                        )}
+                                      </div>
+
+                                      <div className="flex items-center gap-2">
+                                        <Progress
+                                          value={successRate}
+                                          className="h-2 flex-1"
+                                        />
+                                        <Badge
+                                          variant={
+                                            successRate < 60
+                                              ? "destructive"
+                                              : successRate < 80
+                                              ? "secondary"
+                                              : "default"
+                                          }
+                                          className="text-xs"
+                                        >
+                                          {successRate.toFixed(0)}%
+                                        </Badge>
+                                      </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-3 text-center shrink-0">
+                                      <div className="bg-green-500/10 px-3 py-2 rounded">
+                                        <p className="text-xs text-muted-foreground">Réussies</p>
+                                        <p className="text-sm font-bold text-green-600 dark:text-green-400">
+                                          {procedure.successCount}
+                                        </p>
+                                      </div>
+                                      <div className="bg-red-500/10 px-3 py-2 rounded">
+                                        <p className="text-xs text-muted-foreground">Échouées</p>
+                                        <p className="text-sm font-bold text-red-600 dark:text-red-400">
+                                          {procedure.failCount}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                )}
 
                 {/* Liste des participants avec leurs résultats */}
                 <Card>

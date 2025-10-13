@@ -89,6 +89,7 @@ export async function POST(request: NextRequest) {
       const updatedAnalytics = await prisma.trainingAnalytics.update({
         where: { sessionId: data.sessionId },
         data: {
+          buildVersion: data.buildVersion || "1.0.0",
           endTime: new Date(data.endTime),
           totalDuration: data.totalDuration,
           completionStatus: data.completionStatus as "COMPLETED" | "IN_PROGRESS" | "ABANDONED" | "FAILED",
@@ -160,6 +161,7 @@ export async function POST(request: NextRequest) {
           organizationId,
           buildName: data.buildName,
           buildType: data.buildType as "WISETOUR" | "WISETRAINER",
+          buildVersion: data.buildVersion || "1.0.0",
           containerId: data.containerId,
           startTime: new Date(data.startTime),
           endTime: new Date(data.endTime),

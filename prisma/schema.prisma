@@ -231,6 +231,7 @@ model TrainingAnalytics {
   organizationId    String?
   buildName         String
   buildType         BuildType
+  buildVersion      String?   @default("1.0.0") // Version du build pour filtrage et rétrocompatibilité
   containerId       String
 
   // Données temporelles
@@ -261,6 +262,7 @@ model TrainingAnalytics {
   @@index([userId])
   @@index([organizationId])
   @@index([buildName])
+  @@index([buildVersion])
   @@index([sessionId])
   @@index([completionStatus])
   @@index([startTime])

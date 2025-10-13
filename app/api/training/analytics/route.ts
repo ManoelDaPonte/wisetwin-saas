@@ -77,6 +77,7 @@ export async function GET(req: NextRequest) {
       userId,
       buildName,
       buildType,
+      buildVersion,
       tagId,
       startDate,
       endDate,
@@ -103,6 +104,10 @@ export async function GET(req: NextRequest) {
 
     if (buildType) {
       whereConditions.buildType = buildType.toUpperCase() as "WISETOUR" | "WISETRAINER";
+    }
+
+    if (buildVersion) {
+      whereConditions.buildVersion = buildVersion;
     }
 
     if (completionStatus) {
@@ -236,6 +241,7 @@ export async function GET(req: NextRequest) {
         trainingId: a.trainingId,
         buildName: a.buildName,
         buildType: a.buildType,
+        buildVersion: a.buildVersion || "1.0.0", // Défaut pour rétrocompatibilité
         user: a.user,
         startTime: a.startTime,
         endTime: a.endTime,

@@ -204,7 +204,7 @@ export function AnalyticsDashboardV2({
       </div>
 
       {/* Statistiques résumé rapide */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -247,6 +247,22 @@ export function AnalyticsDashboardV2({
                 </p>
               </div>
               <Users className="h-8 w-8 text-muted-foreground/50" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">
+                  Interactions totales
+                </p>
+                <p className="text-2xl font-bold">
+                  {aggregates?.totalInteractions || 0}
+                </p>
+              </div>
+              <BarChart3 className="h-8 w-8 text-muted-foreground/50" />
             </div>
           </CardContent>
         </Card>

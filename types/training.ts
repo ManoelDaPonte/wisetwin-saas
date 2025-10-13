@@ -6,14 +6,14 @@ export interface TrainingTag {
   color?: string;
   description?: string;
   organizationId: string;
-  
+
   // Configuration du plan de formation
   dueDate?: Date | null;
   priority: "LOW" | "MEDIUM" | "HIGH";
-  
+
   createdAt: Date;
   updatedAt: Date;
-  
+
   // Relations optionnelles (pour les requêtes avec includes)
   memberTags?: MemberTag[];
   buildTags?: BuildTag[];
@@ -29,7 +29,7 @@ export interface MemberTag {
   tagId: string;
   assignedById: string;
   createdAt: Date;
-  
+
   // Relations optionnelles
   user?: {
     id: string;
@@ -54,7 +54,7 @@ export interface BuildTag {
   assignedById: string;
   createdAt: Date;
   updatedAt: Date;
-  
+
   // Relations optionnelles
   tag?: TrainingTag;
   assignedBy?: {
@@ -145,16 +145,16 @@ export interface BuildWithTags {
     progress: number;
     startedAt: string;
   } | null;
-  
+
   // Propriétés supplémentaires pour le système de formation
   type: "WISETOUR" | "WISETRAINER";
   containerId: string;
   updatedAt?: Date;
   size?: number;
-  
+
   // Tags assignés à ce build
   tags: TrainingTag[];
-  
+
   // Statistiques de progression
   stats: {
     totalMembers: number;
@@ -204,7 +204,11 @@ export interface MemberWithTrainings {
 
 // === TYPES POUR LES ANALYTICS ===
 
-export type CompletionStatus = "COMPLETED" | "IN_PROGRESS" | "ABANDONED" | "FAILED";
+export type CompletionStatus =
+  | "COMPLETED"
+  | "IN_PROGRESS"
+  | "ABANDONED"
+  | "FAILED";
 
 // Types détaillés pour les données d'interaction
 export interface QuestionInteractionData {
@@ -214,14 +218,18 @@ export interface QuestionInteractionData {
   userAnswers?: number[][];
   finalScore: number;
   firstAttemptCorrect: boolean;
+  selectionMode?: "single" | "multiple"; // Ajout du mode de sélection
+  questionType?: string; // Type de question (si disponible)
 }
 
 export interface ProcedureInteractionData {
+  title?: string; // Nouveau format Unity (optionnel pour rétrocompatibilité)
   instruction: string;
   stepNumber: number;
   totalSteps: number;
   hintsUsed: number;
   wrongClicks: number;
+  finalScore?: number; // Ajout du score final
 }
 
 export interface TextInteractionData {
@@ -234,13 +242,18 @@ export interface TextInteractionData {
 export interface InteractionData {
   interactionId: string;
   type: "question" | "procedure" | "text" | string;
+  subtype?: "single_choice" | "multiple_choice" | "sequential" | "parallel" | string; // Ajout du subtype
   startTime: Date;
   endTime: Date;
   duration: number;
   success: boolean;
   attempts: number;
   objectId?: string;
-  data?: QuestionInteractionData | ProcedureInteractionData | TextInteractionData | Record<string, unknown>;
+  data?:
+    | QuestionInteractionData
+    | ProcedureInteractionData
+    | TextInteractionData
+    | Record<string, unknown>;
 }
 
 export interface TrainingAnalytics {
@@ -249,6 +262,7 @@ export interface TrainingAnalytics {
   trainingId: string;
   buildName: string;
   buildType: string;
+  buildVersion?: string; // Version du build (défaut: "1.0.0" pour anciennes données)
   user: {
     id: string;
     email: string;
@@ -345,6 +359,16 @@ export interface QuestionStats {
   userResponses: QuestionUserResponse[];
 }
 
+export interface ProcedureStats {
+  title: string;
+  totalAttempts: number;
+  successCount: number;
+  failCount: number;
+  totalDuration: number;
+  avgDuration?: number;
+  steps: string[];
+}
+
 export interface TrainingStatsWithQuestions {
   buildName: string;
   uniqueUsers: Set<string>;
@@ -353,11 +377,13 @@ export interface TrainingStatsWithQuestions {
   averageSuccessRate: number;
   completedCount: number;
   allQuestions: Map<string, QuestionStats>;
+  allProcedures?: Map<string, ProcedureStats>;
   // Calculated fields
   averageDuration?: number;
   completionRate?: number;
   uniqueUsersCount?: number;
   questionsArray?: QuestionStats[];
+  proceduresArray?: ProcedureStats[];
 }
 
 export interface TrainingDetails {
