@@ -306,18 +306,20 @@ export const GET = withAuth(async (request) => {
     }
 
     // Vérifier que l'utilisateur a bien terminé cette formation
-    const userBuild = await prisma.userBuild.findUnique({
+    const completionRecord = await prisma.trainingAnalytics.findFirst({
       where: {
-        userId_buildName_buildType_containerId: {
-          userId: request.user.id,
-          buildName: buildName,
-          buildType: buildType.toUpperCase() as "WISETOUR" | "WISETRAINER",
-          containerId: containerId,
-        },
+        userId: request.user.id,
+        buildName,
+        buildType: buildType.toUpperCase() as "WISETOUR" | "WISETRAINER",
+        containerId,
+        completionStatus: "COMPLETED",
+      },
+      orderBy: {
+        endTime: "desc",
       },
     });
 
-    if (!userBuild || !userBuild.completed) {
+    if (!completionRecord) {
       return NextResponse.json(
         { error: "Formation non terminée ou non trouvée" },
         { status: 404 }
@@ -330,12 +332,12 @@ export const GET = withAuth(async (request) => {
       userEmail: request.user.email,
       formationName: buildName,
       completionDate: format(
-        userBuild.completedAt || userBuild.updatedAt,
+        completionRecord.endTime || completionRecord.updatedAt,
         "d MMMM yyyy",
         { locale: fr }
       ),
       organizationName: "Espace Personnel", // Pour l'espace personnel
-      certificateId: `WT-${userBuild.id.slice(-8).toUpperCase()}`,
+      certificateId: `WT-${completionRecord.id.slice(-8).toUpperCase()}`,
       buildType: buildType,
     };
 

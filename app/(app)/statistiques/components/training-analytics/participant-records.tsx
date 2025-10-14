@@ -33,12 +33,10 @@ import type {
 
 interface ParticipantRecordsProps {
   sessions: TrainingAnalytics[];
-  uniqueUsers: Set<string>;
 }
 
 export function ParticipantRecords({
   sessions,
-  uniqueUsers,
 }: ParticipantRecordsProps) {
   const [selectedSession, setSelectedSession] = useState<TrainingAnalytics | null>(
     null

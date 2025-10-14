@@ -27,11 +27,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  ChevronRight,
-  ChevronDown,
-  Clock,
-} from "lucide-react";
+import { ChevronRight, ChevronDown, Clock, BookOpen } from "lucide-react";
+import Image from "next/image";
 import { useMembers } from "../../organisation/hooks/use-members";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -126,8 +123,8 @@ export function MemberAnalyticsV2({ analytics }: MemberAnalyticsProps) {
         <CardHeader>
           <CardTitle className="text-base">Résultats par utilisateur</CardTitle>
           <CardDescription>
-            Cliquez sur &quot;Détails&quot; pour voir les réponses complètes de
-            chaque session
+            Cliquez sur un utilisateur pour afficher ses sessions, puis sur
+            &quot;Détails&quot; pour consulter une session en particulier
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -135,7 +132,7 @@ export function MemberAnalyticsV2({ analytics }: MemberAnalyticsProps) {
             <TableHeader>
               <TableRow>
                 <TableHead>Utilisateur</TableHead>
-                <TableHead>Formations suivies</TableHead>
+                <TableHead>Formations / Sessions</TableHead>
                 <TableHead>Taux de réussite</TableHead>
                 <TableHead>Temps total</TableHead>
                 <TableHead>Dernière session</TableHead>
@@ -150,15 +147,27 @@ export function MemberAnalyticsV2({ analytics }: MemberAnalyticsProps) {
                   const stats = getUserStats(userSessions);
                   const lastSession = userSessions[0]; // Les sessions sont triées par date décroissante
                   const isExpanded = expandedUsers.has(userId);
+                  const uniqueTrainingsCount = new Set(
+                    userSessions.map((session) => session.buildName)
+                  ).size;
+                  const totalSessions = userSessions.length;
 
                   return (
                     <React.Fragment key={userId}>
                       <TableRow
                         className="cursor-pointer hover:bg-muted/30"
                         onClick={() => toggleUserExpansion(userId)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            toggleUserExpansion(userId);
+                          }
+                        }}
+                        tabIndex={0}
+                        aria-expanded={isExpanded}
                       >
                         <TableCell>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 min-w-0">
                             <Button
                               variant="ghost"
                               size="sm"
@@ -167,6 +176,12 @@ export function MemberAnalyticsV2({ analytics }: MemberAnalyticsProps) {
                                 e.stopPropagation();
                                 toggleUserExpansion(userId);
                               }}
+                              aria-label={
+                                isExpanded
+                                  ? "Réduire les sessions de l'utilisateur"
+                                  : "Afficher les sessions de l'utilisateur"
+                              }
+                              onKeyDown={(event) => event.stopPropagation()}
                             >
                               {isExpanded ? (
                                 <ChevronDown className="h-4 w-4" />
@@ -187,21 +202,28 @@ export function MemberAnalyticsV2({ analytics }: MemberAnalyticsProps) {
                                 {getUserInitials(user)}
                               </AvatarFallback>
                             </Avatar>
-                            <div>
+                            <div className="min-w-0">
                               <p className="font-medium">
                                 {getDisplayName(user)}
                               </p>
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-xs text-muted-foreground truncate">
                                 {user.email}
                               </p>
                             </div>
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="flex gap-1">
-                            <Badge variant="outline" className="text-xs">
-                              {stats.completedSessions} terminées
-                            </Badge>
+                          <div className="flex items-center gap-2 text-sm">
+                            <BookOpen className="h-4 w-4 text-muted-foreground" />
+                            <span className="font-medium">
+                              {uniqueTrainingsCount} formation
+                              {uniqueTrainingsCount > 1 ? "s" : ""}
+                            </span>
+                            <span className="text-muted-foreground">•</span>
+                            <span className="text-muted-foreground text-sm">
+                              {totalSessions} session
+                              {totalSessions > 1 ? "s" : ""}
+                            </span>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -227,7 +249,7 @@ export function MemberAnalyticsV2({ analytics }: MemberAnalyticsProps) {
                           <p className="text-sm">
                             {format(
                               new Date(lastSession.startTime),
-                              "dd/MM/yyyy",
+                              "dd/MM/yyyy HH:mm",
                               { locale: fr }
                             )}
                           </p>
@@ -237,80 +259,140 @@ export function MemberAnalyticsV2({ analytics }: MemberAnalyticsProps) {
                       {/* Sessions détaillées de l'utilisateur (affichées seulement si expandé) */}
                       {isExpanded && (
                         <TableRow>
-                          <TableCell colSpan={5} className="bg-muted/30 p-2">
-                            <div className="space-y-2">
-                              <p className="text-sm font-medium text-muted-foreground mb-2">
-                                Sessions détaillées:
-                              </p>
-                              {userSessions.map((session) => (
-                                <div
-                                  key={session.id}
-                                  className="flex items-center justify-between p-3 bg-background rounded-lg border"
-                                >
-                                  <div className="flex-1">
-                                    <p className="font-medium text-sm">
-                                      {session.displayName || session.buildName}
-                                      {session.buildVersion && (
-                                        <span className="ml-2 text-xs text-muted-foreground font-normal">
-                                          v{session.buildVersion}
-                                        </span>
-                                      )}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">
-                                      {format(
-                                        new Date(session.startTime),
-                                        "dd/MM/yyyy HH:mm",
-                                        { locale: fr }
-                                      )}{" "}
-                                      • Durée:{" "}
-                                      {Math.round(session.totalDuration / 60)}{" "}
-                                      min
-                                    </p>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <Badge
-                                      variant={
-                                        session.completionStatus === "COMPLETED"
-                                          ? "default"
-                                          : "secondary"
-                                      }
-                                      className="text-xs"
-                                    >
-                                      {session.completionStatus === "COMPLETED"
-                                        ? "Terminé"
-                                        : session.completionStatus ===
-                                          "ABANDONED"
-                                        ? "Abandonné"
-                                        : session.completionStatus ===
-                                          "IN_PROGRESS"
-                                        ? "En cours"
-                                        : "Échoué"}
-                                    </Badge>
-                                    <Badge
-                                      variant={
-                                        session.score >= 80
-                                          ? "default"
-                                          : session.score >= 60
-                                          ? "secondary"
-                                          : "destructive"
-                                      }
-                                      className="text-xs"
-                                    >
-                                      {Math.round(session.score)}%
-                                    </Badge>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() =>
-                                        showSessionDetails(session)
-                                      }
-                                    >
-                                      Détails
-                                      <ChevronRight className="h-4 w-4 ml-1" />
-                                    </Button>
-                                  </div>
-                                </div>
-                              ))}
+                          <TableCell colSpan={5} className="bg-muted/30 p-6">
+                            <div className="space-y-4">
+                              <h3 className="text-sm font-medium text-muted-foreground">
+                                Sessions détaillées
+                              </h3>
+                              <Table>
+                                <TableHeader>
+                                  <TableRow>
+                                    <TableHead>Formation</TableHead>
+                                    <TableHead>Date</TableHead>
+                                    <TableHead>Score</TableHead>
+                                    <TableHead>Durée</TableHead>
+                                    <TableHead>Statut</TableHead>
+                                    <TableHead>Actions</TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  {userSessions.map((session) => (
+                                    <TableRow key={session.id}>
+                                      <TableCell>
+                                        <div className="flex items-center gap-3">
+                                          {session.imageUrl ? (
+                                            <Image
+                                              src={session.imageUrl}
+                                              alt={
+                                                session.displayName ||
+                                                session.buildName
+                                              }
+                                              width={40}
+                                              height={40}
+                                              className="h-10 w-10 rounded-md object-cover"
+                                            />
+                                          ) : (
+                                            <div className="h-10 w-10 rounded-md bg-muted flex items-center justify-center">
+                                              <BookOpen className="h-5 w-5 text-muted-foreground" />
+                                            </div>
+                                          )}
+                                          <div>
+                                            <p className="font-medium text-sm">
+                                              {session.displayName ||
+                                                session.buildName}
+                                            </p>
+                                            {session.buildVersion && (
+                                              <p className="text-xs text-muted-foreground">
+                                                v{session.buildVersion}
+                                              </p>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </TableCell>
+                                      <TableCell>
+                                        <p className="text-sm">
+                                          {format(
+                                            new Date(session.startTime),
+                                            "dd/MM/yyyy HH:mm",
+                                            { locale: fr }
+                                          )}
+                                        </p>
+                                      </TableCell>
+                                      <TableCell>
+                                        <Badge
+                                          variant={
+                                            session.score >= 80
+                                              ? "default"
+                                              : session.score >= 60
+                                              ? "secondary"
+                                              : "destructive"
+                                          }
+                                          className="text-xs"
+                                        >
+                                          {Math.round(session.score)}%
+                                        </Badge>
+                                      </TableCell>
+                                      <TableCell>
+                                        <div className="flex items-center gap-1">
+                                          <Clock className="h-3 w-3 text-muted-foreground" />
+                                          <span className="text-sm">
+                                            {Math.round(
+                                              session.totalDuration / 60
+                                            )}{" "}
+                                            min
+                                          </span>
+                                        </div>
+                                      </TableCell>
+                                      <TableCell>
+                                        {session.completionStatus ===
+                                        "COMPLETED" ? (
+                                          <Badge
+                                            variant="default"
+                                            className="text-xs"
+                                          >
+                                            Complété
+                                          </Badge>
+                                        ) : session.completionStatus ===
+                                          "ABANDONED" ? (
+                                          <Badge
+                                            variant="secondary"
+                                            className="text-xs"
+                                          >
+                                            Abandonné
+                                          </Badge>
+                                        ) : session.completionStatus ===
+                                          "IN_PROGRESS" ? (
+                                          <Badge
+                                            variant="outline"
+                                            className="text-xs"
+                                          >
+                                            En cours
+                                          </Badge>
+                                        ) : (
+                                          <Badge
+                                            variant="destructive"
+                                            className="text-xs"
+                                          >
+                                            Échoué
+                                          </Badge>
+                                        )}
+                                      </TableCell>
+                                      <TableCell>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() =>
+                                            showSessionDetails(session)
+                                          }
+                                        >
+                                          Détails
+                                          <ChevronRight className="h-4 w-4 ml-1" />
+                                        </Button>
+                                      </TableCell>
+                                    </TableRow>
+                                  ))}
+                                </TableBody>
+                              </Table>
                             </div>
                           </TableCell>
                         </TableRow>
@@ -363,9 +445,10 @@ export function MemberAnalyticsV2({ analytics }: MemberAnalyticsProps) {
               <div className="space-y-4 pr-4">
                 {/* Procédures */}
                 {(() => {
-                  const procedures = selectedSession.session.interactions.filter(
-                    (i) => i.type === "procedure"
-                  ) as ResolvedInteraction[];
+                  const procedures =
+                    selectedSession.session.interactions.filter(
+                      (i) => i.type === "procedure"
+                    ) as ResolvedInteraction[];
 
                   if (procedures.length === 0) return null;
 
@@ -427,7 +510,6 @@ export function MemberAnalyticsV2({ analytics }: MemberAnalyticsProps) {
                     </div>
                   );
                 })()}
-
               </div>
             </ScrollArea>
           )}

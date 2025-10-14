@@ -51,10 +51,10 @@ export function VersionRow({
   const displayName =
     versionStats.displayName || trainingDisplayName || trainingName;
   const coverImage = versionStats.imageUrl || trainingImageUrl;
+  const participantCount =
+    versionStats.uniqueUsersCount ?? versionStats.uniqueUsers.size;
   const toggleExpansion = () => setIsExpanded((prev) => !prev);
-  const handleHeaderKeyDown = (
-    event: React.KeyboardEvent<HTMLDivElement>
-  ) => {
+  const handleHeaderKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       toggleExpansion();
@@ -114,8 +114,8 @@ export function VersionRow({
 
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <span>
-                    {versionStats.uniqueUsersCount} participant
-                    {versionStats.uniqueUsersCount > 1 ? "s" : ""}
+                    {participantCount} participant
+                    {participantCount > 1 ? "s" : ""}
                   </span>
                   <span>•</span>
                   <span>
@@ -137,9 +137,9 @@ export function VersionRow({
                   </Badge>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground mt-1 truncate">
+              {/* <p className="text-xs text-muted-foreground mt-1 truncate">
                 {displayName}
-              </p>
+              </p> */}
             </div>
           </div>
 
@@ -159,10 +159,10 @@ export function VersionRow({
 
         {/* Liste des participants (visible si expandé) */}
         {isExpanded && (
-          <div className="border-t pt-4">
-            <p className="text-sm font-medium text-muted-foreground mb-3">
-              Sessions des participants:
-            </p>
+          <div className="border-t pt-4 space-y-3">
+            <h3 className="text-sm font-medium text-muted-foreground">
+              Sessions des participants
+            </h3>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -204,14 +204,13 @@ export function VersionRow({
                     </TableCell>
                     <TableCell>
                       <p className="text-sm">
-                        {format(new Date(session.startTime), "dd/MM/yyyy", {
-                          locale: fr,
-                        })}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {format(new Date(session.startTime), "HH:mm", {
-                          locale: fr,
-                        })}
+                        {format(
+                          new Date(session.startTime),
+                          "dd/MM/yyyy HH:mm",
+                          {
+                            locale: fr,
+                          }
+                        )}
                       </p>
                     </TableCell>
                     <TableCell>

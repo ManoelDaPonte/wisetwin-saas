@@ -185,7 +185,7 @@ export function OrganizationTrends({
           </div>
         ) : (
           <div className="relative">
-            <div className="flex items-end gap-1 h-10">
+            <div className="flex items-end gap-2 h-48 sm:h-56">
               {trendData.map((data, index) => {
                 const height = (data.activityScore / maxScore) * 100;
                 const isCurrentMonth = index === trendData.length - 1;
@@ -213,66 +213,70 @@ export function OrganizationTrends({
                 }
 
                 return (
-                  <div key={index} className="flex-1 min-w-0 relative group">
+                  <div
+                    key={index}
+                    className="flex-1 min-w-[14px] h-full relative group"
+                  >
                     <div className="relative h-full flex items-end">
-                      <div
-                        className={`
-												w-full rounded-t-md transition-all duration-300 hover:brightness-110
-												${barClass}
-											`}
-                        style={{
-                          height: `${height}%`,
-                          minHeight: "4px",
-                          ...barStyle,
-                        }}
-                      >
-                        {/* Tooltip au hover */}
-                        <div className="absolute -top-20 left-1/2 transform -translate-x-1/2 bg-popover text-popover-foreground text-xs px-3 py-2 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none border shadow-lg">
-                          <div className="font-semibold text-sm">
-                            {data.month}
-                          </div>
-                          <div className="space-y-1 mt-2">
-                            {data.completions > 0 ? (
-                              <>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-green-500">●</span>
-                                  <span>
-                                    {data.completions}{" "}
-                                    {data.completions > 1
-                                      ? t.organization.trends.trainings
-                                      : t.organization.trends.training}
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-blue-500">●</span>
-                                  <span>
-                                    {data.hours.toFixed(1)}h{" "}
-                                    {t.organization.trends.ofTraining}
-                                  </span>
-                                </div>
-                              </>
-                            ) : (
-                              <div className="text-muted-foreground">
-                                {t.organization.trends.noActivity}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Valeur au-dessus des barres qui ont des données */}
-                        {data.completions > 0 && (
+                      <div className="flex-1 flex flex-col justify-end h-full">
+                        {data.activityScore > 0 && (
                           <div
-                            className={`absolute -top-5 left-1/2 transform -translate-x-1/2 text-xs font-bold ${
+                            className={`text-xs font-semibold text-center mb-2 ${
                               isCurrentMonth
                                 ? "text-green-500"
                                 : isLastThreeMonths
                                 ? "text-blue-500"
-                                : "text-gray-500"
+                                : "text-muted-foreground"
                             }`}
                           >
                             {data.completions}
                           </div>
                         )}
+                        <div className="relative h-full">
+                          <div
+                            className={`
+                              absolute bottom-0 left-0 right-0 rounded-t-md transition-all duration-300 hover:brightness-110
+                              ${barClass}
+                            `}
+                            style={{
+                              height: `${height}%`,
+                              minHeight: data.activityScore > 0 ? "8px" : "0px",
+                              ...barStyle,
+                            }}
+                          >
+                            <div className="absolute -top-20 left-1/2 transform -translate-x-1/2 bg-popover text-popover-foreground text-xs px-3 py-2 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none border shadow-lg">
+                              <div className="font-semibold text-sm">
+                                {data.month}
+                              </div>
+                              <div className="space-y-1 mt-2">
+                                {data.completions > 0 ? (
+                                  <>
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-green-500">●</span>
+                                      <span>
+                                        {data.completions}{" "}
+                                        {data.completions > 1
+                                          ? t.organization.trends.trainings
+                                          : t.organization.trends.training}
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-blue-500">●</span>
+                                      <span>
+                                        {data.hours.toFixed(1)}h{" "}
+                                        {t.organization.trends.ofTraining}
+                                      </span>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <div className="text-muted-foreground">
+                                    {t.organization.trends.noActivity}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     {/* Labels des mois */}

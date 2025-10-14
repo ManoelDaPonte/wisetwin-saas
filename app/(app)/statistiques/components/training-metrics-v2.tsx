@@ -26,7 +26,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { BookOpen, Users, Clock, ChevronRight, ChevronDown } from "lucide-react";
+import {
+  BookOpen,
+  Users,
+  Clock,
+  ChevronRight,
+  ChevronDown,
+} from "lucide-react";
 import Image from "next/image";
 import { VersionRow } from "./training-analytics";
 import { QuestionCard, ProcedureCard, TextCard } from "./interaction-cards";
@@ -52,9 +58,8 @@ export function TrainingMetricsV2({ analytics }: TrainingMetricsProps) {
   const [expandedTrainings, setExpandedTrainings] = useState<Set<string>>(
     new Set()
   );
-  const [selectedSession, setSelectedSession] = useState<TrainingAnalytics | null>(
-    null
-  );
+  const [selectedSession, setSelectedSession] =
+    useState<TrainingAnalytics | null>(null);
   const [sessionDialogOpen, setSessionDialogOpen] = useState(false);
 
   // Fonction pour basculer l'expansion d'une formation
@@ -135,7 +140,8 @@ export function TrainingMetricsV2({ analytics }: TrainingMetricsProps) {
         uniqueUsers,
         totalSessions: sessions.length,
         averageScore: sessions.length > 0 ? totalScore / sessions.length : 0,
-        averageDuration: sessions.length > 0 ? totalDuration / sessions.length : 0,
+        averageDuration:
+          sessions.length > 0 ? totalDuration / sessions.length : 0,
         versions: Array.from(versions).sort((a, b) => {
           // Tri sémantique des versions
           const aParts = a.split(".").map(Number);
@@ -169,14 +175,8 @@ export function TrainingMetricsV2({ analytics }: TrainingMetricsProps) {
 
     const stats: TrainingStatsWithQuestions = {
       buildName: trainingName,
-      displayName:
-        displayNameHint ||
-        firstSession?.displayName ||
-        trainingName,
-      imageUrl:
-        imageUrlHint ||
-        firstSession?.imageUrl ||
-        undefined,
+      displayName: displayNameHint || firstSession?.displayName || trainingName,
+      imageUrl: imageUrlHint || firstSession?.imageUrl || undefined,
       metadata: firstSession?.metadata ?? null,
       uniqueUsers: new Set<string>(),
       sessions: filteredSessions,
@@ -266,7 +266,9 @@ export function TrainingMetricsV2({ analytics }: TrainingMetricsProps) {
             procedureData.procedureKey ||
             "Procédure";
 
-          const existingProcedure = stats.allProcedures?.get(procedureTitle) || {
+          const existingProcedure = stats.allProcedures?.get(
+            procedureTitle
+          ) || {
             title: procedureTitle,
             totalAttempts: 0,
             successCount: 0,
@@ -328,7 +330,8 @@ export function TrainingMetricsV2({ analytics }: TrainingMetricsProps) {
     stats.proceduresArray = stats.allProcedures
       ? Array.from(stats.allProcedures.values()).map((p) => ({
           ...p,
-          avgDuration: p.totalAttempts > 0 ? p.totalDuration / p.totalAttempts : 0,
+          avgDuration:
+            p.totalAttempts > 0 ? p.totalDuration / p.totalAttempts : 0,
         }))
       : [];
 
@@ -349,10 +352,9 @@ export function TrainingMetricsV2({ analytics }: TrainingMetricsProps) {
             <TableHeader>
               <TableRow>
                 <TableHead>Formation</TableHead>
-                <TableHead>Participants</TableHead>
+                <TableHead>Participants / Sessions</TableHead>
                 <TableHead>Score moyen</TableHead>
                 <TableHead>Durée moyenne</TableHead>
-                <TableHead>Versions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -365,6 +367,14 @@ export function TrainingMetricsV2({ analytics }: TrainingMetricsProps) {
                       <TableRow
                         className="cursor-pointer hover:bg-muted/30"
                         onClick={() => toggleTrainingExpansion(trainingName)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            toggleTrainingExpansion(trainingName);
+                          }
+                        }}
+                        tabIndex={0}
+                        aria-expanded={isExpanded}
                       >
                         <TableCell>
                           <div className="flex items-center gap-3 min-w-0">
@@ -376,6 +386,11 @@ export function TrainingMetricsV2({ analytics }: TrainingMetricsProps) {
                                 e.stopPropagation();
                                 toggleTrainingExpansion(trainingName);
                               }}
+                              aria-label={
+                                isExpanded
+                                  ? "Réduire les versions de la formation"
+                                  : "Afficher les versions de la formation"
+                              }
                             >
                               {isExpanded ? (
                                 <ChevronDown className="h-4 w-4" />
@@ -400,20 +415,23 @@ export function TrainingMetricsV2({ analytics }: TrainingMetricsProps) {
                               <p className="font-medium truncate">
                                 {stat.displayName}
                               </p>
-                              <p className="text-xs text-muted-foreground truncate">
+                              {/* <p className="text-xs text-muted-foreground truncate">
                                 {stat.buildName}
-                              </p>
+                              </p> */}
                             </div>
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 text-sm">
                             <Users className="h-4 w-4 text-muted-foreground" />
                             <span className="font-medium">
-                              {stat.uniqueUsers.size}
+                              {stat.uniqueUsers.size} participant
+                              {stat.uniqueUsers.size > 1 ? "s" : ""}
                             </span>
-                            <span className="text-xs text-muted-foreground">
-                              ({stat.totalSessions} sessions)
+                            <span className="text-muted-foreground">•</span>
+                            <span className="text-muted-foreground">
+                              {stat.totalSessions} session
+                              {stat.totalSessions > 1 ? "s" : ""}
                             </span>
                           </div>
                         </TableCell>
@@ -436,24 +454,15 @@ export function TrainingMetricsV2({ analytics }: TrainingMetricsProps) {
                             {Math.round(stat.averageDuration / 60)} min
                           </div>
                         </TableCell>
-                        <TableCell>
-                          <div className="flex gap-1 flex-wrap">
-                            {stat.versions.map((v) => (
-                              <Badge key={v} variant="outline" className="text-xs">
-                                v{v}
-                              </Badge>
-                            ))}
-                          </div>
-                        </TableCell>
                       </TableRow>
 
                       {/* Liste des versions (affichée seulement si expandée) */}
                       {isExpanded && (
                         <TableRow>
-                          <TableCell colSpan={5} className="bg-muted/30 p-6">
+                          <TableCell colSpan={4} className="bg-muted/30 p-6">
                             <div className="space-y-4">
                               <h3 className="font-semibold text-lg mb-4">
-                                {`${stat.displayName || trainingName} - Versions disponibles`}
+                                Versions disponibles
                               </h3>
 
                               {stat.versions.map((version) => {

@@ -17,7 +17,7 @@ export async function getAllUsers(): Promise<AdminUser[]> {
       _count: {
         select: {
           organizations: true,
-          followedBuilds: true,
+          trainingAnalytics: true,
         },
       },
     },
@@ -35,7 +35,7 @@ export async function getAllUsers(): Promise<AdminUser[]> {
     createdAt: user.createdAt,
     emailVerified: user.emailVerified || undefined,
     organizationsCount: user._count.organizations,
-    buildsCount: user._count.followedBuilds,
+    buildsCount: user._count.trainingAnalytics,
     lastLogin: undefined, // TODO: Ajouter tracking login si nécessaire
   }));
 }
@@ -54,7 +54,7 @@ export async function getUserById(userId: string): Promise<AdminUser | null> {
       _count: {
         select: {
           organizations: true,
-          followedBuilds: true,
+          trainingAnalytics: true,
         },
       },
     },
@@ -71,7 +71,7 @@ export async function getUserById(userId: string): Promise<AdminUser | null> {
     createdAt: user.createdAt,
     emailVerified: user.emailVerified || undefined,
     organizationsCount: user._count.organizations,
-    buildsCount: user._count.followedBuilds,
+    buildsCount: user._count.trainingAnalytics,
     lastLogin: undefined,
   };
 }

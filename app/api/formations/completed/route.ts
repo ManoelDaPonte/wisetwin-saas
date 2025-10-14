@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { withAuth, AuthenticatedRequest } from "@/lib/auth-wrapper";
 import { prisma } from "@/lib/prisma";
-import { listBuilds } from "@/lib/azure-server";
-import { BuildType, Build } from "@/types/azure";
+import { Prisma, BuildType as PrismaBuildType, CompletionStatus } from "@prisma/client";
+import { BuildType } from "@/types/azure";
 
 // POST /api/formations/completed - Marquer une formation comme terminée (appelé depuis Unity)
 export const POST = withAuth(async (req: AuthenticatedRequest) => {
@@ -93,14 +93,9 @@ export const GET = withAuth(async (req: AuthenticatedRequest) => {
     const containerId = searchParams.get("containerId");
 
     // Construire les conditions de la requête
-    const whereConditions: {
-      userId: string;
-      completionStatus: string;
-      buildType?: string;
-      containerId?: string;
-    } = {
+    const whereConditions: Prisma.TrainingAnalyticsWhereInput = {
       userId: req.user.id,
-      completionStatus: 'COMPLETED',
+      completionStatus: CompletionStatus.COMPLETED,
     };
 
     if (buildType) {
@@ -110,7 +105,8 @@ export const GET = withAuth(async (req: AuthenticatedRequest) => {
           { status: 400 }
         );
       }
-      whereConditions.buildType = buildType.toUpperCase();
+      whereConditions.buildType =
+        buildType.toUpperCase() as PrismaBuildType;
     }
 
     if (containerId) {
