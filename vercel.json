@@ -1,0 +1,12 @@
+{
+  "functions": {
+    "app/api/certificates/generate/route.ts": {
+      "maxDuration": 60,
+      "memory": 1024
+    },
+    "app/api/certificates/generate-personal/route.ts": {
+      "maxDuration": 60,
+      "memory": 1024
+    }
+  }
+}

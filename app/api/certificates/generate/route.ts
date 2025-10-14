@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { withOrgAuth } from "@/lib/auth-wrapper";
 import { prisma } from "@/lib/prisma";
 import puppeteer from "puppeteer";
+import puppeteerCore from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { createHash } from "crypto";
@@ -437,10 +439,19 @@ export const GET = withOrgAuth(async (request) => {
     };
 
     // Générer le PDF avec Puppeteer
-    const browser = await puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      headless: true,
-    });
+    // Utiliser chromium pour les environnements serverless (Vercel), puppeteer pour local
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    const browser = isProduction
+      ? await puppeteerCore.launch({
+          args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox'],
+          executablePath: await chromium.executablePath(),
+          headless: true,
+        })
+      : await puppeteer.launch({
+          args: ['--no-sandbox', '--disable-setuid-sandbox'],
+          headless: true,
+        });
 
     const page = await browser.newPage();
     
