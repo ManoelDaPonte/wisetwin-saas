@@ -63,7 +63,12 @@ export async function generateMetadata({
 
   return {
     title: `Certificat valide (${certificate.code}) - WiseTwin`,
-    description: `Confirmation officielle du certificat ${certificate.code} délivré à ${certificate.trainingAnalytics.user.name ?? certificate.trainingAnalytics.user.email}.`,
+    description: `Confirmation officielle du certificat ${
+      certificate.code
+    } délivré à ${
+      certificate.trainingAnalytics.user.name ??
+      certificate.trainingAnalytics.user.email
+    }.`,
   };
 }
 
@@ -151,10 +156,15 @@ export default async function VerificationPage({
               Certificat introuvable
             </h1>
             <p className="mt-4 text-sm sm:text-base text-slate-600 leading-relaxed">
-              Aucun certificat correspondant au code <span className="font-mono font-semibold text-slate-900 bg-slate-100 px-2 py-1 rounded">{normalizedCode}</span> n&apos;a été trouvé dans notre système.
+              Aucun certificat correspondant au code{" "}
+              <span className="font-mono font-semibold text-slate-900 bg-slate-100 px-2 py-1 rounded">
+                {normalizedCode}
+              </span>{" "}
+              n&apos;a été trouvé dans notre système.
             </p>
             <p className="mt-2 text-sm text-slate-500">
-              Veuillez vérifier le code ou contacter l&apos;équipe WiseTwin pour plus d&apos;informations.
+              Veuillez vérifier le code ou contacter l&apos;équipe WiseTwin pour
+              plus d&apos;informations.
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
@@ -191,8 +201,6 @@ export default async function VerificationPage({
     ? format(training.endTime, "d MMMM yyyy", { locale: fr })
     : format(training.updatedAt, "d MMMM yyyy", { locale: fr });
   const duration = formatDuration(training.totalDuration);
-  const buildLabel =
-    training.buildType === "WISETRAINER" ? "Formation WiseTrainer" : "Visite WiseTour";
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 py-6 sm:py-12">
@@ -200,13 +208,17 @@ export default async function VerificationPage({
         {/* Header Section */}
         <div className="mb-6 sm:mb-8 flex flex-col gap-3 sm:gap-4 text-center px-4">
           <div className="mx-auto flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg">
-            <ShieldCheck className="h-7 w-7 sm:h-8 sm:w-8 text-white" aria-hidden="true" />
+            <ShieldCheck
+              className="h-7 w-7 sm:h-8 sm:w-8 text-white"
+              aria-hidden="true"
+            />
           </div>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
             Certificat Authentique
           </h1>
           <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Ce certificat WiseTwin est valide et correspond à une formation officiellement reconnue.
+            Ce certificat WiseTwin est valide et correspond à une formation
+            officiellement reconnue.
           </p>
         </div>
 
@@ -244,16 +256,27 @@ export default async function VerificationPage({
                 </p>
                 <div className="grid gap-2 text-sm">
                   <div className="flex flex-wrap items-baseline gap-2">
-                    <span className="font-semibold uppercase tracking-wide text-slate-500 text-xs">Nom :</span>
+                    <span className="font-semibold uppercase tracking-wide text-slate-500 text-xs">
+                      Nom :
+                    </span>
                     <span className="text-slate-700">{userNames.lastName}</span>
                   </div>
                   <div className="flex flex-wrap items-baseline gap-2">
-                    <span className="font-semibold uppercase tracking-wide text-slate-500 text-xs">Prénom :</span>
-                    <span className="text-slate-700">{userNames.firstName}</span>
+                    <span className="font-semibold uppercase tracking-wide text-slate-500 text-xs">
+                      Prénom :
+                    </span>
+                    <span className="text-slate-700">
+                      {userNames.firstName}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2 mt-2 pt-2 border-t border-slate-200">
-                    <Mail className="h-4 w-4 text-slate-400 flex-shrink-0" aria-hidden="true" />
-                    <span className="text-slate-600 break-all">{training.user.email}</span>
+                    <Mail
+                      className="h-4 w-4 text-slate-400 flex-shrink-0"
+                      aria-hidden="true"
+                    />
+                    <span className="text-slate-600 break-all">
+                      {training.user.email}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -335,7 +358,8 @@ export default async function VerificationPage({
           <footer className="border-t border-slate-100 bg-gradient-to-r from-slate-50 to-white px-4 sm:px-6 py-5 sm:py-6">
             <div>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                Pour toute question sur la validité d&apos;un certificat, contactez{" "}
+                Pour toute question sur la validité d&apos;un certificat,
+                contactez{" "}
                 <a
                   className="font-semibold text-slate-900 underline decoration-2 underline-offset-2 hover:text-emerald-600 transition"
                   href="mailto:contact@wisetwin.eu"
@@ -344,7 +368,8 @@ export default async function VerificationPage({
                 </a>
               </p>
               <p className="text-xs text-slate-500 mt-2">
-                Les certificats WiseTwin sont vérifiables en ligne grâce à leur QR code unique.
+                Les certificats WiseTwin sont vérifiables en ligne grâce à leur
+                QR code unique.
               </p>
             </div>
           </footer>
