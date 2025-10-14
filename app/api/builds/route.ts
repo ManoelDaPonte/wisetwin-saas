@@ -9,7 +9,6 @@ export const GET = withAuth(async (req: AuthenticatedRequest) => {
     const { searchParams } = new URL(req.url);
     const buildType = searchParams.get("type") as BuildType;
     const containerId = searchParams.get("containerId");
-    const followedOnly = searchParams.get("followedOnly") === "true";
 
     if (!buildType) {
       return NextResponse.json(
@@ -71,29 +70,7 @@ export const GET = withAuth(async (req: AuthenticatedRequest) => {
     }
 
     // Récupérer les builds depuis Azure uniquement
-    let builds = await listBuilds(containerId, buildType);
-
-    // Si on veut seulement les formations suivies, filtrer
-    if (followedOnly) {
-      const followedBuilds = await prisma.userBuild.findMany({
-        where: {
-          userId: req.user.id,
-          buildType: buildType.toUpperCase() as "WISETOUR" | "WISETRAINER", // Convert to Prisma enum
-          containerId: containerId,
-        },
-        select: {
-          buildName: true,
-        },
-      });
-
-      const followedBuildNames = new Set(
-        followedBuilds.map((fb) => fb.buildName)
-      );
-
-      builds = builds.filter(build => 
-        followedBuildNames.has(build.name) || followedBuildNames.has(build.id || "")
-      );
-    }
+    const builds = await listBuilds(containerId, buildType);
 
     // Trier par date de modification (plus récent en premier)
     builds.sort((a, b) => {

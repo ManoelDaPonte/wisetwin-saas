@@ -5,7 +5,8 @@
       "Bash(rm:*)",
       "Bash(npm run build:*)",
       "Bash(npm run lint)",
-      "Bash(npx ts-node:*)"
+      "Bash(npx ts-node:*)",
+      "Bash(mkdir:*)"
     ]
   },
   "enableAllProjectMcpServers": false

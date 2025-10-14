@@ -24,8 +24,7 @@ model User {
   organizations Organization[]
   OrganizationMember OrganizationMember[]
   sentInvitations OrganizationInvitation[] @relation("InvitedBy")
-  followedBuilds UserBuild[]
-  
+
   // Relations pour le système de formations
   memberTags    MemberTag[]
   assignedTags  MemberTag[] @relation("TagAssignedBy")
@@ -88,29 +87,6 @@ model OrganizationInvitation {
   @@index([token])
   @@index([code])
   @@index([email])
-}
-
-model UserBuild {
-  id          String    @id @default(cuid())
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  buildName   String    // Nom du build (build.name)
-  buildType   BuildType // wisetrainer ou wisetour
-  containerId String    // Container Azure où se trouve le build
-  
-  // Métadonnées de suivi
-  startedAt   DateTime  @default(now())
-  lastAccessedAt DateTime @default(now())
-  progress    Float     @default(0) // Pourcentage de progression (0-100)
-  completed   Boolean   @default(false)
-  completedAt DateTime?
-  
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
-  @@unique([userId, buildName, buildType, containerId])
-  @@index([userId, buildType])
-  @@index([userId, containerId])
 }
 
 enum Role {
@@ -241,13 +217,10 @@ model TrainingAnalytics {
   completionStatus  CompletionStatus
 
   // Métriques globales
+  score                 Float    @default(0) // Score final Unity (0-100)
   totalInteractions      Int
   successfulInteractions Int
   failedInteractions    Int
-  averageTimePerInteraction Float
-  totalAttempts         Int
-  totalFailedAttempts   Int
-  successRate       Float    // pourcentage
 
   // JSON pour stocker les interactions détaillées
   interactions      Json     // Array<InteractionRecord>

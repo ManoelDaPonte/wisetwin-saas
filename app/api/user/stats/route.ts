@@ -53,31 +53,8 @@ export async function GET(request: NextRequest) {
 
     const targetUserId = userId || session.user.id;
 
-    // Récupérer les formations de l'utilisateur
-    const userBuilds = await prisma.userBuild.findMany({
-      where: {
-        userId: targetUserId,
-        containerId,
-      },
-      orderBy: { updatedAt: 'desc' },
-      take: 50, // Limiter pour les performances
-    });
-
-    // Calculer les statistiques
-    const completedBuilds = userBuilds.filter(b => b.completed);
-    const wisetrainerCompletions = completedBuilds.filter(b => 
-      b.buildType === 'WISETRAINER'
-    ).length;
-
-    const wisetourVisits = completedBuilds.filter(b => 
-      b.buildType === 'WISETOUR'
-    ).length;
-
-    const totalFormationsCompleted = completedBuilds.length;
-    // Supprimer totalFormationsStarted car on ne track plus les formations démarrées
-
-    // Récupérer les analytics pour calculer temps total et moyenne des scores
-    const trainingAnalytics = await prisma.trainingAnalytics.findMany({
+    // Récupérer les analytics complétés pour calculer les statistiques
+    const completedAnalytics = await prisma.trainingAnalytics.findMany({
       where: {
         userId: targetUserId,
         containerId,
@@ -85,16 +62,39 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Calculer le temps total passé (en heures)
-    const totalTimeSpentSeconds = trainingAnalytics.reduce(
+    // Grouper par formation unique (buildName + buildType) pour éviter les doublons
+    const uniqueCompletions = new Map<string, typeof completedAnalytics[0]>();
+    completedAnalytics.forEach(analytics => {
+      const key = `${analytics.buildName}-${analytics.buildType}`;
+      const existing = uniqueCompletions.get(key);
+
+      // Garder la plus récente complétion pour chaque formation unique
+      if (!existing || new Date(analytics.endTime) > new Date(existing.endTime)) {
+        uniqueCompletions.set(key, analytics);
+      }
+    });
+
+    const uniqueCompletionsArray = Array.from(uniqueCompletions.values());
+
+    // Calculer les statistiques à partir des formations uniques
+    const totalFormationsCompleted = uniqueCompletionsArray.length;
+    const wisetrainerCompletions = uniqueCompletionsArray.filter(a =>
+      a.buildType === 'WISETRAINER'
+    ).length;
+    const wisetourVisits = uniqueCompletionsArray.filter(a =>
+      a.buildType === 'WISETOUR'
+    ).length;
+
+    // Calculer le temps total passé (en heures) depuis toutes les analytics
+    const totalTimeSpentSeconds = completedAnalytics.reduce(
       (sum, analytics) => sum + analytics.totalDuration,
       0
     );
     const totalTimeSpent = totalTimeSpentSeconds / 3600; // Convertir en heures
 
-    // Calculer la moyenne des scores
-    const averageScore = trainingAnalytics.length > 0
-      ? trainingAnalytics.reduce((sum, analytics) => sum + analytics.successRate, 0) / trainingAnalytics.length
+    // Calculer la moyenne des scores depuis toutes les analytics
+    const averageScore = completedAnalytics.length > 0
+      ? completedAnalytics.reduce((sum, analytics) => sum + analytics.score, 0) / completedAnalytics.length
       : 0;
 
     // Récupérer TOUTES les activités depuis TrainingAnalytics pour l'historique complet
@@ -115,7 +115,7 @@ export async function GET(request: NextRequest) {
       buildName: analytics.buildName,
       buildType: analytics.buildType.toLowerCase() as 'wisetrainer' | 'wisetour',
       timestamp: analytics.endTime.toISOString(),
-      score: analytics.completionStatus === 'COMPLETED' ? analytics.successRate : undefined,
+      score: analytics.completionStatus === 'COMPLETED' ? analytics.score : undefined,
       // imageUrl sera ajouté par le hook use-recent-activity-with-details
     }));
 

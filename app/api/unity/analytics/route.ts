@@ -93,47 +93,13 @@ export async function POST(request: NextRequest) {
           endTime: new Date(data.endTime),
           totalDuration: data.totalDuration,
           completionStatus: data.completionStatus as "COMPLETED" | "IN_PROGRESS" | "ABANDONED" | "FAILED",
+          score: data.summary.score, // Score Unity (0-100)
           totalInteractions: data.summary.totalInteractions,
           successfulInteractions: data.summary.successfulInteractions,
           failedInteractions: data.summary.failedInteractions,
-          averageTimePerInteraction: data.summary.averageTimePerInteraction,
-          totalAttempts: data.summary.totalAttempts,
-          totalFailedAttempts: data.summary.totalFailedAttempts,
-          successRate: data.summary.successRate,
           interactions: data.interactions as Prisma.JsonArray,
         }
       });
-
-      // Si la formation est terminée, mettre à jour UserBuild
-      if (data.completionStatus === "COMPLETED" && userId) {
-        await prisma.userBuild.upsert({
-          where: {
-            userId_buildName_buildType_containerId: {
-              userId,
-              buildName: data.buildName,
-              buildType: data.buildType as "WISETOUR" | "WISETRAINER",
-              containerId: data.containerId,
-            }
-          },
-          update: {
-            completed: true,
-            completedAt: new Date(data.endTime),
-            progress: 100,
-            lastAccessedAt: new Date(),
-          },
-          create: {
-            userId,
-            buildName: data.buildName,
-            buildType: data.buildType as "WISETOUR" | "WISETRAINER",
-            containerId: data.containerId,
-            completed: true,
-            completedAt: new Date(data.endTime),
-            progress: 100,
-            startedAt: new Date(data.startTime),
-            lastAccessedAt: new Date(),
-          }
-        });
-      }
 
       return NextResponse.json({
         success: true,
@@ -167,47 +133,13 @@ export async function POST(request: NextRequest) {
           endTime: new Date(data.endTime),
           totalDuration: data.totalDuration,
           completionStatus: data.completionStatus as "COMPLETED" | "IN_PROGRESS" | "ABANDONED" | "FAILED",
+          score: data.summary.score, // Score Unity (0-100)
           totalInteractions: data.summary.totalInteractions,
           successfulInteractions: data.summary.successfulInteractions,
           failedInteractions: data.summary.failedInteractions,
-          averageTimePerInteraction: data.summary.averageTimePerInteraction,
-          totalAttempts: data.summary.totalAttempts,
-          totalFailedAttempts: data.summary.totalFailedAttempts,
-          successRate: data.summary.successRate,
           interactions: data.interactions as Prisma.JsonArray,
         }
       });
-
-      // Si la formation est terminée, mettre à jour UserBuild
-      if (data.completionStatus === "COMPLETED") {
-        await prisma.userBuild.upsert({
-          where: {
-            userId_buildName_buildType_containerId: {
-              userId,
-              buildName: data.buildName,
-              buildType: data.buildType as "WISETOUR" | "WISETRAINER",
-              containerId: data.containerId,
-            }
-          },
-          update: {
-            completed: true,
-            completedAt: new Date(data.endTime),
-            progress: 100,
-            lastAccessedAt: new Date(),
-          },
-          create: {
-            userId,
-            buildName: data.buildName,
-            buildType: data.buildType as "WISETOUR" | "WISETRAINER",
-            containerId: data.containerId,
-            completed: true,
-            completedAt: new Date(data.endTime),
-            progress: 100,
-            startedAt: new Date(data.startTime),
-            lastAccessedAt: new Date(),
-          }
-        });
-      }
 
       console.log(`[Unity Analytics] Nouvelle session créée: ${newAnalytics.sessionId}`);
 

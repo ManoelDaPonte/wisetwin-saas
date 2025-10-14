@@ -43,24 +43,24 @@ async function fetchCertifiedFormations(
   analytics.sessions?.forEach((session: {
     buildName: string;
     buildType: string;
-    successRate: number;
+    score: number;
     endTime: string;
   }) => {
-    if (session.successRate >= CERTIFICATION_THRESHOLD) {
+    if (session.score >= CERTIFICATION_THRESHOLD) {
       const key = `${session.buildName}-${session.buildType}`;
 
       // Garder le meilleur score, ou le plus récent si scores identiques
       const existing = certificationsByBuild.get(key);
       if (!existing ||
-          session.successRate > existing.score ||
-          (session.successRate === existing.score && new Date(session.endTime) > new Date(existing.completedAt))) {
+          session.score > existing.score ||
+          (session.score === existing.score && new Date(session.endTime) > new Date(existing.completedAt))) {
         certificationsByBuild.set(key, {
           build: {
             name: session.buildName,
             buildType: session.buildType.toLowerCase(),
             // Les autres données du build seront enrichies plus tard
           } as Build,
-          score: session.successRate,
+          score: session.score,
           completedAt: session.endTime,
           isFirstSuccess: !existing, // Première réussite si pas d'existant
         });

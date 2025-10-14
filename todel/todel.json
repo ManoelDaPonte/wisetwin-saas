@@ -1,397 +1,152 @@
 [
   {
     "data": {
-      "title": "Actionner le levier de déverrouillage manuel",
-      "hintsUsed": 0,
+      "objectId": "blue_sphere",
       "finalScore": 100,
-      "stepNumber": 1,
-      "totalSteps": 10,
-      "instruction": "DÉVERROUILLAGE MANUEL DE LA PORTE\n\nActionner le levier rouge pour libérer manuellement le mécanisme de verrouillage de la porte et dépressuriser la chambre.\n\nCette étape assure que la porte peut être ouverte en toute sécurité en libérant toute pression résiduelle et en désengageant les verrous mécaniques.\n\nCliquez sur le LEVIER ROUGE pour l'actionner.",
-      "wrongClicks": 0
+      "questionKey": "question_1",
+      "userAnswers": [[1]],
+      "correctAnswers": [1],
+      "firstAttemptCorrect": true
     },
-    "type": "procedure",
-    "endTime": "2025-10-13T21:50:02Z",
-    "subtype": "sequential",
+    "type": "question",
+    "endTime": "2025-10-14T09:26:01Z",
+    "subtype": "single_choice",
+    "success": true,
+    "attempts": 1,
+    "duration": 2,
+    "objectId": "blue_sphere",
+    "startTime": "2025-10-14T09:25:59Z",
+    "interactionId": "blue_sphere_question_638960307592620000"
+  },
+  {
+    "data": {
+      "objectId": "green_cylinder",
+      "contentKey": "text_content",
+      "finalScore": 100,
+      "readComplete": true,
+      "timeDisplayed": 1.27899981,
+      "scrollPercentage": 100
+    },
+    "type": "text",
+    "endTime": "2025-10-14T09:26:03Z",
+    "subtype": "informative",
+    "success": true,
+    "attempts": 1,
+    "duration": 1,
+    "objectId": "green_cylinder",
+    "startTime": "2025-10-14T09:26:02Z",
+    "interactionId": "green_cylinder_text_638960307622910000"
+  },
+  {
+    "data": {
+      "objectId": "red_cube",
+      "finalScore": 100,
+      "questionKey": "question_1",
+      "userAnswers": [[0, 2, 5, 4]],
+      "correctAnswers": [0, 2, 4, 5],
+      "firstAttemptCorrect": true
+    },
+    "type": "question",
+    "endTime": "2025-10-14T09:26:08Z",
+    "subtype": "multiple_choice",
     "success": true,
     "attempts": 1,
     "duration": 4,
-    "objectId": "ouverturemanuelleporteautoclave",
-    "startTime": "2025-10-13T21:49:58Z",
-    "interactionId": "ouverturemanuelleporteautoclave_procedure_638959889989650000"
+    "objectId": "red_cube",
+    "startTime": "2025-10-14T09:26:04Z",
+    "interactionId": "red_cube_question_638960307643020000"
   },
   {
     "data": {
-      "title": "Appuyer sur le bouton Door Open",
-      "hintsUsed": 0,
-      "finalScore": 100,
-      "stepNumber": 2,
-      "totalSteps": 10,
-      "instruction": "ACTIVER LE SYSTÈME D'OUVERTURE\n\nAppuyer sur le bouton 'Door Open' pour activer le mécanisme électrique d'ouverture de la porte.\n\nCeci active le système motorisé qui ouvrira la lourde porte de l'autoclave en toute sécurité.\n\nCliquez sur le bouton DOOR OPEN.",
-      "wrongClicks": 0
-    },
-    "type": "procedure",
-    "endTime": "2025-10-13T21:50:05Z",
-    "subtype": "sequential",
-    "success": true,
-    "attempts": 1,
-    "duration": 3,
-    "objectId": "bouton-porteautoclaveopen",
-    "startTime": "2025-10-13T21:50:02Z",
-    "interactionId": "bouton-porteautoclaveopen_procedure_638959890029480000"
-  },
-  {
-    "data": {
-      "title": "Monter la table élévatrice",
-      "hintsUsed": 0,
-      "finalScore": 100,
-      "stepNumber": 3,
-      "totalSteps": 10,
-      "instruction": "AJUSTER LA HAUTEUR DE LA PLATEFORME\n\nActionner le levier de la table élévatrice pour la monter en position de travail.\n\nCeci positionne la plateforme à la hauteur optimale pour un accès sécurisé à la chambre de l'autoclave et facilite le chargement/déchargement des produits.\n\nCliquez sur le LEVIER DE LA PLATEFORME pour la monter.",
-      "wrongClicks": 0
-    },
-    "type": "procedure",
-    "endTime": "2025-10-13T21:50:06Z",
-    "subtype": "sequential",
-    "success": true,
-    "attempts": 1,
-    "duration": 1,
-    "objectId": "bouton-tableelevatriceup",
-    "startTime": "2025-10-13T21:50:05Z",
-    "interactionId": "bouton-tableelevatriceup_procedure_638959890057020000"
-  },
-  {
-    "data": {
-      "title": "Tourner la clé de sécurité",
-      "hintsUsed": 0,
-      "finalScore": 100,
-      "stepNumber": 4,
-      "totalSteps": 10,
-      "instruction": "ACTIVER L'ACCÈS À LA ZONE\n\nTourner la clé de sécurité pour déverrouiller la porte d'accès à la zone de l'autoclave.\n\nCette clé de sécurité désactive le système de verrouillage de la porte d'accès et autorise l'entrée dans la zone de l'autoclave pour les travaux de maintenance.\n\nCliquez sur la CLÉ DE SÉCURITÉ pour la tourner.",
-      "wrongClicks": 0
-    },
-    "type": "procedure",
-    "endTime": "2025-10-13T21:50:07Z",
-    "subtype": "sequential",
-    "success": true,
-    "attempts": 1,
-    "duration": 1,
-    "objectId": "cle-455",
-    "startTime": "2025-10-13T21:50:06Z",
-    "interactionId": "cle-455_procedure_638959890065850000"
-  },
-  {
-    "data": {
-      "title": "Retirer le couvercle de la station de consignation",
-      "hintsUsed": 0,
-      "finalScore": 100,
-      "stepNumber": 5,
-      "totalSteps": 10,
-      "instruction": "ACCÉDER À LA STATION DE CONSIGNATION\n\nRetirer le couvercle de protection de la station de consignation pour accéder à la boîte à cadenas.\n\nCe couvercle protège l'équipement de consignation lorsqu'il n'est pas utilisé. Le retirer vous permet de récupérer votre cadenas personnel.\n\nCliquez sur le COUVERCLE DE LA STATION pour le retirer.",
-      "wrongClicks": 0
-    },
-    "type": "procedure",
-    "endTime": "2025-10-13T21:50:11Z",
-    "subtype": "sequential",
-    "success": true,
-    "attempts": 1,
-    "duration": 3,
-    "objectId": "protectionboiteacadenasrotative",
-    "startTime": "2025-10-13T21:50:08Z",
-    "interactionId": "protectionboiteacadenasrotative_procedure_638959890084900000"
-  },
-  {
-    "data": {
-      "title": "Récupérer votre cadenas personnel",
-      "hintsUsed": 0,
-      "finalScore": 100,
-      "stepNumber": 6,
-      "totalSteps": 10,
-      "instruction": "RÉCUPÉRER VOTRE CADENAS\n\nRécupérer votre cadenas personnel depuis la boîte de la station de consignation.\n\nChaque opérateur possède son propre cadenas identifié de manière unique. Ce cadenas personnel garantit que vous seul pouvez terminer la procédure de consignation.\n\nCliquez sur VOTRE CADENAS pour le récupérer.",
-      "wrongClicks": 0
-    },
-    "type": "procedure",
-    "endTime": "2025-10-13T21:50:16Z",
-    "subtype": "sequential",
-    "success": true,
-    "attempts": 1,
-    "duration": 5,
-    "objectId": "lock",
-    "startTime": "2025-10-13T21:50:11Z",
-    "interactionId": "lock_procedure_638959890119690000"
-  },
-  {
-    "data": {
-      "title": "Ouvrir la porte d'accès à la zone",
-      "hintsUsed": 0,
-      "finalScore": 100,
-      "stepNumber": 7,
-      "totalSteps": 10,
-      "instruction": "ENTRER DANS LA ZONE DE L'AUTOCLAVE\n\nOuvrir la porte d'accès pour entrer dans la zone de l'autoclave.\n\nCette porte fournit un accès contrôlé à la zone de l'autoclave. L'ouvrir vous permet d'atteindre le dispositif de consignation et de compléter la procédure de sécurité.\n\nCliquez sur la PORTE D'ACCÈS À LA ZONE pour l'ouvrir.",
-      "wrongClicks": 0
-    },
-    "type": "procedure",
-    "endTime": "2025-10-13T21:50:19Z",
-    "subtype": "sequential",
-    "success": true,
-    "attempts": 1,
-    "duration": 3,
-    "objectId": "poigneebarriere",
-    "startTime": "2025-10-13T21:50:16Z",
-    "interactionId": "poigneebarriere_procedure_638959890165590000"
-  },
-  {
-    "data": {
-      "title": "Poser le cadenas sur le dispositif de consignation",
-      "hintsUsed": 0,
-      "finalScore": 100,
-      "stepNumber": 8,
-      "totalSteps": 10,
-      "instruction": "SÉCURISER LA CONSIGNATION\n\nPoser votre cadenas personnel sur le dispositif de consignation situé à côté de la poignée de porte.\n\n🔒 Cette étape critique empêche quiconque de fermer la porte d'accès ou d'opérer l'autoclave pendant que vous effectuez des travaux de maintenance. Vous seul pouvez retirer votre cadenas.\n\nCliquez sur le DISPOSITIF DE CONSIGNATION pour poser votre cadenas.",
-      "wrongClicks": 0
-    },
-    "type": "procedure",
-    "endTime": "2025-10-13T21:50:25Z",
-    "subtype": "sequential",
-    "success": true,
-    "attempts": 1,
-    "duration": 6,
-    "objectId": "crochet_consignation",
-    "startTime": "2025-10-13T21:50:19Z",
-    "interactionId": "crochet_consignation_procedure_638959890195910000"
-  },
-  {
-    "data": {
-      "title": "Récupérer votre étiquette LOTO",
-      "hintsUsed": 0,
+      "objectId": "red_cube",
       "finalScore": 0,
-      "stepNumber": 9,
-      "totalSteps": 10,
-      "instruction": "RÉCUPÉRER VOTRE ÉTIQUETTE\n\nRécupérer votre étiquette LOTO personnelle depuis la station de consignation.\n\nL'étiquette sera utilisée pour documenter et communiquer l'état de consignation aux autres opérateurs et au personnel de maintenance.\n\nCliquez sur VOTRE ÉTIQUETTE pour la récupérer.",
-      "wrongClicks": 0
-    },
-    "type": "procedure",
-    "endTime": "2025-10-13T21:50:30Z",
-    "subtype": "sequential",
-    "success": false,
-    "attempts": 1,
-    "duration": 5,
-    "objectId": "tag",
-    "startTime": "2025-10-13T21:50:25Z",
-    "interactionId": "tag_procedure_638959890258240000"
-  },
-  {
-    "data": {
-      "title": "Déposer l'étiquette LOTO sur la station",
-      "hintsUsed": 0,
-      "finalScore": 100,
-      "stepNumber": 10,
-      "totalSteps": 10,
-      "instruction": "DOCUMENTER LA CONSIGNATION\n\nDéposer votre étiquette magnétique sur la station LOTO pour signaler la procédure de consignation en cours.\n\n📋 Remplir l'étiquette avec :\n• Votre nom et ID\n• Date et heure\n• Raison de la consignation\n• Heure de fin prévue\n\nCeci informe tout le personnel que l'équipement est consigné et en maintenance.\n\nCliquez sur la STATION LOTO pour déposer votre étiquette.",
-      "wrongClicks": 0
-    },
-    "type": "procedure",
-    "endTime": "2025-10-13T21:50:31Z",
-    "subtype": "sequential",
-    "success": true,
-    "attempts": 1,
-    "duration": 1,
-    "objectId": "plane.036",
-    "startTime": "2025-10-13T21:50:30Z",
-    "interactionId": "plane.036_procedure_638959890307280000"
-  },
-  {
-    "data": {
-      "options": [
-        "Toute personne formée en production",
-        "Toute personne habilitée à l'utilisation d'appareils sous pression",
-        "Le chef d'équipe uniquement",
-        "Un opérateur expérimenté, même sans habilitation"
-      ],
-      "finalScore": 0,
+      "questionKey": "question_2",
       "userAnswers": [[0], [0], [1]],
-      "questionText": "Qui est autorisé à utiliser l'autoclave ?",
       "correctAnswers": [1],
       "firstAttemptCorrect": false
     },
     "type": "question",
-    "endTime": "2025-10-13T21:50:36Z",
+    "endTime": "2025-10-14T09:26:13Z",
     "subtype": "single_choice",
     "success": true,
     "attempts": 3,
     "duration": 3,
-    "objectId": "autoclave_qcm",
-    "startTime": "2025-10-13T21:50:33Z",
-    "interactionId": "autoclave_qcm_question_638959890333520000"
+    "objectId": "red_cube",
+    "startTime": "2025-10-14T09:26:10Z",
+    "interactionId": "red_cube_question_638960307702580000"
   },
   {
     "data": {
-      "options": [
-        "Parce que c'est une exigence réglementaire de sécurité",
-        "Pour être reconnu comme expert dans son métier",
-        "Parce que l'autoclave fonctionne à haute température et pression",
-        "Pour pouvoir donner des consignes aux autres"
-      ],
-      "finalScore": 0,
-      "userAnswers": [
-        [0, 1],
-        [2, 0]
-      ],
-      "questionText": "Pourquoi l'habilitation 'appareil sous pression' est-elle obligatoire pour utiliser l'autoclave ?",
-      "correctAnswers": [0, 2],
-      "firstAttemptCorrect": false
-    },
-    "type": "question",
-    "endTime": "2025-10-13T21:50:43Z",
-    "subtype": "multiple_choice",
-    "success": true,
-    "attempts": 2,
-    "duration": 6,
-    "objectId": "autoclave_qcm",
-    "startTime": "2025-10-13T21:50:37Z",
-    "interactionId": "autoclave_qcm_question_638959890379110000"
-  },
-  {
-    "data": {
-      "options": [
-        "Le LOTO (consignation énergie)",
-        "Une simple coupure électrique",
-        "Le port des gants thermiques uniquement",
-        "Rien, si le cycle est terminé"
-      ],
+      "objectId": "red_cube",
       "finalScore": 100,
-      "userAnswers": [[0]],
-      "questionText": "Avant d'ouvrir l'autoclave, que doit-on impérativement appliquer ?",
-      "correctAnswers": [0],
+      "questionKey": "question_3",
+      "userAnswers": [[1]],
+      "correctAnswers": [1],
       "firstAttemptCorrect": true
     },
     "type": "question",
-    "endTime": "2025-10-13T21:50:45Z",
+    "endTime": "2025-10-14T09:26:14Z",
     "subtype": "single_choice",
     "success": true,
     "attempts": 1,
     "duration": 1,
-    "objectId": "autoclave_qcm",
-    "startTime": "2025-10-13T21:50:44Z",
-    "interactionId": "autoclave_qcm_question_638959890443500000"
+    "objectId": "red_cube",
+    "startTime": "2025-10-14T09:26:13Z",
+    "interactionId": "red_cube_question_638960307735140000"
   },
   {
     "data": {
-      "options": [
-        "Continuer la production pour ne pas perdre de temps",
-        "Avertir immédiatement le responsable ou la maintenance habilitée",
-        "Forcer l'ouverture de l'autoclave si le cycle est bloqué",
-        "Consigner l'appareil avant toute intervention"
+      "steps": [
+        {
+          "stepKey": "step_1",
+          "duration": 0.5849991,
+          "completed": true,
+          "stepNumber": 1,
+          "targetObjectId": "cube",
+          "wrongClicksOnThisStep": 0
+        },
+        {
+          "stepKey": "step_2",
+          "duration": 1.217001,
+          "completed": true,
+          "stepNumber": 2,
+          "targetObjectId": "cube_(1)",
+          "wrongClicksOnThisStep": 1
+        },
+        {
+          "stepKey": "step_3",
+          "duration": 0.275999069,
+          "completed": true,
+          "stepNumber": 3,
+          "targetObjectId": "cube_(2)",
+          "wrongClicksOnThisStep": 0
+        },
+        {
+          "stepKey": "step_4",
+          "duration": 0.256000519,
+          "completed": true,
+          "stepNumber": 4,
+          "targetObjectId": "cube_(3)",
+          "wrongClicksOnThisStep": 0
+        }
       ],
-      "finalScore": 100,
-      "userAnswers": [[1, 3]],
-      "questionText": "Quelle est la bonne pratique en cas de défaillance ou alarme sur l'autoclave ?",
-      "correctAnswers": [1, 3],
-      "firstAttemptCorrect": true
+      "objectId": "yellow_capsule",
+      "finalScore": 300,
+      "totalSteps": 4,
+      "procedureKey": "procedure",
+      "totalDuration": 4.386999,
+      "totalWrongClicks": 1,
+      "perfectCompletion": false,
+      "perfectStepsCount": 3
     },
-    "type": "question",
-    "endTime": "2025-10-13T21:50:48Z",
-    "subtype": "multiple_choice",
+    "type": "procedure",
+    "endTime": "2025-10-14T09:26:20Z",
+    "subtype": "sequential",
     "success": true,
     "attempts": 1,
-    "duration": 2,
-    "objectId": "autoclave_qcm",
-    "startTime": "2025-10-13T21:50:46Z",
-    "interactionId": "autoclave_qcm_question_638959890460950000"
-  },
-  {
-    "data": {
-      "options": [
-        "Parce qu'ils peuvent s'évaporer et provoquer un incendie/explosion",
-        "Parce qu'ils dégradent la qualité du pare-brise",
-        "Parce qu'ils sont coûteux",
-        "Parce qu'ils compliquent le nettoyage de l'autoclave"
-      ],
-      "finalScore": 100,
-      "userAnswers": [[0]],
-      "questionText": "Pourquoi est-il interdit d'utiliser des produits inflammables sur le verre avant passage à l'autoclave ?",
-      "correctAnswers": [0],
-      "firstAttemptCorrect": true
-    },
-    "type": "question",
-    "endTime": "2025-10-13T21:50:51Z",
-    "subtype": "single_choice",
-    "success": true,
-    "attempts": 1,
-    "duration": 2,
-    "objectId": "autoclave_qcm_2",
-    "startTime": "2025-10-13T21:50:49Z",
-    "interactionId": "autoclave_qcm_2_question_638959890499610000"
-  },
-  {
-    "data": {
-      "options": [
-        "Tous les 10 cycles",
-        "Tous les 20 cycles",
-        "Tous les 30 cycles",
-        "Une fois par mois uniquement"
-      ],
-      "finalScore": 100,
-      "userAnswers": [[2]],
-      "questionText": "Tous les combien de cycles de production un cycle de nettoyage à vide doit-il être effectué sur l'autoclave ?",
-      "correctAnswers": [2],
-      "firstAttemptCorrect": true
-    },
-    "type": "question",
-    "endTime": "2025-10-13T21:50:54Z",
-    "subtype": "single_choice",
-    "success": true,
-    "attempts": 1,
-    "duration": 2,
-    "objectId": "autoclave_qcm_2",
-    "startTime": "2025-10-13T21:50:52Z",
-    "interactionId": "autoclave_qcm_2_question_638959890520860000"
-  },
-  {
-    "data": {
-      "options": [
-        "Éliminer les résidus de produits volatils ou contaminants",
-        "Améliorer la transparence du verre",
-        "Maintenir la sécurité et la performance de l'autoclave",
-        "Réduire la consommation énergétique"
-      ],
-      "finalScore": 100,
-      "userAnswers": [[0, 2]],
-      "questionText": "Quel est l'objectif principal du cycle de nettoyage à vide ?",
-      "correctAnswers": [0, 2],
-      "firstAttemptCorrect": true
-    },
-    "type": "question",
-    "endTime": "2025-10-13T21:50:56Z",
-    "subtype": "multiple_choice",
-    "success": true,
-    "attempts": 1,
-    "duration": 2,
-    "objectId": "autoclave_qcm_2",
-    "startTime": "2025-10-13T21:50:54Z",
-    "interactionId": "autoclave_qcm_2_question_638959890546910000"
-  },
-  {
-    "data": {
-      "options": [
-        "À couper immédiatement toutes les énergies en cas de danger",
-        "À signaler la fin de cycle",
-        "À lancer un cycle de nettoyage automatique",
-        "À ouvrir la porte de l'autoclave automatiquement"
-      ],
-      "finalScore": 100,
-      "userAnswers": [[0]],
-      "questionText": "À quoi sert la ligne d'urgence installée à l'intérieur de l'autoclave ?",
-      "correctAnswers": [0],
-      "firstAttemptCorrect": true
-    },
-    "type": "question",
-    "endTime": "2025-10-13T21:50:58Z",
-    "subtype": "single_choice",
-    "success": true,
-    "attempts": 1,
-    "duration": 2,
-    "objectId": "autoclave_qcm_2",
-    "startTime": "2025-10-13T21:50:56Z",
-    "interactionId": "autoclave_qcm_2_question_638959890569780000"
+    "duration": 5,
+    "objectId": "yellow_capsule",
+    "startTime": "2025-10-14T09:26:15Z",
+    "interactionId": "yellow_capsule_procedure_638960307757680000"
   }
 ]

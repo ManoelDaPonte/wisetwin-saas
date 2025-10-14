@@ -1,4 +1,5 @@
 // Types pour le système de gestion de formations
+import type { FormationMetadata } from "@/types/metadata-types";
 
 export interface TrainingTag {
   id: string;
@@ -210,39 +211,50 @@ export type CompletionStatus =
   | "ABANDONED"
   | "FAILED";
 
-// Types détaillés pour les données d'interaction
+// Types détaillés pour les données d'interaction - NOUVEAU FORMAT AVEC CLÉS
+
 export interface QuestionInteractionData {
-  questionText: string;
-  options?: string[];
-  correctAnswers?: number[];
-  userAnswers?: number[][];
-  finalScore: number;
+  questionKey: string;           // Clé de la question (ex: "question_1")
+  objectId: string;              // ID de l'objet Unity (ex: "red_cube")
+  correctAnswers: number[];
+  userAnswers: number[][];       // Historique des tentatives
   firstAttemptCorrect: boolean;
-  selectionMode?: "single" | "multiple"; // Ajout du mode de sélection
-  questionType?: string; // Type de question (si disponible)
+  finalScore: number;            // 100 ou 0
+}
+
+export interface ProcedureStepAnalyticsData {
+  stepNumber: number;            // 1, 2, 3...
+  stepKey: string;               // Clé de l'étape (ex: "step_1")
+  targetObjectId: string;        // ID de l'objet cible
+  completed: boolean;
+  duration: number;              // Durée de l'étape en secondes
+  wrongClicksOnThisStep: number; // Erreurs sur cette étape uniquement
 }
 
 export interface ProcedureInteractionData {
-  title?: string; // Nouveau format Unity (optionnel pour rétrocompatibilité)
-  instruction: string;
-  stepNumber: number;
+  procedureKey: string;          // Clé de la procédure (ex: "procedure_startup")
+  objectId: string;              // ID de l'objet Unity (ex: "yellow_capsule")
   totalSteps: number;
-  hintsUsed: number;
-  wrongClicks: number;
-  finalScore?: number; // Ajout du score final
+  steps: ProcedureStepAnalyticsData[];
+  totalWrongClicks: number;      // Erreurs totales sur toute la procédure
+  totalDuration: number;         // Durée totale de la procédure
+  perfectCompletion: boolean;    // true si aucune erreur
+  finalScore: number;            // 100 si parfait, 0 sinon
 }
 
 export interface TextInteractionData {
-  textContent: string;
+  contentKey: string;            // Clé du contenu (ex: "text_content")
+  objectId: string;              // ID de l'objet Unity (ex: "green_cylinder")
   timeDisplayed: number;
   readComplete: boolean;
   scrollPercentage: number;
+  finalScore: number;            // Toujours 100 pour les textes
 }
 
 export interface InteractionData {
   interactionId: string;
   type: "question" | "procedure" | "text" | string;
-  subtype?: "single_choice" | "multiple_choice" | "sequential" | "parallel" | string; // Ajout du subtype
+  subtype?: "single_choice" | "multiple_choice" | "sequential" | "parallel" | string;
   startTime: Date;
   endTime: Date;
   duration: number;
@@ -254,6 +266,31 @@ export interface InteractionData {
     | ProcedureInteractionData
     | TextInteractionData
     | Record<string, unknown>;
+}
+
+// Type pour les interactions enrichies avec les métadonnées résolues
+export interface ResolvedInteraction extends InteractionData {
+  resolvedData?: {
+    // Pour questions
+    questionText?: string;
+    options?: string[];
+    feedback?: string;
+
+    // Pour procédures
+    procedureTitle?: string;
+    procedureDescription?: string;
+    steps?: Array<{
+      stepNumber: number;
+      title: string;
+      instruction: string;
+      hint?: string;
+    }>;
+
+    // Pour texte
+    textTitle?: string;
+    textSubtitle?: string;
+    textContent?: string;
+  };
 }
 
 export interface TrainingAnalytics {
@@ -274,18 +311,20 @@ export interface TrainingAnalytics {
   endTime: Date;
   totalDuration: number;
   completionStatus: CompletionStatus;
-  successRate: number;
+  score: number; // Score Unity (0-100)
   totalInteractions: number;
   successfulInteractions: number;
   failedInteractions: number;
-  interactions: InteractionData[];
+  interactions: InteractionData[] | ResolvedInteraction[]; // Peut être enrichi
+  metadata?: FormationMetadata | null;
+  displayName?: string;
+  imageUrl?: string;
 }
 
 export interface AnalyticsAggregates {
   totalSessions: number;
   averageDuration: number;
-  averageSuccessRate: number;
-  averageTimePerInteraction: number;
+  averageScore: number; // Remplacement de averageSuccessRate
   totalInteractions: number;
   totalSuccessful: number;
   totalFailed: number;
@@ -326,14 +365,14 @@ export interface AnalyticsSession {
 export interface UserAnalyticsStats {
   totalSessions: number;
   completedSessions: number;
-  avgSuccessRate: number;
+  avgScore: number; // Remplacement de avgSuccessRate
   totalTime: number;
 }
 
 export interface BuildAnalyticsStats {
   buildName: string;
   totalSessions: number;
-  avgSuccessRate: number;
+  avgScore: number; // Remplacement de avgSuccessRate
   avgDuration: number;
   completedSessions: number;
   participants: Set<string>;
@@ -371,10 +410,13 @@ export interface ProcedureStats {
 
 export interface TrainingStatsWithQuestions {
   buildName: string;
+  displayName?: string;
+  imageUrl?: string;
+  metadata?: FormationMetadata | null;
   uniqueUsers: Set<string>;
   sessions: TrainingAnalytics[];
   totalDuration: number;
-  averageSuccessRate: number;
+  averageScore: number; // Remplacement de averageSuccessRate
   completedCount: number;
   allQuestions: Map<string, QuestionStats>;
   allProcedures?: Map<string, ProcedureStats>;

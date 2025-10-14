@@ -1,5 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useOrganizationStore } from "@/stores/organization-store";
+import { useCurrentLanguage } from "@/stores/language-store";
 import { toast } from "sonner";
 import type { GetTrainingAnalyticsQuery } from "@/validators";
 import type { AnalyticsResponse } from "@/types/training";
@@ -7,9 +8,10 @@ import type { AnalyticsResponse } from "@/types/training";
 // Hook pour récupérer les analytics avec filtres
 export function useTrainingAnalytics(filters?: Partial<GetTrainingAnalyticsQuery>) {
   const { activeOrganization } = useOrganizationStore();
+  const currentLanguage = useCurrentLanguage();
 
   return useQuery({
-    queryKey: ["training-analytics", activeOrganization?.id, filters],
+    queryKey: ["training-analytics", activeOrganization?.id, filters, currentLanguage],
     queryFn: async (): Promise<AnalyticsResponse> => {
       const params = new URLSearchParams();
 
@@ -17,6 +19,9 @@ export function useTrainingAnalytics(filters?: Partial<GetTrainingAnalyticsQuery
       if (activeOrganization?.id) {
         params.append("organizationId", activeOrganization.id);
       }
+
+      // Ajouter la langue courante
+      params.append("language", currentLanguage);
 
       if (filters) {
         Object.entries(filters).forEach(([key, value]) => {

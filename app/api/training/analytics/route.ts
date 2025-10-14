@@ -6,6 +6,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { Prisma } from "@prisma/client";
 import type { InteractionData, QuestionInteractionData } from "@/types/training";
+import { enrichAnalyticsWithMetadata } from "@/lib/analytics/metadata-resolver";
+import { getMetadataForBuild } from "@/lib/admin/metadata-service";
 
 /**
  * GET /api/training/analytics - Récupérer les analytics de formation
@@ -164,13 +166,52 @@ export async function GET(req: NextRequest) {
       take: limit,
     });
 
+    // Récupérer la langue depuis les query params (défaut: "fr")
+    const language = searchParams.get("language") || "fr";
+
+    // Récupérer les métadonnées pour chaque build unique
+    const uniqueBuilds = [...new Set(analytics.map(a => a.buildName))];
+    const metadataMap = new Map();
+
+    await Promise.all(
+      uniqueBuilds.map(async (buildName) => {
+        const session = analytics.find(a => a.buildName === buildName);
+        if (session) {
+          try {
+            const metadata = await getMetadataForBuild(
+              session.containerId,
+              buildName,
+              session.buildType
+            );
+            if (metadata) {
+              metadataMap.set(buildName, metadata);
+            }
+          } catch (error) {
+            console.warn(`No metadata for ${buildName}:`, error);
+          }
+        }
+      })
+    );
+
+    // Enrichir les analytics avec les métadonnées
+    // Cast les interactions depuis JsonValue vers InteractionData[]
+    const analyticsWithTypedInteractions = analytics.map(a => ({
+      ...a,
+      interactions: a.interactions as unknown as InteractionData[],
+    }));
+
+    const enrichedAnalytics = enrichAnalyticsWithMetadata(
+      analyticsWithTypedInteractions,
+      metadataMap,
+      language
+    );
+
     // Calculer les métriques agrégées
     const aggregates = await prisma.trainingAnalytics.aggregate({
       where: whereConditions,
       _avg: {
         totalDuration: true,
-        successRate: true,
-        averageTimePerInteraction: true,
+        score: true, // Utiliser score au lieu de successRate
       },
       _count: {
         id: true,
@@ -209,7 +250,8 @@ export async function GET(req: NextRequest) {
       interactions?.forEach((interaction) => {
         if (interaction.type === "question" && interaction.data) {
           const questionData = interaction.data as QuestionInteractionData;
-          const key = questionData.questionText;
+          // Utiliser questionKey comme identifiant unique de la question
+          const key = questionData.questionKey;
           const current = questionFailures.get(key) || {
             text: key,
             failures: 0,
@@ -234,25 +276,49 @@ export async function GET(req: NextRequest) {
       }));
 
     // Formater la réponse
+    type EnrichedAnalytics = typeof enrichedAnalytics[number];
+    const localeKey =
+      language?.toLowerCase().startsWith("en") ? "en" : "fr";
+
     const response = {
-      analytics: analytics.map((a) => ({
-        id: a.id,
-        sessionId: a.sessionId,
-        trainingId: a.trainingId,
-        buildName: a.buildName,
-        buildType: a.buildType,
-        buildVersion: a.buildVersion || "1.0.0", // Défaut pour rétrocompatibilité
-        user: a.user,
-        startTime: a.startTime,
-        endTime: a.endTime,
-        totalDuration: a.totalDuration,
-        completionStatus: a.completionStatus,
-        successRate: a.successRate,
-        totalInteractions: a.totalInteractions,
-        successfulInteractions: a.successfulInteractions,
-        failedInteractions: a.failedInteractions,
-        interactions: a.interactions,
-      })),
+      analytics: enrichedAnalytics.map((a: EnrichedAnalytics) => {
+        const metadata = metadataMap.get(a.buildName) || null;
+        let displayName = a.buildName;
+
+        if (metadata?.title) {
+          if (typeof metadata.title === "string") {
+            displayName = metadata.title;
+          } else {
+            displayName =
+              metadata.title[localeKey as keyof typeof metadata.title] ||
+              metadata.title.fr ||
+              metadata.title.en ||
+              a.buildName;
+          }
+        }
+
+        return {
+          id: a.id,
+          sessionId: a.sessionId,
+          trainingId: a.trainingId,
+          buildName: a.buildName,
+          buildType: a.buildType,
+          buildVersion: a.buildVersion || "1.0.0",
+          user: a.user,
+          startTime: a.startTime,
+          endTime: a.endTime,
+          totalDuration: a.totalDuration,
+          completionStatus: a.completionStatus,
+          score: a.score, // Utiliser score au lieu de successRate
+          totalInteractions: a.totalInteractions,
+          successfulInteractions: a.successfulInteractions,
+          failedInteractions: a.failedInteractions,
+          interactions: a.interactions, // Déjà enrichies avec resolvedData
+          metadata,
+          displayName,
+          imageUrl: metadata?.imageUrl || "",
+        };
+      }),
       pagination: {
         page,
         limit,
@@ -262,9 +328,7 @@ export async function GET(req: NextRequest) {
       aggregates: {
         totalSessions: aggregates._count.id || 0,
         averageDuration: aggregates._avg.totalDuration || 0,
-        averageSuccessRate: aggregates._avg.successRate || 0,
-        averageTimePerInteraction:
-          aggregates._avg.averageTimePerInteraction || 0,
+        averageScore: aggregates._avg.score || 0, // Utiliser score
         totalInteractions: aggregates._sum.totalInteractions || 0,
         totalSuccessful: aggregates._sum.successfulInteractions || 0,
         totalFailed: aggregates._sum.failedInteractions || 0,

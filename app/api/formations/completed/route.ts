@@ -64,72 +64,14 @@ export const POST = withAuth(async (req: AuthenticatedRequest) => {
       }
     }
 
-    // Vérifier que la formation existe réellement dans Azure
-    try {
-      const azureBuilds = await listBuilds(containerId, buildType);
-      const buildExists = azureBuilds.some((build: Build) => 
-        build.name === buildName || build.id === buildName
-      );
-
-      if (!buildExists) {
-        return NextResponse.json(
-          { 
-            error: `Formation '${buildName}' introuvable dans le container ${containerId}`,
-            details: "La formation doit exister dans Azure pour être marquée comme terminée"
-          },
-          { status: 404 }
-        );
-      }
-    } catch (azureError) {
-      console.error("Erreur lors de la vérification Azure:", azureError);
-      return NextResponse.json(
-        { 
-          error: "Impossible de vérifier l'existence de la formation",
-          details: "Erreur de communication avec Azure Storage"
-        },
-        { status: 503 }
-      );
-    }
-
-    // Mettre à jour ou créer l'enregistrement UserBuild
-    const userBuild = await prisma.userBuild.upsert({
-      where: {
-        userId_buildName_buildType_containerId: {
-          userId: req.user.id,
-          buildName,
-          buildType: buildType.toUpperCase() as "WISETOUR" | "WISETRAINER",
-          containerId,
-        }
-      },
-      update: {
-        completed: true,
-        completedAt: new Date(),
-        progress: 100, // Formation terminée
-        lastAccessedAt: new Date(),
-      },
-      create: {
-        userId: req.user.id,
-        buildName,
-        buildType: buildType.toUpperCase() as "WISETOUR" | "WISETRAINER",
-        containerId,
-        completed: true,
-        completedAt: new Date(),
-        progress: 100,
-        startedAt: new Date(),
-        lastAccessedAt: new Date(),
-      }
-    });
+    // Note : Cette route est obsolète car les completions sont maintenant
+    // enregistrées automatiquement via TrainingAnalytics depuis Unity.
+    // On garde cette route pour compatibilité mais elle ne devrait plus être appelée.
 
     return NextResponse.json({
       success: true,
-      message: "Formation marquée comme terminée",
-      completion: {
-        id: userBuild.id,
-        buildName: userBuild.buildName,
-        buildType: userBuild.buildType,
-        completedAt: userBuild.completedAt,
-        progress: userBuild.progress,
-      }
+      message: "Cette route est obsolète. Les formations sont maintenant automatiquement marquées comme terminées via TrainingAnalytics.",
+      deprecated: true,
     });
 
   } catch (error) {
@@ -151,9 +93,14 @@ export const GET = withAuth(async (req: AuthenticatedRequest) => {
     const containerId = searchParams.get("containerId");
 
     // Construire les conditions de la requête
-    const whereConditions: Record<string, unknown> = {
+    const whereConditions: {
+      userId: string;
+      completionStatus: string;
+      buildType?: string;
+      containerId?: string;
+    } = {
       userId: req.user.id,
-      completed: true,
+      completionStatus: 'COMPLETED',
     };
 
     if (buildType) {
@@ -170,24 +117,36 @@ export const GET = withAuth(async (req: AuthenticatedRequest) => {
       whereConditions.containerId = containerId;
     }
 
-    // Récupérer les formations terminées
-    const completedFormations = await prisma.userBuild.findMany({
+    // Récupérer les formations terminées depuis TrainingAnalytics
+    const completedAnalytics = await prisma.trainingAnalytics.findMany({
       where: whereConditions,
       orderBy: {
-        completedAt: "desc", // Plus récentes en premier
+        endTime: "desc", // Plus récentes en premier
       }
     });
 
-    // Formater les données pour l'interface
-    const formattedCompletions = completedFormations.map(formation => ({
-      id: formation.id,
-      buildName: formation.buildName,
-      buildType: formation.buildType,
-      containerId: formation.containerId,
-      progress: formation.progress,
-      completedAt: formation.completedAt,
-      startedAt: formation.startedAt,
-      lastAccessedAt: formation.lastAccessedAt,
+    // Grouper par formation unique pour éviter les doublons
+    const uniqueCompletions = new Map<string, typeof completedAnalytics[0]>();
+    completedAnalytics.forEach(analytics => {
+      const key = `${analytics.buildName}-${analytics.buildType}-${analytics.containerId}`;
+      const existing = uniqueCompletions.get(key);
+
+      // Garder la plus récente complétion
+      if (!existing || new Date(analytics.endTime) > new Date(existing.endTime)) {
+        uniqueCompletions.set(key, analytics);
+      }
+    });
+
+    // Formater les données pour l'interface (format compatible avec l'ancien UserBuild)
+    const formattedCompletions = Array.from(uniqueCompletions.values()).map(analytics => ({
+      id: analytics.id,
+      buildName: analytics.buildName,
+      buildType: analytics.buildType,
+      containerId: analytics.containerId,
+      progress: 100, // Toujours 100 pour une formation complétée
+      completedAt: analytics.endTime,
+      startedAt: analytics.startTime,
+      lastAccessedAt: analytics.endTime,
     }));
 
     return NextResponse.json({

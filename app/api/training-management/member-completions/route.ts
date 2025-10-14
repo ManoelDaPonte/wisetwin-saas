@@ -24,26 +24,17 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
       }
     });
 
-    // Récupérer toutes les formations terminées par ces membres dans le container de l'organisation
+    // Récupérer toutes les formations terminées par ces membres depuis TrainingAnalytics
     const memberIds = organizationMembers.map(member => member.userId);
-    
-    const memberCompletions = await prisma.userBuild.findMany({
+
+    const completedAnalytics = await prisma.trainingAnalytics.findMany({
       where: {
         userId: { in: memberIds },
         buildType: buildType.toUpperCase() as "WISETOUR" | "WISETRAINER",
         containerId: request.organization.azureContainerId,
-        completed: true,
+        completionStatus: 'COMPLETED',
       },
-      select: {
-        id: true,
-        userId: true,
-        buildName: true,
-        buildType: true,
-        containerId: true,
-        progress: true,
-        completedAt: true,
-        startedAt: true,
-        lastAccessedAt: true,
+      include: {
         user: {
           select: {
             id: true,
@@ -53,9 +44,35 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
         }
       },
       orderBy: {
-        completedAt: "desc",
+        endTime: "desc",
       }
     });
+
+    // Grouper par utilisateur + formation pour éviter les doublons
+    const uniqueCompletions = new Map<string, typeof completedAnalytics[0]>();
+    completedAnalytics.forEach(analytics => {
+      const key = `${analytics.userId}-${analytics.buildName}-${analytics.buildType}`;
+      const existing = uniqueCompletions.get(key);
+
+      // Garder la plus récente complétion
+      if (!existing || new Date(analytics.endTime) > new Date(existing.endTime)) {
+        uniqueCompletions.set(key, analytics);
+      }
+    });
+
+    // Formater pour correspondre à l'ancien format UserBuild
+    const memberCompletions = Array.from(uniqueCompletions.values()).map(analytics => ({
+      id: analytics.id,
+      userId: analytics.userId,
+      buildName: analytics.buildName,
+      buildType: analytics.buildType,
+      containerId: analytics.containerId,
+      progress: 100,
+      completedAt: analytics.endTime,
+      startedAt: analytics.startTime,
+      lastAccessedAt: analytics.endTime,
+      user: analytics.user,
+    }));
 
     return NextResponse.json({
       memberCompletions,

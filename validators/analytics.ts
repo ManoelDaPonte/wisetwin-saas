@@ -25,33 +25,46 @@ export const InteractionSubtypeSchema = z.enum([
   "tutorial",
 ]);
 
-// Données spécifiques pour une interaction de type Question
+// Données spécifiques pour une interaction de type Question - NOUVEAU FORMAT
 export const QuestionAnalyticsDataSchema = z.object({
-  questionText: z.string(),
-  options: z.array(z.string()),
+  questionKey: z.string(),              // Clé de la question
+  objectId: z.string(),                 // ID de l'objet Unity
   correctAnswers: z.array(z.number()),
-  userAnswers: z.array(z.array(z.number())), // Historique de toutes les tentatives
+  userAnswers: z.array(z.array(z.number())), // Historique des tentatives
   firstAttemptCorrect: z.boolean(),
-  finalScore: z.number(),
-  selectionMode: z.enum(["single", "multiple"]).optional(),
-  questionType: z.string().optional(),
+  finalScore: z.number(),               // 100 ou 0
 });
 
-// Données spécifiques pour une interaction de type Procédure
-export const ProcedureAnalyticsDataSchema = z.object({
+// Schéma pour une étape de procédure
+export const ProcedureStepAnalyticsDataSchema = z.object({
   stepNumber: z.number(),
-  totalSteps: z.number(),
-  instruction: z.string(),
-  hintsUsed: z.number(),
-  wrongClicks: z.number(),
+  stepKey: z.string(),                  // Clé de l'étape
+  targetObjectId: z.string(),           // ID de l'objet cible
+  completed: z.boolean(),
+  duration: z.number(),
+  wrongClicksOnThisStep: z.number(),
 });
 
-// Données spécifiques pour une interaction de type Texte
+// Données spécifiques pour une interaction de type Procédure - NOUVEAU FORMAT
+export const ProcedureAnalyticsDataSchema = z.object({
+  procedureKey: z.string(),             // Clé de la procédure
+  objectId: z.string(),                 // ID de l'objet Unity
+  totalSteps: z.number(),
+  steps: z.array(ProcedureStepAnalyticsDataSchema),
+  totalWrongClicks: z.number(),
+  totalDuration: z.number(),
+  perfectCompletion: z.boolean(),
+  finalScore: z.number(),               // 100 ou 0
+});
+
+// Données spécifiques pour une interaction de type Texte - NOUVEAU FORMAT
 export const TextAnalyticsDataSchema = z.object({
-  textContent: z.string(),
+  contentKey: z.string(),               // Clé du contenu
+  objectId: z.string(),                 // ID de l'objet Unity
   timeDisplayed: z.number(),
   readComplete: z.boolean(),
   scrollPercentage: z.number(),
+  finalScore: z.number().default(100),  // Toujours 100
 });
 
 // Enregistrement d'une interaction individuelle
@@ -73,10 +86,7 @@ export const AnalyticsSummarySchema = z.object({
   totalInteractions: z.number(),
   successfulInteractions: z.number(),
   failedInteractions: z.number(),
-  averageTimePerInteraction: z.number(),
-  totalAttempts: z.number(),
-  totalFailedAttempts: z.number(),
-  successRate: z.number(), // Pourcentage
+  score: z.number(), // Score final Unity (0-100)
 });
 
 // Structure de données complète pour les analytics de formation
@@ -145,7 +155,7 @@ export const AggregatedAnalyticsSchema = z.object({
   completedSessions: z.number(),
   abandonedSessions: z.number(),
   averageDuration: z.number(),
-  averageSuccessRate: z.number(),
+  averageScore: z.number(),
   totalUniqueUsers: z.number(),
   mostFailedQuestions: z.array(z.object({
     questionText: z.string(),

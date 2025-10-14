@@ -222,6 +222,33 @@ export async function deleteFormationMetadata({
   }
 }
 
+/**
+ * Récupère les métadonnées d'un build ou retourne null si elles n'existent pas
+ * Fonction helper pour l'enrichissement des analytics
+ */
+export async function getMetadataForBuild(
+  containerId: string,
+  buildName: string,
+  buildType: string
+): Promise<FormationMetadata | null> {
+  try {
+    const result = await getFormationMetadata({
+      containerId,
+      buildType: buildType.toLowerCase() as BuildType,
+      buildName,
+    });
+
+    if (result.exists && result.metadata) {
+      return result.metadata;
+    }
+
+    return null;
+  } catch (error) {
+    console.warn(`[getMetadataForBuild] Error fetching metadata for ${buildName}:`, error);
+    return null;
+  }
+}
+
 // Utilitaire pour convertir un stream en string
 async function streamToString(readableStream: NodeJS.ReadableStream): Promise<string> {
   return new Promise((resolve, reject) => {

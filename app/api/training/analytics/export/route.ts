@@ -109,16 +109,13 @@ export const GET = withOrgAuth(async (req: OrgAuthenticatedRequest) => {
         'Date fin': formatDate(session.endTime),
         'Durée (min)': Math.round(session.totalDuration / 60),
         'Statut': translateStatus(session.completionStatus),
-        'Taux de réussite (%)': session.successRate.toFixed(2),
+        'Score (%)': session.score.toFixed(2),
         'Interactions totales': session.totalInteractions,
         'Interactions réussies': session.successfulInteractions,
         'Interactions échouées': session.failedInteractions,
         'Questions': questionCount,
         'Procédures': procedureCount,
         'Textes': textCount,
-        'Tentatives totales': session.totalAttempts,
-        'Échecs totaux': session.totalFailedAttempts,
-        'Temps moyen par interaction (s)': session.averageTimePerInteraction.toFixed(2),
       };
     });
 

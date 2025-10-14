@@ -226,10 +226,10 @@ export function AnalyticsDashboardV2({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">
-                  Taux de réussite moyen
+                  Score moyen
                 </p>
                 <p className="text-2xl font-bold">
-                  {aggregates?.averageSuccessRate?.toFixed(1) || 0}%
+                  {Math.round(aggregates?.averageScore ?? 0)}%
                 </p>
               </div>
               <BarChart3 className="h-8 w-8 text-muted-foreground/50" />
