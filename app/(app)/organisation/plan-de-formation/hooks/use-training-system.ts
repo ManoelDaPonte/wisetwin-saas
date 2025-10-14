@@ -14,7 +14,7 @@ export function useTrainingSystem() {
   const { activeOrganization } = useOrganizationStore();
 
   // Hooks de base
-  const tagsQuery = useTrainingTags();
+  const tagsQuery = useTrainingTags({ includeArchived: true });
   const memberTagsQuery = useMemberTags();
   const buildTagsQuery = useBuildTags();
   const membersQuery = useMembers();
@@ -27,20 +27,25 @@ export function useTrainingSystem() {
   // Données enrichies avec statistiques
   const systemStats = useMemo(() => {
     const tags = tagsQuery.data?.tags || [];
+    const activeTags = tags.filter(tag => !tag.archived);
     const memberTags = memberTagsQuery.data?.memberTags || [];
     const members = membersQuery.members || [];
 
+    const activeTagIds = new Set(activeTags.map(tag => tag.id));
+    const activeMemberTags = memberTags.filter(mt => activeTagIds.has(mt.tagId));
+
     return {
-      totalTags: tags.length,
+      totalTags: activeTags.length,
       totalMembers: members.length,
-      totalAssignments: memberTags.length,
-      averageTagsPerMember: members.length > 0 ? memberTags.length / members.length : 0,
-      tagsWithMembers: tags.filter(tag =>
-        memberTags.some(mt => mt.tagId === tag.id)
+      totalAssignments: activeMemberTags.length,
+      averageTagsPerMember: members.length > 0 ? activeMemberTags.length / members.length : 0,
+      tagsWithMembers: activeTags.filter(tag =>
+        activeMemberTags.some(mt => mt.tagId === tag.id)
       ).length,
       membersWithTags: members.filter(member =>
-        memberTags.some(mt => mt.userId === member.id)
+        activeMemberTags.some(mt => mt.userId === member.id)
       ).length,
+      archivedTags: tags.length - activeTags.length,
     };
   }, [tagsQuery.data?.tags, memberTagsQuery.data?.memberTags, membersQuery.members]);
 
@@ -206,16 +211,17 @@ export function useTrainingDashboard() {
   // Métriques principales pour le dashboard
   const dashboardMetrics = useMemo(() => {
     const { systemStats, tagsWithStats, membersWithStats } = trainingSystem;
+    const visibleTags = tagsWithStats.filter(tag => !tag.archived);
     
     // Tags par priorité
     const priorityBreakdown = {
-      high: tagsWithStats.filter(tag => tag.priority === "HIGH").length,
-      medium: tagsWithStats.filter(tag => tag.priority === "MEDIUM").length,
-      low: tagsWithStats.filter(tag => tag.priority === "LOW").length,
+      high: visibleTags.filter(tag => tag.priority === "HIGH").length,
+      medium: visibleTags.filter(tag => tag.priority === "MEDIUM").length,
+      low: visibleTags.filter(tag => tag.priority === "LOW").length,
     };
     
     // Plans actifs (pas terminés ET échéance pas dépassée)
-    const activePlans = tagsWithStats.filter(tag => {
+    const activePlans = visibleTags.filter(tag => {
       const notCompleted = !tag.isCompleted;
       const notOverdue = !tag.dueDate || new Date(tag.dueDate) >= new Date();
       // Un plan est actif s'il n'est pas terminé ET (pas d'échéance OU échéance pas encore dépassée)
@@ -223,10 +229,10 @@ export function useTrainingDashboard() {
     }).length;
 
     // Plans terminés (100% des membres ont terminé toutes les formations)
-    const completedPlans = tagsWithStats.filter(tag => tag.isCompleted).length;
+    const completedPlans = visibleTags.filter(tag => tag.isCompleted).length;
 
     // Plans en retard (pas 100% terminé ET dépassement de due date)
-    const overduePlans = tagsWithStats.filter(tag => {
+    const overduePlans = visibleTags.filter(tag => {
       const isOverdue = tag.dueDate && new Date(tag.dueDate) < new Date();
       const notCompleted = !tag.isCompleted;
       // Un plan est en retard s'il a une échéance passée ET qu'il n'est pas terminé
@@ -240,7 +246,7 @@ export function useTrainingDashboard() {
     const nextWeek = new Date();
     nextWeek.setDate(nextWeek.getDate() + 7);
     
-    const upcomingDeadlines = tagsWithStats.filter(tag => 
+    const upcomingDeadlines = visibleTags.filter(tag => 
       tag.dueDate && 
       new Date(tag.dueDate) > new Date() && 
       new Date(tag.dueDate) <= nextWeek

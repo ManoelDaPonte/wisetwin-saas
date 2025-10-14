@@ -24,6 +24,7 @@ export const CreateTrainingTagInputSchema = z.object({
   description: z.string()
     .max(500, "La description ne peut pas dépasser 500 caractères")
     .optional(),
+  archived: z.boolean().default(false).optional(),
   dueDate: z.string().nullable().optional(),
   priority: PrioritySchema.default("MEDIUM").optional(),
 });
@@ -65,6 +66,9 @@ export const GetTrainingTagsQuerySchema = z.object({
   search: z.string().max(100).optional(),
   limit: z.number().int().min(1).max(100).default(50).optional(),
   offset: z.number().int().min(0).default(0).optional(),
+  includeArchived: z
+    .union([z.boolean(), z.string().transform((val) => val === "true")])
+    .optional(),
 });
 
 export const GetMemberTagsQuerySchema = z.object({

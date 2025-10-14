@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { fr, enUS } from "date-fns/locale";
 import {
@@ -52,7 +52,7 @@ interface BuildsTableProps {
   mode?: "catalog" | "my-trainings" | "completed";
 }
 
-type SortField = "name" | "category" | "lastModified" | "version";
+type SortField = "name" | "category" | "lastModified" | "difficulty" | "duration";
 type SortDirection = "asc" | "desc";
 
 interface SortState {
@@ -82,12 +82,60 @@ export function BuildsTable({
   });
 
   // Helper pour extraire le texte localisé des métadonnées
-  const getLocalizedText = (
-    text: string | { en: string; fr: string } | undefined
-  ): string | undefined => {
-    if (!text) return undefined;
-    if (typeof text === "string") return text;
-    return text[currentLanguage] || text.fr || text.en;
+  const getLocalizedText = useCallback(
+    (text: string | { en: string; fr: string } | undefined): string | undefined => {
+      if (!text) return undefined;
+      if (typeof text === "string") return text;
+      return text[currentLanguage] || text.fr || text.en;
+    },
+    [currentLanguage]
+  );
+
+  const getDifficultyRank = (value?: string | null) => {
+    if (!value) return Number.POSITIVE_INFINITY;
+    const normalized = value.trim().toLowerCase();
+    const mapping: Record<string, number> = {
+      beginner: 1,
+      facile: 1,
+      easy: 1,
+      intermediate: 2,
+      moyen: 2,
+      intermediaire: 2,
+      medium: 2,
+      advanced: 3,
+      avance: 3,
+      avancé: 3,
+      difficile: 3,
+      hard: 3,
+      expert: 4,
+    };
+    return mapping[normalized] ?? Number.POSITIVE_INFINITY;
+  };
+
+  const getDurationValue = (value?: string | null) => {
+    if (!value) return Number.POSITIVE_INFINITY;
+    const normalized = value.trim().toLowerCase();
+    const hourMatch = normalized.match(/(\d+(?:[.,]\d+)?)\s*h/);
+    const minuteMatch = normalized.match(/(\d+(?:[.,]\d+)?)\s*(?:min|m)/);
+
+    let totalMinutes = 0;
+
+    if (hourMatch) {
+      totalMinutes += parseFloat(hourMatch[1].replace(",", ".")) * 60;
+    }
+
+    if (minuteMatch) {
+      totalMinutes += parseFloat(minuteMatch[1].replace(",", "."));
+    }
+
+    if (totalMinutes === 0) {
+      const fallbackNumeric = parseFloat(normalized.replace(",", "."));
+      if (!Number.isNaN(fallbackNumeric)) {
+        totalMinutes = fallbackNumeric;
+      }
+    }
+
+    return totalMinutes === 0 ? Number.POSITIVE_INFINITY : totalMinutes;
   };
 
   const filteredAndSortedBuilds = useMemo(() => {
@@ -118,8 +166,81 @@ export function BuildsTable({
           const dateB = b.lastModified ? new Date(b.lastModified).getTime() : 0;
           comparison = dateA - dateB;
           break;
-        case "version":
-          comparison = (a.version || "").localeCompare(b.version || "");
+        case "difficulty":
+          const diffA =
+            getDifficultyRank(
+              typeof a.metadata?.difficulty === "string"
+                ? a.metadata?.difficulty
+                : typeof a.metadata?.difficulty === "object"
+                ? getLocalizedText(a.metadata?.difficulty)
+                : typeof a.difficulty === "string"
+                ? a.difficulty
+                : undefined
+            ) ?? Number.POSITIVE_INFINITY;
+          const diffB =
+            getDifficultyRank(
+              typeof b.metadata?.difficulty === "string"
+                ? b.metadata?.difficulty
+                : typeof b.metadata?.difficulty === "object"
+                ? getLocalizedText(b.metadata?.difficulty)
+                : typeof b.difficulty === "string"
+                ? b.difficulty
+                : undefined
+            ) ?? Number.POSITIVE_INFINITY;
+          if (diffA !== diffB) {
+            comparison = diffA - diffB;
+          } else {
+            const diffLabelA =
+              (typeof a.metadata?.difficulty === "string"
+                ? a.metadata?.difficulty
+                : typeof a.metadata?.difficulty === "object"
+                ? getLocalizedText(a.metadata?.difficulty)
+                : typeof a.difficulty === "string"
+                ? a.difficulty
+                : "") || "";
+            const diffLabelB =
+              (typeof b.metadata?.difficulty === "string"
+                ? b.metadata?.difficulty
+                : typeof b.metadata?.difficulty === "object"
+                ? getLocalizedText(b.metadata?.difficulty)
+                : typeof b.difficulty === "string"
+                ? b.difficulty
+                : "") || "";
+            comparison = diffLabelA.localeCompare(diffLabelB);
+          }
+          break;
+        case "duration":
+          const durationA = getDurationValue(
+            typeof a.metadata?.duration === "string"
+              ? a.metadata.duration
+              : typeof a.duration === "string"
+              ? a.duration
+              : undefined
+          );
+          const durationB = getDurationValue(
+            typeof b.metadata?.duration === "string"
+              ? b.metadata.duration
+              : typeof b.duration === "string"
+              ? b.duration
+              : undefined
+          );
+          if (durationA !== durationB) {
+            comparison = durationA - durationB;
+          } else {
+            const durationLabelA =
+              (typeof a.metadata?.duration === "string"
+                ? a.metadata.duration
+                : typeof a.duration === "string"
+                ? a.duration
+                : "") || "";
+            const durationLabelB =
+              (typeof b.metadata?.duration === "string"
+                ? b.metadata.duration
+                : typeof b.duration === "string"
+                ? b.duration
+                : "") || "";
+            comparison = durationLabelA.localeCompare(durationLabelB);
+          }
           break;
       }
 
@@ -127,7 +248,7 @@ export function BuildsTable({
     });
 
     return filtered;
-  }, [builds?.builds, searchTerm, sortState]);
+  }, [builds?.builds, searchTerm, sortState, getLocalizedText]);
 
   const paginatedBuilds = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -244,13 +365,17 @@ export function BuildsTable({
                       </SortButton>
                     </TableHead>
                     <TableHead>{t.buildsTable.table.tags}</TableHead>
-                    <TableHead>{t.buildsTable.table.difficulty}</TableHead>
-                    <TableHead>{t.buildsTable.table.duration}</TableHead>
                     <TableHead>
-                      <SortButton field="version">
-                        {t.buildsTable.table.version}
+                      <SortButton field="difficulty">
+                        {t.buildsTable.table.difficulty}
                       </SortButton>
                     </TableHead>
+                    <TableHead>
+                      <SortButton field="duration">
+                        {t.buildsTable.table.duration}
+                      </SortButton>
+                    </TableHead>
+                    <TableHead>{t.buildsTable.table.version}</TableHead>
                     <TableHead>
                       <SortButton field="lastModified">
                         {t.buildsTable.table.modified}

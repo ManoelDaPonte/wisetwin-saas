@@ -4,19 +4,83 @@ import { prisma } from "@/lib/prisma";
 import puppeteer from "puppeteer";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { createHash } from "crypto";
+import QRCode from "qrcode";
 
 interface CertificateData {
-  userName: string;
+  userFirstName: string;
+  userLastName: string;
   userEmail: string;
   formationName: string;
   completionDate: string;
   organizationName: string;
   certificateId: string;
-  buildType: 'wisetrainer' | 'wisetour';
+  buildType: "wisetrainer" | "wisetour";
+  verificationUrl: string;
+  verificationCode: string;
+  qrCodeDataUrl: string;
+}
+
+function generateVerificationCode(trainingAnalyticsId: string): string {
+  const hash = createHash("sha256")
+    .update(trainingAnalyticsId)
+    .digest("base64url")
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "");
+
+  return `WT-${hash.slice(0, 12)}`;
+}
+
+function resolveUserNames(
+  firstName: string | null | undefined,
+  lastName: string | null | undefined,
+  fallback?: string
+): { firstName: string; lastName: string; fullName: string } {
+  let resolvedFirst = firstName?.trim() ?? "";
+  let resolvedLast = lastName?.trim() ?? "";
+
+  const safeFallback = fallback?.trim();
+  const canSplitFallback =
+    safeFallback && safeFallback.length > 0 && !safeFallback.includes("@");
+
+  if (canSplitFallback) {
+    const parts = safeFallback!.split(/\s+/).filter(Boolean);
+    if (parts.length === 1) {
+      if (!resolvedFirst) {
+        resolvedFirst = parts[0];
+      }
+    } else if (parts.length > 1) {
+      if (!resolvedFirst) {
+        resolvedFirst = parts[0];
+      }
+      if (!resolvedLast) {
+        resolvedLast = parts.slice(1).join(" ");
+      }
+    }
+  }
+
+  if (!resolvedFirst) {
+    resolvedFirst = "Prénom non renseigné";
+  }
+  if (!resolvedLast) {
+    resolvedLast = "Nom non renseigné";
+  }
+
+  const fullNameParts = [resolvedFirst, resolvedLast].filter(Boolean);
+  const fullName =
+    fullNameParts.length > 0
+      ? fullNameParts.join(" ")
+      : fallback || "Identité non renseignée";
+
+  return {
+    firstName: resolvedFirst,
+    lastName: resolvedLast,
+    fullName,
+  };
 }
 
 function getCertificateTemplate(data: CertificateData): string {
-  const typeLabel = data.buildType === 'wisetrainer' ? 'Formation' : 'Visite Virtuelle';
+  const typeLabel = data.buildType === "wisetrainer" ? "Formation" : "Visite Virtuelle";
   
   return `
 <!DOCTYPE html>
@@ -62,13 +126,6 @@ function getCertificateTemplate(data: CertificateData): string {
       margin-bottom: 15px;
     }
     
-    .organization-name {
-      font-size: 18px;
-      font-weight: 600;
-      color: #000;
-      margin-bottom: 5px;
-    }
-    
     .document-title {
       font-size: 32px;
       font-weight: 700;
@@ -104,13 +161,26 @@ function getCertificateTemplate(data: CertificateData): string {
       border: 1px solid #ddd;
     }
     
-    .user-name {
-      font-size: 20px;
-      font-weight: 600;
-      color: #000;
-      margin-bottom: 5px;
+    .user-info-row {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 8px;
     }
-    
+
+    .info-label {
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-value {
+      font-weight: 500;
+      color: #000;
+    }
+
     .user-email {
       font-size: 14px;
       color: #666;
@@ -118,85 +188,33 @@ function getCertificateTemplate(data: CertificateData): string {
     }
     
     .formation-details {
-      margin: 30px 0;
-      padding: 20px;
-      border: 1px solid #000;
-      background: #fafafa;
-    }
-    
-    .formation-type {
-      font-size: 12px;
-      font-weight: 600;
-      color: #666;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
+      margin: 25px 0;
+      padding: 22px;
+      border: 1px solid #ddd;
+      background: #f8f9fa;
+      text-align: center;
     }
     
     .formation-name {
-      font-size: 18px;
-      font-weight: 600;
+      font-size: 20px;
+      font-weight: 700;
       color: #000;
       margin-bottom: 10px;
     }
     
-    .completion-info {
-      font-size: 14px;
-      color: #333;
-    }
-    
-    .footer {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding-top: 20px;
-    }
-    
-    .signature-section {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 20px;
-    }
-    
-    .signature-left {
-      flex: 1;
-    }
-    
-    .signature-right {
-      flex: 1;
-      text-align: right;
-    }
-    
-    .wisetwin-stamp {
-      width: 100px;
-      height: 100px;
-      border: 3px solid #000;
-      border-radius: 50%;
+    .formation-meta {
       display: inline-flex;
-      align-items: center;
-      justify-content: center;
       flex-direction: column;
-      font-size: 10px;
-      font-weight: 700;
-      text-align: center;
-      line-height: 1.2;
+      gap: 8px;
+      font-size: 13px;
+      color: #333;
+      text-align: left;
     }
-    
-    .stamp-text-1 {
-      font-size: 8px;
-      margin-bottom: 2px;
-    }
-    
-    .stamp-text-2 {
-      font-size: 12px;
-      font-weight: 900;
-    }
-    
-    .stamp-text-3 {
-      font-size: 8px;
-      margin-top: 2px;
+
+    .meta-label {
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     
     .certificate-info {
@@ -206,19 +224,49 @@ function getCertificateTemplate(data: CertificateData): string {
       font-family: 'Courier New', monospace;
     }
     
-    .date-location {
-      text-align: right;
-      margin-bottom: 10px;
-      font-size: 12px;
-      color: #666;
+    .verification-section {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      background: #f8f9fa;
     }
+
+    .qr-wrapper {
+      border: 1px solid #000;
+      padding: 12px;
+      background: #fff;
+    }
+
+    .qr-code {
+      width: 120px;
+      height: 120px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .verification-text {
+      font-size: 12px;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .verification-url {
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      color: #000;
+      text-decoration: underline;
+      white-space: nowrap;
+    }
+
   </style>
 </head>
 <body>
   <div class="certificate">
     <div class="header">
       <img src="https://res.cloudinary.com/dhojbmhmr/image/upload/v1748940258/logo_wisetwin_dark_atpnkr.svg" alt="WiseTwin Logo" class="logo">
-      <div class="organization-name">${data.organizationName}</div>
       <h1 class="document-title">Certificat</h1>
       <p class="subtitle">de réussite de formation</p>
     </div>
@@ -229,7 +277,14 @@ function getCertificateTemplate(data: CertificateData): string {
       </p>
       
       <div class="user-info">
-        <div class="user-name">${data.userName || 'Non spécifié'}</div>
+        <div class="user-info-row">
+          <span class="info-label">Nom :</span>
+          <span class="info-value">${data.userLastName}</span>
+        </div>
+        <div class="user-info-row">
+          <span class="info-label">Prénom :</span>
+          <span class="info-value">${data.userFirstName}</span>
+        </div>
         <div class="user-email">${data.userEmail}</div>
       </div>
       
@@ -239,10 +294,10 @@ function getCertificateTemplate(data: CertificateData): string {
       </p>
       
       <div class="formation-details">
-        <div class="formation-type">${typeLabel}</div>
         <div class="formation-name">${data.formationName}</div>
-        <div class="completion-info">
-          Terminée avec succès le ${data.completionDate}
+        <div class="formation-meta">
+          <div><span class="meta-label">Organisation :</span> ${data.organizationName}</div>
+          <div><span class="meta-label">Date de validation :</span> ${data.completionDate}</div>
         </div>
       </div>
       
@@ -252,29 +307,22 @@ function getCertificateTemplate(data: CertificateData): string {
     </div>
     
     <div class="footer">
-      <div class="date-location">
-        Fait le ${data.completionDate}
-      </div>
-      
-      <div class="signature-section">
-        <div class="signature-left">
-          <p style="font-size: 12px; margin-bottom: 40px;">Signature et cachet :</p>
-          <div class="wisetwin-stamp">
-            <div class="stamp-text-1">CERTIFIÉ PAR</div>
-            <div class="stamp-text-2">WISETWIN</div>
-            <div class="stamp-text-3">PLATFORM</div>
-          </div>
+      <div class="verification-section">
+        <div class="qr-wrapper">
+          <img src="${data.qrCodeDataUrl}" alt="Vérification du certificat" class="qr-code" />
         </div>
-        
-        <div class="signature-right">
-          <p style="font-size: 12px; font-weight: 600;">WiseTwin Platform</p>
-          <p style="font-size: 10px; color: #666; margin-top: 5px;">Plateforme de formation certifiée</p>
+        <div class="verification-text">
+          <p>Scannez ce code pour vérifier l'authenticité de ce certificat.</p>
+          <p>Code de vérification : <strong>${data.verificationCode}</strong></p>
+          <p>Ou visitez :
+            <a href="${data.verificationUrl}" class="verification-url">${data.verificationUrl}</a>
+          </p>
         </div>
       </div>
       
       <div class="certificate-info">
         Numéro de certificat : ${data.certificateId}<br>
-        Document généré automatiquement - Authenticité vérifiable
+        Document généré automatiquement - Authenticité vérifiable en ligne
       </div>
     </div>
   </div>
@@ -287,7 +335,8 @@ export const GET = withAuth(async (request) => {
   try {
     const url = new URL(request.url);
     const buildName = url.searchParams.get("buildName");
-    const buildType = url.searchParams.get("buildType") as 'wisetrainer' | 'wisetour';
+    const buildType = url.searchParams.get("buildType") as "wisetrainer" | "wisetour";
+    const providedDisplayName = url.searchParams.get("displayName")?.trim();
 
     if (!buildName || !buildType) {
       return NextResponse.json(
@@ -317,6 +366,9 @@ export const GET = withAuth(async (request) => {
       orderBy: {
         endTime: "desc",
       },
+      include: {
+        user: true,
+      },
     });
 
     if (!completionRecord) {
@@ -326,19 +378,71 @@ export const GET = withAuth(async (request) => {
       );
     }
 
+    let formationName =
+      providedDisplayName && providedDisplayName.length > 0
+        ? providedDisplayName
+        : buildName;
+
+    if (
+      (!providedDisplayName || providedDisplayName.length === 0) &&
+      completionRecord.trainingId
+    ) {
+      const trainingPlan = await prisma.trainingTag.findUnique({
+        where: { id: completionRecord.trainingId },
+      });
+      if (trainingPlan?.name) {
+        formationName = trainingPlan.name;
+      }
+    }
+
+    if (!formationName) {
+      formationName = "Formation non renseignée";
+    }
+
+    const verificationRecord = await prisma.certificateVerification.upsert({
+      where: {
+        trainingAnalyticsId: completionRecord.id,
+      },
+      update: {
+        formationName,
+      },
+      create: {
+        trainingAnalyticsId: completionRecord.id,
+        code: generateVerificationCode(completionRecord.id),
+        formationName,
+      },
+    });
+
+    const resolvedNames = resolveUserNames(
+      completionRecord.user?.firstName,
+      completionRecord.user?.name,
+      [request.user.firstName, request.user.name].filter(Boolean).join(" ") ||
+        request.user.email
+    );
+
+    const verificationUrl = `${request.nextUrl.origin}/certifications/verification/${verificationRecord.code}`;
+    const qrCodeDataUrl = await QRCode.toDataURL(verificationUrl, {
+      width: 240,
+      margin: 1,
+    });
+
     // Préparer les données du certificat
     const certificateData: CertificateData = {
-      userName: request.user.name || request.user.email,
+      userFirstName: resolvedNames.firstName,
+      userLastName: resolvedNames.lastName,
       userEmail: request.user.email,
-      formationName: buildName,
+      formationName,
       completionDate: format(
         completionRecord.endTime || completionRecord.updatedAt,
         "d MMMM yyyy",
         { locale: fr }
       ),
       organizationName: "Espace Personnel", // Pour l'espace personnel
-      certificateId: `WT-${completionRecord.id.slice(-8).toUpperCase()}`,
+      certificateId: verificationRecord.code,
       buildType: buildType,
+      verificationUrl,
+      verificationCode: verificationRecord.code,
+      qrCodeDataUrl,
     };
 
     // Générer le PDF avec Puppeteer

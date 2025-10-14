@@ -9,11 +9,12 @@ import { CreateTrainingTagInputData, UpdateTrainingTagInputData } from "@/valida
 // ===== FONCTIONS API =====
 
 async function fetchTrainingTags(
-  organizationId: string, 
+  organizationId: string,
   options: {
     search?: string;
     limit?: number;
     offset?: number;
+    includeArchived?: boolean;
   } = {}
 ): Promise<TrainingTagsResponse> {
   const searchParams = new URLSearchParams({
@@ -21,6 +22,7 @@ async function fetchTrainingTags(
     ...(options.search && { search: options.search }),
     ...(options.limit && { limit: options.limit.toString() }),
     ...(options.offset && { offset: options.offset.toString() }),
+    ...(options.includeArchived ? { includeArchived: "true" } : {}),
   });
 
   const response = await fetch(`/api/training-management/tags?${searchParams}`);
@@ -110,6 +112,7 @@ export function useTrainingTags(options: {
   search?: string;
   limit?: number;
   offset?: number;
+  includeArchived?: boolean;
 } = {}) {
   const { activeOrganization } = useOrganizationStore();
 
@@ -221,7 +224,7 @@ export function useDeleteTrainingTag() {
 export function useTrainingTagsManager() {
   const { activeOrganization } = useOrganizationStore();
   
-  const tagsQuery = useTrainingTags();
+  const tagsQuery = useTrainingTags({ includeArchived: true });
   const createMutation = useCreateTrainingTag();
   const updateMutation = useUpdateTrainingTag();
   const deleteMutation = useDeleteTrainingTag();

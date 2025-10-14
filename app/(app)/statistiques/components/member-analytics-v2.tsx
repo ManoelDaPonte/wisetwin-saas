@@ -133,7 +133,7 @@ export function MemberAnalyticsV2({ analytics }: MemberAnalyticsProps) {
               <TableRow>
                 <TableHead>Utilisateur</TableHead>
                 <TableHead>Formations / Sessions</TableHead>
-                <TableHead>Taux de réussite</TableHead>
+                <TableHead>Score moyen</TableHead>
                 <TableHead>Temps total</TableHead>
                 <TableHead>Dernière session</TableHead>
               </TableRow>

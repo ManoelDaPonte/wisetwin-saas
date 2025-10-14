@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -38,11 +39,21 @@ import {
   ChevronDown,
   ArrowLeft,
   RefreshCw,
+  Archive,
+  ArchiveRestore,
+  Trash2,
+  CheckSquare,
+  X,
+  Loader2,
 } from "lucide-react";
 import { useTrainingDashboard } from "../hooks/use-training-system";
 import { useBuildsWithTags } from "../hooks/use-build-tags";
 import { useTrainingAnalytics } from "../hooks/use-training-analytics";
 import { useTrainingReminders } from "../hooks/use-training-reminders";
+import {
+  useUpdateTrainingTag,
+  useDeleteTrainingTag,
+} from "../hooks/use-training-tags";
 import { TagBadge } from "./tag-badge";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -50,6 +61,7 @@ import Image from "next/image";
 import type { TagWithStats } from "@/types/training";
 import { useCurrentLanguage } from "@/stores/language-store";
 import { getUserInitials, getDisplayName } from "@/lib/user-utils";
+import { toast } from "sonner";
 
 interface ProgressDashboardProps {
   organizationId: string;
@@ -62,8 +74,13 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
     new Set()
   );
   const [statusFilter, setStatusFilter] = useState<
-    "all" | "active" | "completed" | "overdue"
+    "all" | "active" | "completed" | "overdue" | "archived"
   >("all");
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedPlans, setSelectedPlans] = useState<Set<string>>(new Set());
+  const [bulkAction, setBulkAction] = useState<null | "archive" | "delete">(
+    null
+  );
 
   // Hook pour les rappels
   const {
@@ -103,6 +120,8 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
     buildType: "WISETRAINER",
   });
   const analytics = analyticsData?.analytics || [];
+  const { mutateAsync: updateTrainingTag } = useUpdateTrainingTag();
+  const { mutateAsync: deleteTrainingTag } = useDeleteTrainingTag();
 
   // Stats pour le tag sélectionné
   const selectedTagStats =
@@ -121,6 +140,32 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
       newExpanded.add(memberId);
     }
     setExpandedMembers(newExpanded);
+  };
+
+  const togglePlanSelection = (planId: string) => {
+    setSelectedPlans((prev) => {
+      const next = new Set(prev);
+      if (next.has(planId)) {
+        next.delete(planId);
+      } else {
+        next.add(planId);
+      }
+      return next;
+    });
+  };
+
+  const clearSelection = () => {
+    setSelectedPlans(new Set());
+  };
+
+  const exitSelectionMode = () => {
+    setSelectionMode(false);
+    clearSelection();
+  };
+
+  const startSelectionMode = () => {
+    setSelectedTagId("all");
+    setSelectionMode(true);
   };
 
   // Fonction helper pour vérifier si une formation est terminée par un membre spécifique
@@ -187,7 +232,10 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
 
   // Filtrer les plans en fonction du statut sélectionné
   const filteredTags = tagsWithStats.filter((tag) => {
-    // D'abord calculer le nombre de membres ayant terminé
+    if (tag.archived) {
+      return statusFilter === "archived";
+    }
+
     const completedCount = getTagCompletionCount(tag);
     const isCompleted =
       tag.memberCount > 0 && completedCount === tag.memberCount;
@@ -201,10 +249,104 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
         return isCompleted;
       case "overdue":
         return isOverdue && !isCompleted;
+      case "archived":
+        return false;
       default:
         return true;
     }
   });
+
+  useEffect(() => {
+    if (
+      selectedTagId !== "all" &&
+      !tagsWithStats.some((tag) => tag.id === selectedTagId)
+    ) {
+      setSelectedTagId("all");
+    }
+  }, [selectedTagId, tagsWithStats]);
+
+  useEffect(() => {
+    if (!selectionMode) {
+      return;
+    }
+
+    setSelectedPlans((prev) => {
+      const allowedIds = new Set(filteredTags.map((tag) => tag.id));
+      const next = new Set(Array.from(prev).filter((id) => allowedIds.has(id)));
+      return next.size === prev.size ? prev : next;
+    });
+  }, [filteredTags, selectionMode]);
+
+  useEffect(() => {
+    if (selectionMode) {
+      clearSelection();
+    }
+  }, [statusFilter, selectionMode]);
+
+  const selectedPlanIds = Array.from(selectedPlans);
+  const hasSelection = selectedPlanIds.length > 0;
+  const allSelectedArchived =
+    hasSelection &&
+    selectedPlanIds.every((planId) =>
+      tagsWithStats.some((tag) => tag.id === planId && tag.archived)
+    );
+  const archiveActionLabel = allSelectedArchived ? "Restaurer" : "Archiver";
+  const isArchiving = bulkAction === "archive";
+  const isDeleting = bulkAction === "delete";
+
+  const handleArchiveSelected = async () => {
+    if (!hasSelection) {
+      return;
+    }
+
+    setBulkAction("archive");
+    const targetArchived = allSelectedArchived ? false : true;
+    try {
+      await Promise.all(
+        selectedPlanIds.map((planId) =>
+          updateTrainingTag({
+            tagId: planId,
+            data: { archived: targetArchived },
+          })
+        )
+      );
+      toast.success(targetArchived ? "Plans archivés" : "Plans restaurés");
+      refetchDashboard();
+      refetchAnalytics();
+      exitSelectionMode();
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour de l'archivage", error);
+      toast.error(
+        targetArchived
+          ? "Impossible d'archiver les plans sélectionnés"
+          : "Impossible de restaurer les plans sélectionnés"
+      );
+    } finally {
+      setBulkAction(null);
+    }
+  };
+
+  const handleDeleteSelected = async () => {
+    if (!hasSelection) {
+      return;
+    }
+
+    setBulkAction("delete");
+    try {
+      await Promise.all(
+        selectedPlanIds.map((planId) => deleteTrainingTag(planId))
+      );
+      toast.success("Plans supprimés");
+      refetchDashboard();
+      refetchAnalytics();
+      exitSelectionMode();
+    } catch (error) {
+      console.error("Erreur lors de la suppression des plans", error);
+      toast.error("Impossible de supprimer les plans sélectionnés");
+    } finally {
+      setBulkAction(null);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -325,7 +467,7 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
   return (
     <div className="space-y-6">
       {/* Stats générales */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
@@ -379,37 +521,117 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
             </div>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg bg-muted p-2">
+                <Archive className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-muted-foreground mb-0.5">
+                  Plans archivés
+                </p>
+                <p className="text-2xl font-bold">
+                  {dashboardMetrics?.archivedTags || 0}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Navigation des plans */}
       <Card>
         {selectedTagId === "all" ? (
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-base">Plans de formation</CardTitle>
-                <CardDescription>
-                  Cliquez sur un plan pour voir les détails et la progression
-                </CardDescription>
-              </div>
-              <div className="flex items-center gap-2">
-                <Select
-                  value={statusFilter}
-                  onValueChange={(value) => setStatusFilter(value as "all" | "active" | "completed" | "overdue")}
-                >
-                  <SelectTrigger className="w-[140px] h-8">
-                    <SelectValue placeholder="Filtrer par..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Tous</SelectItem>
-                    <SelectItem value="active">En cours</SelectItem>
-                    <SelectItem value="completed">Terminés</SelectItem>
-                    <SelectItem value="overdue">En retard</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Badge variant="outline" className="text-xs">
-                  {filteredTags.length} / {tagsWithStats.length}
-                </Badge>
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  {selectionMode ? (
+                    <>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={exitSelectionMode}
+                        disabled={isArchiving || isDeleting}
+                      >
+                        <X className="w-4 h-4 mr-2" />
+                        Annuler
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={handleArchiveSelected}
+                        disabled={!hasSelection || isArchiving || isDeleting}
+                        className="flex items-center gap-2"
+                      >
+                        {isArchiving ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : allSelectedArchived ? (
+                          <ArchiveRestore className="h-4 w-4" />
+                        ) : (
+                          <Archive className="h-4 w-4" />
+                        )}
+                        {archiveActionLabel}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={handleDeleteSelected}
+                        disabled={!hasSelection || isArchiving || isDeleting}
+                        className="flex items-center gap-2"
+                      >
+                        {isDeleting ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-4 w-4" />
+                        )}
+                        Supprimer
+                      </Button>
+                      <Badge variant="secondary" className="text-xs">
+                        {selectedPlans.size} sélectionné
+                        {selectedPlans.size > 1 ? "s" : ""}
+                      </Badge>
+                    </>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={startSelectionMode}
+                      className="flex items-center gap-2"
+                      disabled={filteredTags.length === 0}
+                    >
+                      <CheckSquare className="h-4 w-4" />
+                      Sélection
+                    </Button>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 flex-wrap justify-end">
+                  <Select
+                    value={statusFilter}
+                    onValueChange={(value) =>
+                      setStatusFilter(
+                        value as
+                          | "all"
+                          | "active"
+                          | "completed"
+                          | "overdue"
+                          | "archived"
+                      )
+                    }
+                  >
+                    <SelectTrigger className="w-[140px] h-8">
+                      <SelectValue placeholder="Filtrer par..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Tous</SelectItem>
+                      <SelectItem value="active">En cours</SelectItem>
+                      <SelectItem value="completed">Terminés</SelectItem>
+                      <SelectItem value="overdue">En retard</SelectItem>
+                      <SelectItem value="archived">Archivés</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
           </CardHeader>
@@ -499,35 +721,99 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
               ) : (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {filteredTags.map((tag) => {
+                    const isSelected = selectedPlans.has(tag.id);
+                    const completedMembers = getTagCompletionCount(tag);
+                    const isCompleted =
+                      tag.memberCount > 0 &&
+                      completedMembers === tag.memberCount;
+                    const status = (() => {
+                      if (tag.archived) {
+                        return {
+                          label: "Archivé",
+                          variant: "outline" as const,
+                        };
+                      }
+                      if (tag.isOverdue && !isCompleted) {
+                        return {
+                          label: "En retard",
+                          variant: "destructive" as const,
+                        };
+                      }
+                      if (isCompleted) {
+                        return {
+                          label: "Terminé",
+                          variant: "default" as const,
+                        };
+                      }
+                      return {
+                        label: "En cours",
+                        variant: "secondary" as const,
+                      };
+                    })();
+                    const priorityLabel =
+                      tag.priority === "HIGH"
+                        ? "Élevée"
+                        : tag.priority === "MEDIUM"
+                        ? "Moyenne"
+                        : "Faible";
+                    const priorityVariant =
+                      tag.priority === "HIGH"
+                        ? "destructive"
+                        : tag.priority === "MEDIUM"
+                        ? "default"
+                        : "secondary";
+                    const dueDateVariant =
+                      tag.archived || isCompleted
+                        ? "outline"
+                        : tag.isOverdue
+                        ? "destructive"
+                        : "outline";
+
                     return (
                       <Card
                         key={tag.id}
-                        className="cursor-pointer hover:shadow-md transition-all duration-200 border-l-4"
+                        className={`relative transition-all duration-200 border-l-4 cursor-pointer ${
+                          isSelected
+                            ? "ring-2 ring-primary"
+                            : selectionMode
+                            ? "hover:ring-1 hover:ring-primary/40"
+                            : "hover:shadow-md"
+                        } ${tag.archived ? "opacity-60" : ""}`}
                         style={{
                           borderLeftColor: tag.color || "#3B82F6",
                         }}
-                        onClick={() => setSelectedTagId(tag.id)}
+                        onClick={() => {
+                          if (selectionMode) {
+                            togglePlanSelection(tag.id);
+                          } else {
+                            setSelectedTagId(tag.id);
+                          }
+                        }}
                       >
+                        {selectionMode && (
+                          <div
+                            className="absolute right-3 top-3 z-10"
+                            onClick={(event) => event.stopPropagation()}
+                          >
+                            <Checkbox
+                              checked={isSelected}
+                              onCheckedChange={() =>
+                                togglePlanSelection(tag.id)
+                              }
+                              aria-label={`Sélectionner ${tag.name}`}
+                            />
+                          </div>
+                        )}
                         <CardContent>
                           <div className="flex flex-col h-full space-y-4">
-                            {/* En-tête avec nom et priorité */}
-                            <div className="flex items-start justify-between">
+                            {/* En-tête avec nom et statut */}
+                            <div className="flex items-start justify-between gap-2">
                               <TagBadge name={tag.name} color={tag.color} />
                               <Badge
-                                variant={
-                                  tag.priority === "HIGH"
-                                    ? "destructive"
-                                    : tag.priority === "MEDIUM"
-                                    ? "default"
-                                    : "secondary"
-                                }
+                                variant={status.variant}
                                 className="text-xs"
                               >
-                                {tag.priority === "HIGH"
-                                  ? "Élevée"
-                                  : tag.priority === "MEDIUM"
-                                  ? "Moyenne"
-                                  : "Faible"}
+                                {status.label}
                               </Badge>
                             </div>
 
@@ -551,7 +837,7 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                               </div>
                               <div className="text-right">
                                 <div className="text-sm font-medium">
-                                  {getTagCompletionCount(tag)}/{tag.memberCount}
+                                  {completedMembers}/{tag.memberCount}
                                 </div>
                                 <div className="text-xs text-muted-foreground">
                                   terminés
@@ -560,27 +846,33 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                             </div>
 
                             {/* Échéance (toujours présente) */}
-                            <div className="flex items-center justify-between pt-2 border-t mt-auto">
+                            <div className="flex items-center justify-between gap-2 pt-2 border-t mt-auto">
                               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                 <Calendar className="w-3 h-3" />
                                 <span>Échéance</span>
+                                {tag.dueDate ? (
+                                  <Badge
+                                    variant={dueDateVariant}
+                                    className="text-xs"
+                                  >
+                                    {format(
+                                      new Date(tag.dueDate),
+                                      "dd/MM/yyyy",
+                                      {
+                                        locale: fr,
+                                      }
+                                    )}
+                                  </Badge>
+                                ) : (
+                                  <span className="italic">Aucune</span>
+                                )}
                               </div>
-                              {tag.dueDate ? (
-                                <Badge
-                                  variant={
-                                    tag.isOverdue ? "destructive" : "outline"
-                                  }
-                                  className="text-xs"
-                                >
-                                  {format(new Date(tag.dueDate), "dd/MM/yyyy", {
-                                    locale: fr,
-                                  })}
-                                </Badge>
-                              ) : (
-                                <span className="text-xs text-muted-foreground italic">
-                                  Aucune
-                                </span>
-                              )}
+                              <Badge
+                                variant={priorityVariant}
+                                className="text-xs"
+                              >
+                                {priorityLabel}
+                              </Badge>
                             </div>
                           </div>
                         </CardContent>

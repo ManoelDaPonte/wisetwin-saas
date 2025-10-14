@@ -17,6 +17,7 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
       search: searchParams.get("search") || undefined,
       limit: searchParams.get("limit") ? parseInt(searchParams.get("limit")!) : undefined,
       offset: searchParams.get("offset") ? parseInt(searchParams.get("offset")!) : undefined,
+      includeArchived: searchParams.get("includeArchived") ?? undefined,
     });
 
     if (!queryValidation.success) {
@@ -26,11 +27,12 @@ export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
       );
     }
 
-    const { search, limit = 50, offset = 0 } = queryValidation.data;
+    const { search, limit = 50, offset = 0, includeArchived } = queryValidation.data;
 
     // Conditions de recherche
     const whereConditions = {
       organizationId: request.organization.id,
+      ...(includeArchived ? {} : { archived: false }),
       ...(search && {
         OR: [
           { name: { contains: search, mode: "insensitive" as const } },
@@ -100,7 +102,7 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
       );
     }
 
-    const { name, color, description, dueDate, priority } = validation.data;
+    const { name, color, description, dueDate, priority, archived } = validation.data;
 
     // Vérification de l'unicité du nom dans l'organisation
     const existingTag = await prisma.trainingTag.findFirst({
@@ -125,6 +127,7 @@ export const POST = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
         description,
         dueDate,
         priority,
+        archived: archived ?? false,
         organizationId: request.organization.id,
       },
       include: {

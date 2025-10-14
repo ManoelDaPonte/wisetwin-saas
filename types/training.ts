@@ -9,6 +9,7 @@ export interface TrainingTag {
   organizationId: string;
 
   // Configuration du plan de formation
+  archived: boolean;
   dueDate?: Date | null;
   priority: "LOW" | "MEDIUM" | "HIGH";
 
@@ -71,6 +72,7 @@ export interface CreateTrainingTagData {
   name: string;
   color?: string;
   description?: string;
+  archived?: boolean;
   dueDate?: string | null;
   priority?: "LOW" | "MEDIUM" | "HIGH";
 }
@@ -79,6 +81,7 @@ export interface UpdateTrainingTagData {
   name?: string;
   color?: string;
   description?: string;
+  archived?: boolean;
   dueDate?: string | null;
   priority?: "LOW" | "MEDIUM" | "HIGH";
 }

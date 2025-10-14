@@ -46,6 +46,7 @@ import {
   BookOpen,
   Loader2,
   AlertCircle,
+  ArchiveRestore,
 } from "lucide-react";
 import { useTrainingTagsManager } from "../hooks/use-training-tags";
 import { useTrainingDashboard } from "../hooks/use-training-system";
@@ -97,11 +98,13 @@ export function TagsManager({}: TagsManagerProps) {
   const statsMap = new Map(tagsWithStats.map((tag) => [tag.id, tag]));
 
   // Filtrage des tags par recherche
-  const filteredTags = tags.filter(
-    (tag) =>
-      tag.name.toLowerCase().includes(search.toLowerCase()) ||
-      tag.description?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredTags = [...tags]
+    .filter(
+      (tag) =>
+        tag.name.toLowerCase().includes(search.toLowerCase()) ||
+        tag.description?.toLowerCase().includes(search.toLowerCase())
+    )
+    .sort((a, b) => Number(a.archived) - Number(b.archived));
 
   const handleDeleteTag = () => {
     if (tagToDelete) {
@@ -132,6 +135,19 @@ export function TagsManager({}: TagsManagerProps) {
         }
       );
     }
+  };
+
+  const handleToggleArchive = (tag: TrainingTag) => {
+    updateTag(
+      { tagId: tag.id, data: { archived: !tag.archived } },
+      {
+        onSuccess: () => {
+          if (tagToEdit?.id === tag.id) {
+            setTagToEdit({ ...tagToEdit, archived: !tag.archived });
+          }
+        },
+      }
+    );
   };
 
   if (isError) {
@@ -287,9 +303,16 @@ export function TagsManager({}: TagsManagerProps) {
                 </TableHeader>
                 <TableBody>
                   {filteredTags.map((tag) => (
-                    <TableRow key={tag.id}>
+                    <TableRow key={tag.id} className={tag.archived ? "opacity-60" : undefined}>
                       <TableCell>
-                        <TagBadge name={tag.name} color={tag.color} />
+                        <div className="flex items-center gap-2">
+                          <TagBadge name={tag.name} color={tag.color} />
+                          {tag.archived && (
+                            <Badge variant="outline" className="text-xs">
+                              Archivé
+                            </Badge>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="max-w-xs">
@@ -411,6 +434,18 @@ export function TagsManager({}: TagsManagerProps) {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
+                              {tag.archived && (
+                                <>
+                                  <DropdownMenuItem
+                                    disabled={isUpdating}
+                                    onClick={() => handleToggleArchive(tag)}
+                                  >
+                                    <ArchiveRestore className="mr-2 h-4 w-4" />
+                                    Restaurer
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                </>
+                              )}
                               <DropdownMenuItem
                                 onClick={() => setTagToEdit(tag)}
                               >
@@ -445,7 +480,11 @@ export function TagsManager({}: TagsManagerProps) {
       {/* Dialog de confirmation de suppression */}
       <AlertDialog
         open={!!tagToDelete}
-        onOpenChange={() => setTagToDelete(null)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setTagToDelete(null);
+          }
+        }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>

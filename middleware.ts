@@ -9,6 +9,7 @@ export default async function middleware(request: NextRequestWithAuth) {
                     request.nextUrl.pathname.startsWith("/forgot-password") ||
                     request.nextUrl.pathname.startsWith("/reset-password")
                     
+  const isCertificateVerification = request.nextUrl.pathname.startsWith("/certifications/verification")
   
   // 🆕 Exclure les routes Unity de l'authentification
   const isUnityApi = request.nextUrl.pathname.startsWith("/api/unity/")
@@ -42,6 +43,10 @@ export default async function middleware(request: NextRequestWithAuth) {
     }
     
     return response
+  }
+
+  if (isCertificateVerification) {
+    return NextResponse.next()
   }
 
   if (!token) {

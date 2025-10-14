@@ -122,6 +122,7 @@ model TrainingTag {
   description    String?
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  archived       Boolean @default(false)
   
   // Configuration du plan de formation
   dueDate        DateTime? // Date limite pour ce plan de formation
@@ -137,6 +138,7 @@ model TrainingTag {
   @@unique([name, organizationId]) // Noms uniques par organisation
   @@index([organizationId])
   @@index([dueDate])
+  @@index([archived])
 }
 
 // Relations membre-tag (many-to-many)
@@ -232,6 +234,8 @@ model TrainingAnalytics {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
+  certificateVerification CertificateVerification?
+
   @@index([userId])
   @@index([organizationId])
   @@index([buildName])
@@ -246,4 +250,16 @@ enum CompletionStatus {
   ABANDONED
   IN_PROGRESS
   FAILED
+}
+
+model CertificateVerification {
+  id                  String             @id @default(cuid())
+  code                String             @unique
+  formationName       String?            // Nom de la formation affiché sur le certificat
+  trainingAnalyticsId String             @unique
+  trainingAnalytics   TrainingAnalytics  @relation(fields: [trainingAnalyticsId], references: [id], onDelete: Cascade)
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  @@index([code])
 }

@@ -162,11 +162,15 @@ export default function CertificationsPage() {
     setDownloadingItems((prev) => new Set(prev).add(buildId));
 
     try {
+      const displayName =
+        getLocalizedText(cert.build.metadata?.title) || cert.build.name;
+
       // Utiliser l'API appropriée selon le contexte
       let apiUrl: string;
       const params = new URLSearchParams({
         buildName: cert.build.name,
         buildType: "wisetrainer",
+        displayName,
       });
 
       if (isPersonalSpace) {
@@ -194,8 +198,6 @@ export default function CertificationsPage() {
       const a = document.createElement("a");
       a.style.display = "none";
       a.href = url;
-      const displayName =
-        getLocalizedText(cert.build.metadata?.title) || cert.build.name;
       a.download = `Certificat-${displayName.replace(
         /[^a-zA-Z0-9]/g,
         "-"
