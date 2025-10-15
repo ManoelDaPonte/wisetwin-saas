@@ -57,7 +57,7 @@ export function OrganizationActions({ canManage }: OrganizationActionsProps) {
 
       <Card
         className="hover:shadow-lg transition-shadow cursor-pointer"
-        onClick={() => router.push('/statistiques')}
+        onClick={() => router.push('/organisation/statistiques')}
       >
         <CardHeader>
           <div className="flex items-center justify-between">

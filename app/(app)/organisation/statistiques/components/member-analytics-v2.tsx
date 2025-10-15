@@ -29,7 +29,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronRight, ChevronDown, Clock, BookOpen } from "lucide-react";
 import Image from "next/image";
-import { useMembers } from "../../organisation/hooks/use-members";
+import { useMembers } from "../../hooks/use-members";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { getDisplayName, getUserInitials } from "@/lib/user-utils";

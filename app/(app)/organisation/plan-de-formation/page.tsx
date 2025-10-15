@@ -11,6 +11,7 @@ import { MemberTagsManager } from "./components/member-tags-manager";
 import { BuildsManager } from "./components/builds-manager";
 import { ProgressDashboard } from "./components/progress-dashboard";
 import { GlobalReminderButton } from "./components/global-reminder-button";
+import { TrainingPlanStats } from "./components/training-plan-stats";
 
 export default function GestionFormationsPage() {
   const t = useTranslations();
@@ -63,6 +64,9 @@ export default function GestionFormationsPage() {
         </div>
         <GlobalReminderButton />
       </div>
+
+      {/* Stats globales */}
+      <TrainingPlanStats />
 
       {/* Navigation par onglets */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">

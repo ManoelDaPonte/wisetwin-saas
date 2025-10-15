@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BarChart3, Users, BookOpen } from "lucide-react";
-import { useTrainingAnalytics } from "../../organisation/plan-de-formation/hooks/use-training-analytics";
+import { useTrainingAnalytics } from "../../plan-de-formation/hooks/use-training-analytics";
 import { MemberAnalyticsV2 } from "./member-analytics-v2";
 import { TrainingMetricsV2 } from "./training-metrics-v2";
 
@@ -96,67 +96,69 @@ export function AnalyticsDashboardV2({
       </div>
 
       {/* Statistiques résumé rapide */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">
-                  Total complétions
-                </p>
-                <p className="text-2xl font-bold">
-                  {aggregates?.statusBreakdown?.COMPLETED || 0}
-                </p>
-              </div>
-              <BookOpen className="h-8 w-8 text-muted-foreground/50" />
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="overflow-hidden p-0">
+          <div className="flex h-full min-h-28">
+            <div className="flex items-center justify-center bg-primary w-20 flex-shrink-0">
+              <BookOpen className="h-8 w-8 text-primary-foreground" />
             </div>
-          </CardContent>
+            <div className="flex-1 flex flex-col items-center justify-center py-6 px-4">
+              <div className="text-3xl font-bold text-primary">
+                {aggregates?.statusBreakdown?.COMPLETED || 0}
+              </div>
+              <p className="text-sm text-muted-foreground mt-1">
+                Total complétions
+              </p>
+            </div>
+          </div>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">
-                  Score moyen
-                </p>
-                <p className="text-2xl font-bold">
-                  {Math.round(aggregates?.averageScore ?? 0)}%
-                </p>
-              </div>
-              <BarChart3 className="h-8 w-8 text-muted-foreground/50" />
+        <Card className="overflow-hidden p-0">
+          <div className="flex h-full min-h-28">
+            <div className="flex items-center justify-center bg-primary w-20 flex-shrink-0">
+              <BarChart3 className="h-8 w-8 text-primary-foreground" />
             </div>
-          </CardContent>
+            <div className="flex-1 flex flex-col items-center justify-center py-6 px-4">
+              <div className="text-3xl font-bold text-primary">
+                {Math.round(aggregates?.averageScore ?? 0)}%
+              </div>
+              <p className="text-sm text-muted-foreground mt-1">
+                Score moyen
+              </p>
+            </div>
+          </div>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Participants</p>
-                <p className="text-2xl font-bold">
-                  {new Set(data?.analytics.map((a) => a.user.id)).size}
-                </p>
-              </div>
-              <Users className="h-8 w-8 text-muted-foreground/50" />
+        <Card className="overflow-hidden p-0">
+          <div className="flex h-full min-h-28">
+            <div className="flex items-center justify-center bg-primary w-20 flex-shrink-0">
+              <Users className="h-8 w-8 text-primary-foreground" />
             </div>
-          </CardContent>
+            <div className="flex-1 flex flex-col items-center justify-center py-6 px-4">
+              <div className="text-3xl font-bold text-primary">
+                {new Set(data?.analytics.map((a) => a.user.id)).size}
+              </div>
+              <p className="text-sm text-muted-foreground mt-1">
+                Participants
+              </p>
+            </div>
+          </div>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">
-                  Interactions totales
-                </p>
-                <p className="text-2xl font-bold">
-                  {aggregates?.totalInteractions || 0}
-                </p>
-              </div>
-              <BarChart3 className="h-8 w-8 text-muted-foreground/50" />
+        <Card className="overflow-hidden p-0">
+          <div className="flex h-full min-h-28">
+            <div className="flex items-center justify-center bg-primary w-20 flex-shrink-0">
+              <BarChart3 className="h-8 w-8 text-primary-foreground" />
             </div>
-          </CardContent>
+            <div className="flex-1 flex flex-col items-center justify-center py-6 px-4">
+              <div className="text-3xl font-bold text-primary">
+                {aggregates?.totalInteractions || 0}
+              </div>
+              <p className="text-sm text-muted-foreground mt-1">
+                Interactions totales
+              </p>
+            </div>
+          </div>
         </Card>
       </div>
 

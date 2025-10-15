@@ -62,6 +62,16 @@ export default function DashboardPage() {
 
 	return (
 		<div className="space-y-8">
+			{/* Header */}
+			<div>
+				<h1 className="text-2xl font-bold tracking-tight">
+					{t.navigation.myDashboard}
+				</h1>
+				<p className="text-muted-foreground">
+					Vue d'ensemble de vos performances et activités récentes
+				</p>
+			</div>
+
 			{/* Métriques principales */}
 			<div className="grid gap-4 md:grid-cols-3">
 				<Card className="overflow-hidden p-0">

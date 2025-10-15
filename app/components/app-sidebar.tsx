@@ -95,7 +95,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			},
 			{
 				title: t.navigation.analytics,
-				url: "/statistiques",
+				url: "/organisation/statistiques",
 				icon: BarChart3,
 			},
 			{

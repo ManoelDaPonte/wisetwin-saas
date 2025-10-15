@@ -27,7 +27,7 @@ export function AppBreadcrumb() {
 		"/wisetour": t.navigation.wisetour,
 		"/wisetrainer": t.navigation.wisetrainer,
 		"/organisation/plan-de-formation": t.navigation.trainingPlans,
-		"/statistiques": t.navigation.analytics,
+		"/organisation/statistiques": t.navigation.analytics,
 		"/wisetrainer/formations-terminees": t.navigation.completedTrainings,
 	});
 
