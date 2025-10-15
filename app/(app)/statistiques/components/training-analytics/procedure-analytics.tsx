@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Wrench, Clock, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Wrench, AlertCircle, CheckCircle2, Clock } from "lucide-react";
 import type {
   TrainingAnalytics,
   ProcedureInteractionData,
@@ -153,27 +153,17 @@ export function ProcedureAnalytics({
             }
           >
             <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <CardTitle className="text-sm mb-2">
-                    {procedure.title.length > 100
-                      ? procedure.title.substring(0, 100) + "..."
-                      : procedure.title}
-                  </CardTitle>
-                  {avgDurationMin > 0 && (
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <Clock className="h-3 w-3" />
-                      {avgDurationMin} min moy.
-                    </div>
-                  )}
-                </div>
-                <div className="text-right">
-                  <p className="text-2xl font-bold">
-                    {successRate.toFixed(0)}%
-                  </p>
-                  <p className="text-xs text-muted-foreground">de réussite</p>
-                </div>
-              </div>
+              <CardTitle className="text-sm mb-2">
+                {procedure.title.length > 100
+                  ? procedure.title.substring(0, 100) + "..."
+                  : procedure.title}
+              </CardTitle>
+              {avgDurationMin > 0 && (
+                <span className="text-xs text-muted-foreground whitespace-nowrap">
+                  <Clock className="h-3 w-3 inline mr-1" />
+                  {avgDurationMin} min moy.
+                </span>
+              )}
             </CardHeader>
 
             <CardContent>
@@ -185,6 +175,7 @@ export function ProcedureAnalytics({
                   </p>
                   {stepsStats.map((step) => {
                     const hasErrors = step.errorRate > 0;
+                    const successRate = 100 - step.errorRate;
 
                     return (
                       <div
@@ -215,11 +206,13 @@ export function ProcedureAnalytics({
                             <p className="text-xs text-muted-foreground">
                               {step.avgDuration.toFixed(1)}s moy.
                             </p>
-                            {hasErrors && (
-                              <p className="text-xs text-orange-600 dark:text-orange-400 font-medium">
-                                {step.errorRate.toFixed(0)}% se sont trompés
-                              </p>
-                            )}
+                            <p className={`text-xs font-medium ${
+                              hasErrors
+                                ? "text-orange-600 dark:text-orange-400"
+                                : "text-green-600 dark:text-green-400"
+                            }`}>
+                              {successRate.toFixed(0)}% de réussite
+                            </p>
                           </div>
                         </div>
                       </div>

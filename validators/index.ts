@@ -79,7 +79,6 @@ export {
   TrainingAnalyticsDataSchema,
   CreateTrainingAnalyticsSchema,
   GetTrainingAnalyticsQuerySchema,
-  ExportAnalyticsQuerySchema,
   AggregatedAnalyticsSchema,
   type CompletionStatus,
   type InteractionType,
@@ -92,6 +91,5 @@ export {
   type TrainingAnalyticsData,
   type CreateTrainingAnalyticsInput,
   type GetTrainingAnalyticsQuery,
-  type ExportAnalyticsQuery,
   type AggregatedAnalytics,
 } from './analytics'

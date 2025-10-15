@@ -64,29 +64,39 @@ export function QuestionCard({ interaction }: QuestionCardProps) {
               Parcours ({userAnswers.length} tentative
               {userAnswers.length > 1 ? "s" : ""}) :
             </p>
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-3 flex-wrap">
               {userAnswers.map((attempt, attemptIdx) => {
-                const attemptCorrect =
-                  attempt.length === questionData.correctAnswers?.length &&
-                  attempt.every((a) =>
-                    questionData.correctAnswers?.includes(a)
-                  );
+                // Trier les réponses alphabétiquement
+                const sortedAttempt = [...attempt].sort((a, b) => a - b);
 
                 return (
                   <div
                     key={attemptIdx}
-                    className={`flex items-center gap-1.5 px-2 py-1 rounded text-xs ${
-                      attemptCorrect
-                        ? "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400"
-                        : "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400"
-                    }`}
+                    className="flex items-center gap-1.5"
                   >
-                    <span className="font-medium">{attemptIdx + 1}.</span>
-                    <span>
-                      {attempt.length > 0
-                        ? attempt.map((i) => String.fromCharCode(65 + i)).join(", ")
-                        : "—"}
-                    </span>
+                    <span className="text-xs font-medium text-muted-foreground">{attemptIdx + 1}.</span>
+                    <div className="flex items-center gap-1 flex-wrap">
+                      {sortedAttempt.length > 0 ? (
+                        sortedAttempt.map((answerIdx, idx) => {
+                          const isCorrect = questionData.correctAnswers?.includes(answerIdx);
+
+                          return (
+                            <span
+                              key={idx}
+                              className={`px-1.5 py-0.5 rounded text-xs font-medium ${
+                                isCorrect
+                                  ? "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400"
+                                  : "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400"
+                              }`}
+                            >
+                              {String.fromCharCode(65 + answerIdx)}
+                            </span>
+                          );
+                        })
+                      ) : (
+                        <span className="text-xs text-muted-foreground">—</span>
+                      )}
+                    </div>
                   </div>
                 );
               })}

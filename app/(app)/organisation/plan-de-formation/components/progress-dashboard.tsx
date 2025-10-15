@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
 import {
   BookOpen,
   Calendar,
@@ -228,6 +229,72 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
     }).length;
 
     return completedMembers;
+  };
+
+  // Fonction helper pour calculer les jours restants avant l'échéance
+  const getDaysUntilDueDate = (dueDate: Date | null): number | null => {
+    if (!dueDate) return null;
+    const now = new Date();
+    const due = new Date(dueDate);
+    const diffTime = due.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  // Fonction helper pour obtenir les styles d'urgence selon les jours restants
+  const getUrgencyStyles = (daysRemaining: number | null, isCompleted: boolean, isArchived: boolean) => {
+    // Pas d'urgence si le plan est terminé, archivé ou sans échéance
+    if (isCompleted || isArchived || daysRemaining === null) {
+      return {
+        badge: null,
+        cardClasses: "",
+        shadowClasses: "",
+      };
+    }
+
+    // Urgent : moins de 7 jours
+    if (daysRemaining < 7 && daysRemaining >= 0) {
+      return {
+        badge: {
+          label: "URGENT",
+          variant: "destructive" as const,
+          icon: AlertTriangle,
+          animate: true,
+        },
+        cardClasses: "bg-destructive/5",
+        shadowClasses: "shadow-lg shadow-destructive/20",
+      };
+    }
+
+    // Bientôt : moins de 30 jours
+    if (daysRemaining < 30 && daysRemaining >= 7) {
+      return {
+        badge: {
+          label: "Bientôt",
+          variant: "outline" as const,
+          icon: Clock,
+          animate: false,
+          className: "border-amber-500 text-amber-700 dark:text-amber-400",
+        },
+        cardClasses: "bg-amber-500/5",
+        shadowClasses: "shadow-md shadow-amber-500/10",
+      };
+    }
+
+    // Retard
+    if (daysRemaining < 0) {
+      return {
+        badge: null, // Le badge "En retard" existe déjà
+        cardClasses: "",
+        shadowClasses: "",
+      };
+    }
+
+    return {
+      badge: null,
+      cardClasses: "",
+      shadowClasses: "",
+    };
   };
 
   // Filtrer les plans en fonction du statut sélectionné
@@ -726,6 +793,11 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                     const isCompleted =
                       tag.memberCount > 0 &&
                       completedMembers === tag.memberCount;
+
+                    // Calculer l'urgence
+                    const daysRemaining = getDaysUntilDueDate(tag.dueDate);
+                    const urgencyStyles = getUrgencyStyles(daysRemaining, isCompleted, tag.archived);
+
                     const status = (() => {
                       if (tag.archived) {
                         return {
@@ -778,7 +850,7 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                             : selectionMode
                             ? "hover:ring-1 hover:ring-primary/40"
                             : "hover:shadow-md"
-                        } ${tag.archived ? "opacity-60" : ""}`}
+                        } ${tag.archived ? "opacity-60" : ""} ${urgencyStyles.cardClasses} ${urgencyStyles.shadowClasses}`}
                         style={{
                           borderLeftColor: tag.color || "#3B82F6",
                         }}
@@ -806,15 +878,21 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                         )}
                         <CardContent>
                           <div className="flex flex-col h-full space-y-4">
-                            {/* En-tête avec nom et statut */}
+                            {/* En-tête avec nom et badge d'urgence */}
                             <div className="flex items-start justify-between gap-2">
                               <TagBadge name={tag.name} color={tag.color} />
-                              <Badge
-                                variant={status.variant}
-                                className="text-xs"
-                              >
-                                {status.label}
-                              </Badge>
+                              {/* Badge d'urgence si nécessaire */}
+                              {urgencyStyles.badge && (
+                                <Badge
+                                  variant={urgencyStyles.badge.variant}
+                                  className={`text-xs flex items-center gap-1 ${
+                                    urgencyStyles.badge.animate ? "animate-pulse" : ""
+                                  } ${urgencyStyles.badge.className || ""}`}
+                                >
+                                  <urgencyStyles.badge.icon className="h-3 w-3" />
+                                  {urgencyStyles.badge.label}
+                                </Badge>
+                              )}
                             </div>
 
                             {/* Description (toujours présente) */}
@@ -824,24 +902,36 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                               </p>
                             </div>
 
-                            {/* Statistiques */}
-                            <div className="flex items-center justify-between text-sm">
-                              <div className="flex items-center gap-2 text-muted-foreground">
-                                <span className="font-medium text-foreground">
-                                  {tag.memberCount}
+                            {/* Statistiques avec progression */}
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="text-muted-foreground">
+                                  {tag.memberCount} membre{tag.memberCount > 1 ? "s" : ""}
                                 </span>
-                                <span>
-                                  membre
-                                  {tag.memberCount > 1 ? "s" : ""}
+                                <span className="text-lg font-bold">
+                                  {tag.memberCount > 0
+                                    ? Math.round((completedMembers / tag.memberCount) * 100)
+                                    : 0}%
                                 </span>
                               </div>
-                              <div className="text-right">
-                                <div className="text-sm font-medium">
-                                  {completedMembers}/{tag.memberCount}
-                                </div>
+                              <Progress
+                                value={tag.memberCount > 0
+                                  ? (completedMembers / tag.memberCount) * 100
+                                  : 0
+                                }
+                                className="h-2"
+                              />
+                              <div className="flex items-center justify-between">
                                 <div className="text-xs text-muted-foreground">
-                                  terminés
+                                  {completedMembers}/{tag.memberCount} terminés
                                 </div>
+                                {/* Badge de statut */}
+                                <Badge
+                                  variant={status.variant}
+                                  className="text-xs"
+                                >
+                                  {status.label}
+                                </Badge>
                               </div>
                             </div>
 

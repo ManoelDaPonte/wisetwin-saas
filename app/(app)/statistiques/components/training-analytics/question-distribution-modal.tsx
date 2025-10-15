@@ -47,7 +47,7 @@ export function QuestionDistributionModal({
         <ScrollArea className="h-[75vh] pr-4">
           <div className="space-y-6">
             {/* Questions avec distribution première tentative */}
-            <QuestionAnalytics questions={questions} />
+            <QuestionAnalytics questions={questions} sessions={sessions} />
 
             {/* Procédures */}
             {procedures.length > 0 && (

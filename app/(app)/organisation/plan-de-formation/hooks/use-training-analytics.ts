@@ -1,7 +1,6 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useOrganizationStore } from "@/stores/organization-store";
 import { useCurrentLanguage } from "@/stores/language-store";
-import { toast } from "sonner";
 import type { GetTrainingAnalyticsQuery } from "@/validators";
 import type { AnalyticsResponse } from "@/types/training";
 
@@ -114,59 +113,6 @@ export function useSessionDetails(sessionId: string) {
       return response.json();
     },
     enabled: !!activeOrganization && !!sessionId,
-  });
-}
-
-// Hook pour exporter les analytics
-export function useExportAnalytics() {
-  const { activeOrganization } = useOrganizationStore();
-
-  return useMutation({
-    mutationFn: async ({ format, filters }: { format: 'csv' | 'excel', filters?: Record<string, unknown> }) => {
-      if (!activeOrganization) {
-        throw new Error("Aucune organisation active");
-      }
-
-      const params = new URLSearchParams({
-        format,
-        ...filters,
-      });
-
-      const response = await fetch(`/api/training/analytics/export?${params}`, {
-        method: "GET",
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Erreur lors de l'export");
-      }
-
-      if (format === 'csv') {
-        // Pour le CSV, on récupère le blob directement
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `analytics-export-${new Date().toISOString().split('T')[0]}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-        return { success: true };
-      } else {
-        // Pour Excel, on récupère les données JSON
-        // Le client devra utiliser une librairie comme SheetJS
-        return response.json();
-      }
-    },
-    onSuccess: (data) => {
-      if (data.success) {
-        toast.success("Export réussi");
-      }
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
   });
 }
 

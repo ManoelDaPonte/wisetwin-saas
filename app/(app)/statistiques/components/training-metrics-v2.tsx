@@ -49,8 +49,6 @@ import type {
 
 interface TrainingMetricsProps {
   organizationId: string;
-  startDate?: string;
-  endDate?: string;
   analytics: TrainingAnalytics[];
 }
 

@@ -2,17 +2,73 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { BarChart3 } from "lucide-react";
-import type { QuestionStats, QuestionUserResponse } from "@/types/training";
+import { BarChart3, Clock } from "lucide-react";
+import type {
+  QuestionStats,
+  QuestionUserResponse,
+  TrainingAnalytics,
+  ResolvedInteraction,
+  QuestionInteractionData,
+  InteractionData,
+} from "@/types/training";
 
 interface QuestionAnalyticsProps {
   questions: QuestionStats[];
+  sessions?: TrainingAnalytics[];
 }
 
-export function QuestionAnalytics({ questions }: QuestionAnalyticsProps) {
+export function QuestionAnalytics({ questions, sessions = [] }: QuestionAnalyticsProps) {
   if (questions.length === 0) {
     return null;
   }
+
+  const getInteractionDurationSeconds = (interaction: InteractionData): number => {
+    const hasNumericDuration =
+      typeof interaction.duration === "number" && !Number.isNaN(interaction.duration);
+
+    const parseTime = (value: Date | string | undefined): number | null => {
+      if (!value) return null;
+      const date = typeof value === "string" ? new Date(value) : value;
+      const timestamp = date.getTime();
+      return Number.isNaN(timestamp) ? null : timestamp;
+    };
+
+    const startTimestamp = parseTime(interaction.startTime);
+    const endTimestamp = parseTime(interaction.endTime);
+
+    if (startTimestamp !== null && endTimestamp !== null) {
+      const diffSeconds = (endTimestamp - startTimestamp) / 1000;
+      if (Number.isFinite(diffSeconds) && diffSeconds > 0) {
+        // Retourner le temps calculé via les timestamps si disponible
+        return diffSeconds;
+      }
+    }
+
+    return hasNumericDuration ? interaction.duration : 0;
+  };
+
+  // Fonction pour calculer la durée moyenne d'une question
+  const getAverageQuestionDuration = (questionText: string): number => {
+    let totalDuration = 0;
+    let count = 0;
+
+    sessions.forEach((session) => {
+      session.interactions.forEach((interaction) => {
+        if (interaction.type !== "question") return;
+
+        const resolved = interaction as ResolvedInteraction;
+        const data = interaction.data as QuestionInteractionData;
+        const text = resolved.resolvedData?.questionText || data.questionKey || "Question";
+
+        if (text === questionText) {
+          totalDuration += getInteractionDurationSeconds(interaction);
+          count++;
+        }
+      });
+    });
+
+    return count > 0 ? totalDuration / count : 0;
+  };
 
   // Trier par difficulté (moins de succès à la première tentative en premier)
   const sortedQuestions = [...questions].sort((a, b) => {
@@ -125,13 +181,11 @@ export function QuestionAnalytics({ questions }: QuestionAnalyticsProps) {
                       {question.userResponses.length} participant
                       {question.userResponses.length > 1 ? "s" : ""}
                     </span>
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">
+                      <Clock className="h-3 w-3 inline mr-1" />
+                      {Math.round(getAverageQuestionDuration(question.text))}s moy.
+                    </span>
                   </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-2xl font-bold">
-                    {firstAttemptSuccessRate.toFixed(0)}%
-                  </p>
-                  <p className="text-xs text-muted-foreground">de réussite</p>
                 </div>
               </div>
             </CardHeader>

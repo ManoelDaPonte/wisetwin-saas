@@ -139,16 +139,6 @@ export const GetTrainingAnalyticsQuerySchema = z.object({
   limit: z.string().optional().transform(val => val ? parseInt(val, 10) : 20),
 });
 
-// Query params pour l'export
-export const ExportAnalyticsQuerySchema = z.object({
-  format: z.enum(["csv", "excel"]),
-  organizationId: z.string().optional(),
-  buildName: z.string().optional(),
-  tagId: z.string().optional(),
-  startDate: z.string().optional(),
-  endDate: z.string().optional(),
-});
-
 // Analytics agrégées pour le dashboard
 export const AggregatedAnalyticsSchema = z.object({
   totalSessions: z.number(),
@@ -181,5 +171,4 @@ export type AnalyticsSummary = z.infer<typeof AnalyticsSummarySchema>;
 export type TrainingAnalyticsData = z.infer<typeof TrainingAnalyticsDataSchema>;
 export type CreateTrainingAnalyticsInput = z.infer<typeof CreateTrainingAnalyticsSchema>;
 export type GetTrainingAnalyticsQuery = z.infer<typeof GetTrainingAnalyticsQuerySchema>;
-export type ExportAnalyticsQuery = z.infer<typeof ExportAnalyticsQuerySchema>;
 export type AggregatedAnalytics = z.infer<typeof AggregatedAnalyticsSchema>;

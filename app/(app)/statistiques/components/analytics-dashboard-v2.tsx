@@ -1,22 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { BarChart3, Users, BookOpen, Download, Calendar } from "lucide-react";
-import {
-  useTrainingAnalytics,
-  useExportAnalytics,
-} from "../../organisation/plan-de-formation/hooks/use-training-analytics";
+import { BarChart3, Users, BookOpen } from "lucide-react";
+import { useTrainingAnalytics } from "../../organisation/plan-de-formation/hooks/use-training-analytics";
 import { MemberAnalyticsV2 } from "./member-analytics-v2";
 import { TrainingMetricsV2 } from "./training-metrics-v2";
 
@@ -27,57 +16,10 @@ interface AnalyticsDashboardProps {
 export function AnalyticsDashboardV2({
   organizationId,
 }: AnalyticsDashboardProps) {
-  const [selectedPeriod, setSelectedPeriod] = useState("7days");
-
-  // Calculer les dates selon la période sélectionnée avec useMemo pour éviter les re-renders
-  const { startDate, endDate } = React.useMemo(() => {
-    const endDate = new Date();
-    const startDate = new Date();
-
-    switch (selectedPeriod) {
-      case "today":
-        startDate.setHours(0, 0, 0, 0);
-        break;
-      case "7days":
-        startDate.setDate(startDate.getDate() - 7);
-        break;
-      case "30days":
-        startDate.setDate(startDate.getDate() - 30);
-        break;
-      case "90days":
-        startDate.setDate(startDate.getDate() - 90);
-        break;
-      default:
-        startDate.setDate(startDate.getDate() - 7);
-    }
-
-    return {
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString(),
-    };
-  }, [selectedPeriod]);
-
   // Récupérer les analytics - seulement WISETRAINER
   const { data, isLoading, error } = useTrainingAnalytics({
-    startDate,
-    endDate,
     buildType: "WISETRAINER",
   });
-
-  // Hook pour l'export
-  const exportMutation = useExportAnalytics();
-
-  // Gérer l'export
-  const handleExport = () => {
-    exportMutation.mutate({
-      format: "csv",
-      filters: {
-        startDate,
-        endDate,
-        buildType: "WISETRAINER",
-      },
-    });
-  };
 
   if (isLoading) {
     return (
@@ -111,39 +53,14 @@ export function AnalyticsDashboardV2({
   if (!data || data.analytics.length === 0) {
     return (
       <div className="space-y-6">
-        {/* Header avec export et sélecteur */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">
-              Statistiques de formation
-            </h1>
-            <p className="text-muted-foreground">
-              Analysez les performances et la progression des formations
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-              <SelectTrigger className="w-[180px]">
-                <Calendar className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="Période" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="today">Aujourd&apos;hui</SelectItem>
-                <SelectItem value="7days">7 derniers jours</SelectItem>
-                <SelectItem value="30days">30 derniers jours</SelectItem>
-                <SelectItem value="90days">90 derniers jours</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleExport}
-              disabled={true}
-            >
-              <Download className="h-4 w-4 mr-1" />
-              Export CSV
-            </Button>
-          </div>
+        {/* Header */}
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Statistiques de formation
+          </h1>
+          <p className="text-muted-foreground">
+            Analysez les performances et la progression des formations
+          </p>
         </div>
 
         <Card>
@@ -168,39 +85,14 @@ export function AnalyticsDashboardV2({
 
   return (
     <div className="space-y-6">
-      {/* Header avec export et sélecteur */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            Statistiques de formation
-          </h1>
-          <p className="text-muted-foreground">
-            Analysez les performances et la progression des formations
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-            <SelectTrigger className="w-[180px]">
-              <Calendar className="h-4 w-4 mr-2" />
-              <SelectValue placeholder="Période" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="today">Aujourd&apos;hui</SelectItem>
-              <SelectItem value="7days">7 derniers jours</SelectItem>
-              <SelectItem value="30days">30 derniers jours</SelectItem>
-              <SelectItem value="90days">90 derniers jours</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleExport}
-            disabled={exportMutation.isPending}
-          >
-            <Download className="h-4 w-4 mr-1" />
-            Export CSV
-          </Button>
-        </div>
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">
+          Statistiques de formation
+        </h1>
+        <p className="text-muted-foreground">
+          Analysez les performances et la progression des formations
+        </p>
       </div>
 
       {/* Statistiques résumé rapide */}
@@ -284,8 +176,6 @@ export function AnalyticsDashboardV2({
         <TabsContent value="members">
           <MemberAnalyticsV2
             organizationId={organizationId}
-            startDate={startDate}
-            endDate={endDate}
             analytics={data?.analytics || []}
           />
         </TabsContent>
@@ -293,8 +183,6 @@ export function AnalyticsDashboardV2({
         <TabsContent value="trainings">
           <TrainingMetricsV2
             organizationId={organizationId}
-            startDate={startDate}
-            endDate={endDate}
             analytics={data?.analytics || []}
           />
         </TabsContent>
