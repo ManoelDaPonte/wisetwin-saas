@@ -1,9 +1,8 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { GetTrainingAnalyticsQuerySchema } from "@/validators/analytics";
 import { z } from "zod";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth-options";
+import { withOrgAuth, OrgAuthenticatedRequest } from "@/lib/auth-wrapper";
 import { Prisma } from "@prisma/client";
 import type { InteractionData, QuestionInteractionData } from "@/types/training";
 import { enrichAnalyticsWithMetadata } from "@/lib/analytics/metadata-resolver";
@@ -12,60 +11,21 @@ import { getMetadataForBuild } from "@/lib/admin/metadata-service";
 /**
  * GET /api/training/analytics - Récupérer les analytics de formation
  *
- * Version temporaire pour debug - accès sans organisation stricte
+ * 🔒 SÉCURISÉ avec withOrgAuth() - Garantit l'accès uniquement aux données de l'organisation
  */
-export async function GET(req: NextRequest) {
+export const GET = withOrgAuth(async (request: OrgAuthenticatedRequest) => {
   try {
-    // Récupérer la session pour obtenir l'organisation
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user) {
-      return NextResponse.json(
-        {
-          error: "Non authentifié",
-        },
-        { status: 401 }
-      );
-    }
-
-    const { searchParams } = new URL(req.url);
+    const { searchParams } = new URL(request.url);
     const queryParams = Object.fromEntries(searchParams.entries());
 
-    // Récupérer l'organisation depuis la query ou utiliser celle par défaut
-    let organizationId = searchParams.get("organizationId");
-
-    if (!organizationId) {
-      // Essayer de récupérer l'organisation active de l'utilisateur
-      const userWithOrgs = await prisma.user.findUnique({
-        where: { id: session.user.id },
-        include: {
-          OrganizationMember: {
-            include: {
-              organization: true,
-            },
-          },
-          organizations: true,
-        },
-      });
-
-      // Utiliser la première organisation trouvée
-      if (userWithOrgs?.organizations?.[0]) {
-        organizationId = userWithOrgs.organizations[0].id;
-      } else if (userWithOrgs?.OrganizationMember?.[0]) {
-        organizationId = userWithOrgs.OrganizationMember[0].organizationId;
-      }
-    }
-
-    // Pour debug
-    console.log("Analytics API - User:", session.user.email);
-    console.log("Analytics API - OrganizationId:", organizationId);
+    // ✅ SÉCURISÉ : Utilise automatiquement l'organisation de l'utilisateur authentifié
+    const organizationId = request.organization.id;
 
     // Validation des paramètres de requête
     const validationResult =
       GetTrainingAnalyticsQuerySchema.safeParse(queryParams);
 
     if (!validationResult.success) {
-      console.error("Validation error:", validationResult.error.flatten());
       return NextResponse.json(
         {
           error: "Paramètres invalides",
@@ -89,12 +49,10 @@ export async function GET(req: NextRequest) {
     } = validationResult.data;
 
     // Construction des conditions de requête
-    const whereConditions: Prisma.TrainingAnalyticsWhereInput = {};
-
-    // Si on a une organisation, filtrer par elle
-    if (organizationId) {
-      whereConditions.organizationId = organizationId;
-    }
+    const whereConditions: Prisma.TrainingAnalyticsWhereInput = {
+      // ✅ SÉCURISÉ : Force toujours le filtre par organisation
+      organizationId: organizationId,
+    };
 
     if (userId) {
       whereConditions.userId = userId;
@@ -128,8 +86,14 @@ export async function GET(req: NextRequest) {
 
     // Si un tagId est fourni, filtrer par les formations associées à ce tag
     if (tagId) {
+      // ✅ SÉCURISÉ : Vérifie que le tag appartient à l'organisation
       const buildTags = await prisma.buildTag.findMany({
-        where: { tagId },
+        where: {
+          tagId,
+          tag: {
+            organizationId: organizationId
+          }
+        },
         select: { buildName: true, buildType: true },
       });
 
@@ -211,7 +175,7 @@ export async function GET(req: NextRequest) {
       where: whereConditions,
       _avg: {
         totalDuration: true,
-        score: true, // Utiliser score au lieu de successRate
+        score: true,
       },
       _count: {
         id: true,
@@ -250,7 +214,6 @@ export async function GET(req: NextRequest) {
       interactions?.forEach((interaction) => {
         if (interaction.type === "question" && interaction.data) {
           const questionData = interaction.data as QuestionInteractionData;
-          // Utiliser questionKey comme identifiant unique de la question
           const key = questionData.questionKey;
           const current = questionFailures.get(key) || {
             text: key,
@@ -309,11 +272,11 @@ export async function GET(req: NextRequest) {
           endTime: a.endTime,
           totalDuration: a.totalDuration,
           completionStatus: a.completionStatus,
-          score: a.score, // Utiliser score au lieu de successRate
+          score: a.score,
           totalInteractions: a.totalInteractions,
           successfulInteractions: a.successfulInteractions,
           failedInteractions: a.failedInteractions,
-          interactions: a.interactions, // Déjà enrichies avec resolvedData
+          interactions: a.interactions,
           metadata,
           displayName,
           imageUrl: metadata?.imageUrl || "",
@@ -328,7 +291,7 @@ export async function GET(req: NextRequest) {
       aggregates: {
         totalSessions: aggregates._count.id || 0,
         averageDuration: aggregates._avg.totalDuration || 0,
-        averageScore: aggregates._avg.score || 0, // Utiliser score
+        averageScore: aggregates._avg.score || 0,
         totalInteractions: aggregates._sum.totalInteractions || 0,
         totalSuccessful: aggregates._sum.successfulInteractions || 0,
         totalFailed: aggregates._sum.failedInteractions || 0,
@@ -361,4 +324,4 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

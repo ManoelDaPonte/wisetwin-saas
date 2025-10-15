@@ -103,7 +103,6 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
   const {
     tagsWithStats,
     membersWithStats,
-    dashboardMetrics,
     isLoading,
     getTagStats,
     refetch: refetchDashboard,
@@ -232,17 +231,31 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
   };
 
   // Fonction helper pour calculer les jours restants avant l'échéance
-  const getDaysUntilDueDate = (dueDate: Date | null): number | null => {
-    if (!dueDate) return null;
+  const getDaysUntilDueDate = (
+    dueDate?: Date | string | null
+  ): number | null => {
+    if (!dueDate) {
+      return null;
+    }
+
+    const due =
+      dueDate instanceof Date ? dueDate : new Date(dueDate);
+
+    if (Number.isNaN(due.getTime())) {
+      return null;
+    }
+
     const now = new Date();
-    const due = new Date(dueDate);
     const diffTime = due.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
   // Fonction helper pour obtenir les styles d'urgence selon les jours restants
-  const getUrgencyStyles = (daysRemaining: number | null, isCompleted: boolean, isArchived: boolean) => {
+  const getUrgencyStyles = (
+    daysRemaining: number | null,
+    isCompleted: boolean,
+    isArchived: boolean
+  ) => {
     // Pas d'urgence si le plan est terminé, archivé ou sans échéance
     if (isCompleted || isArchived || daysRemaining === null) {
       return {
@@ -721,7 +734,11 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
 
                     // Calculer l'urgence
                     const daysRemaining = getDaysUntilDueDate(tag.dueDate);
-                    const urgencyStyles = getUrgencyStyles(daysRemaining, isCompleted, tag.archived);
+                    const urgencyStyles = getUrgencyStyles(
+                      daysRemaining,
+                      isCompleted,
+                      tag.archived
+                    );
 
                     const status = (() => {
                       if (tag.archived) {
@@ -775,7 +792,9 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                             : selectionMode
                             ? "hover:ring-1 hover:ring-primary/40"
                             : "hover:shadow-md"
-                        } ${tag.archived ? "opacity-60" : ""} ${urgencyStyles.cardClasses} ${urgencyStyles.shadowClasses}`}
+                        } ${tag.archived ? "opacity-60" : ""} ${
+                          urgencyStyles.cardClasses
+                        } ${urgencyStyles.shadowClasses}`}
                         style={{
                           borderLeftColor: tag.color || "#3B82F6",
                         }}
@@ -811,7 +830,9 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                                 <Badge
                                   variant={urgencyStyles.badge.variant}
                                   className={`text-xs flex items-center gap-1 ${
-                                    urgencyStyles.badge.animate ? "animate-pulse" : ""
+                                    urgencyStyles.badge.animate
+                                      ? "animate-pulse"
+                                      : ""
                                   } ${urgencyStyles.badge.className || ""}`}
                                 >
                                   <urgencyStyles.badge.icon className="h-3 w-3" />
@@ -831,18 +852,24 @@ export function ProgressDashboard({}: ProgressDashboardProps) {
                             <div className="space-y-2">
                               <div className="flex items-center justify-between text-sm">
                                 <span className="text-muted-foreground">
-                                  {tag.memberCount} membre{tag.memberCount > 1 ? "s" : ""}
+                                  {tag.memberCount} membre
+                                  {tag.memberCount > 1 ? "s" : ""}
                                 </span>
                                 <span className="text-lg font-bold">
                                   {tag.memberCount > 0
-                                    ? Math.round((completedMembers / tag.memberCount) * 100)
-                                    : 0}%
+                                    ? Math.round(
+                                        (completedMembers / tag.memberCount) *
+                                          100
+                                      )
+                                    : 0}
+                                  %
                                 </span>
                               </div>
                               <Progress
-                                value={tag.memberCount > 0
-                                  ? (completedMembers / tag.memberCount) * 100
-                                  : 0
+                                value={
+                                  tag.memberCount > 0
+                                    ? (completedMembers / tag.memberCount) * 100
+                                    : 0
                                 }
                                 className="h-2"
                               />

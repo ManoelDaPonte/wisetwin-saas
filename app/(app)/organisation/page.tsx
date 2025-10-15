@@ -62,7 +62,7 @@ export default function OrganizationPage() {
           {t.navigation.organizationOverview}
         </h1>
         <p className="text-muted-foreground">
-          Vue d'ensemble de votre organisation et des performances
+          Vue d&apos;ensemble de votre organisation et des performances
         </p>
       </div>
 

@@ -25,6 +25,8 @@ export default function SettingsPage() {
 		return null;
 	}
 
+	// Les MEMBER peuvent accéder aux paramètres (pour quitter l'organisation)
+	// Mais seuls OWNER/ADMIN peuvent modifier les paramètres
 	const canEdit =
 		activeOrganization.role === "OWNER" ||
 		activeOrganization.role === "ADMIN";

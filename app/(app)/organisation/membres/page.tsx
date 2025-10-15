@@ -23,6 +23,8 @@ export default function MembersPage() {
 		isCancelling,
 	} = useMembers();
 
+	// Les MEMBER peuvent voir la liste des membres (lecture seule)
+	// Seuls OWNER/ADMIN peuvent inviter
 	const canInvite =
 		activeOrganization?.role === "OWNER" ||
 		activeOrganization?.role === "ADMIN";

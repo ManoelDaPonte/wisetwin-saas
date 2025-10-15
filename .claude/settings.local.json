@@ -6,7 +6,12 @@
       "Bash(npm run build:*)",
       "Bash(npm run lint)",
       "Bash(npx ts-node:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(for dir in app/api/members app/api/invitations app/api/training-management app/api/organization)",
+      "Bash(do echo \"=== Analyzing $dir ===\" find \"$dir\" -name \"route.ts\")",
+      "Bash(while read f)",
+      "Bash(do echo \"File: $f\" grep -E \"export const (GET|POST|PUT|PATCH|DELETE)\" \"$f\")",
+      "Bash(head:*)"
     ]
   },
   "enableAllProjectMcpServers": false
